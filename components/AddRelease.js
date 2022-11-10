@@ -13,7 +13,7 @@ const schema = yup.object({
 
 export default function AddRelease({setInsertedData}) {
 
-  const { register, control, handleSubmit, formState: { errors } } = useForm({
+  const { register, control, handleSubmit,reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   });
   const [data, setData] = useState("");
@@ -25,6 +25,7 @@ export default function AddRelease({setInsertedData}) {
     console.log("error ",error)
     if(data){
       setInsertedData(data)
+      reset()
     }
     console.log("insert error ",error)
   }

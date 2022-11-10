@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import AddRelease from '../components/AddRelease'
 import CollapsibleTable from '../components/CollapsibleTable'
 import { supabase } from '../supabaseClient';
+import {addMonths, getMonth} from 'date-fns'
 
 export const getStaticProps = async () => {
   const res = await fetch("https://jsonplaceholder.typicode.com/users")
@@ -16,10 +17,11 @@ export const getStaticProps = async () => {
  const  Home = ({users}) => {
   const [releases, setReleases] = useState([])
   const [insertedData, setInsertedData] = useState([])
+  console.log("aaa month ", getMonth(new Date()+1))
 
 
   const getReleases = async () => {
-    const { data, error } = await supabase.from('Releases').select()
+    const { data, error } = await supabase.from('Releases').select().order('releaseDate', { ascending: true })
     if(!error){
       setReleases(data)
     }
