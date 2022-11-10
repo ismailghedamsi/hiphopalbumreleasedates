@@ -14,14 +14,50 @@ export const getStaticProps = async () => {
   }
 }
 
+const MonthTabs = ({selectedIndex, setSelectedIndex}) => {
+    
+  var mL = ['All', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  return (
+      <>
+          <div class="tabs is-toggle is-toggle-rounded ">
+              <ul>
+                  {mL.map((month, index) => {
+                      return (
+                          <li key={index} onClick={() => setSelectedIndex(index)} className={index === selectedIndex ? "is-active" : ""}>
+                          <a>
+                              <span className="is-size-7">{month}</span>
+                          </a>
+                      </li>
+                      )
+                  })
+              }
+              </ul>
+          </div>
+      </>
+  )
+}
+
+
  const  Home = ({users}) => {
   const [releases, setReleases] = useState([])
   const [insertedData, setInsertedData] = useState([])
   console.log("aaa month ", getMonth(new Date()+1))
+  const [selectedIndex, setSelectedIndex] = useState(getMonth(new Date())+1)
 
 
-  const getReleases = async () => {
-    const { data, error } = await supabase.from('Releases').select().order('releaseDate', { ascending: true })
+  function getDaysInMonth(year, month) {
+    return new Date(year, month, 0).getDate();
+  }
+
+  const getReleases = async (month) => {
+    console.log("selectedIndex", selectedIndex)
+    let query = supabase.from('Releases').select()
+    if(selectedIndex != 0){
+      query = query.gte("releaseDate",`2022-${selectedIndex}-01`).lte("releaseDate",`2022-${selectedIndex}-${getDaysInMonth(2022,selectedIndex)}`)
+    }
+    query = query.order('releaseDate', { ascending: true })
+    const { data, error } = await query
+    
     if(!error){
       setReleases(data)
     }
@@ -31,7 +67,7 @@ export const getStaticProps = async () => {
 
   useEffect(() => {
     getReleases()
-  }, [insertedData])
+  }, [insertedData, selectedIndex])
 
 
   releases
@@ -44,6 +80,7 @@ export const getStaticProps = async () => {
     <div 
     >
       <h1>Homepage</h1>
+      <MonthTabs selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />
       <CollapsibleTable data={releases}/>
       <AddRelease setInsertedData={setInsertedData}/>
       {/* { users.map(u => {

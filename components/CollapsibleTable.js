@@ -33,31 +33,8 @@ const Content = ({ data }) => {
 }
 
 
-const MonthTabs = ({selectedIndex, setSelectedIndex}) => {
-    
-    var mL = ['All', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    return (
-        <>
-            <div class="tabs is-toggle is-toggle-rounded ">
-                <ul>
-                    {mL.map((month, index) => {
-                        return (
-                            <li key={index} onClick={() => setSelectedIndex(index)} className={index === selectedIndex ? "is-active" : ""}>
-                            <a>
-                                <span className="is-size-7">{month}</span>
-                            </a>
-                        </li>
-                        )
-                    })
-                }
-                </ul>
-            </div>
-        </>
-    )
-}
-
 export default function CollapsibleTable({data}) {
-    const [selectedIndex, setSelectedIndex] = useState(getMonth(new Date())+1)
+
     const headersArray = [
         "Release Date",
         "Artist",
@@ -66,7 +43,6 @@ export default function CollapsibleTable({data}) {
 
     return (
         <div className="table-container">
-            <MonthTabs selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />
             <Table className="table is-bordered">
                 <Headers headersArray={headersArray} />
                 <Content data={data} />
