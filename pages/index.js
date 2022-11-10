@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import AddRelease from '../components/AddRelease'
 import CollapsibleTable from '../components/CollapsibleTable'
 import { supabase } from '../supabaseClient';
-import {addMonths, getMonth} from 'date-fns'
+import {getMonth} from 'date-fns'
 
 export const getStaticProps = async () => {
   const res = await fetch("https://jsonplaceholder.typicode.com/users")
