@@ -1,36 +1,40 @@
+import { getMonth } from "date-fns"
 import { useState } from "react"
+import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
+import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
 
 const Headers = ({ headersArray }) => {
     console.log(headersArray[0])
     return (
-        <thead>
-            <tr>
+        <Thead>
+            <Tr>
                 {
                     headersArray.map((header) => {
-                        return <th>{header}</th>
+                        return <Th>{header}</Th>
                     })
                 }
-            </tr>
-        </thead>
+            </Tr>
+        </Thead>
     )
 }
 
 const Content = ({ data }) => {
     return (
         data.map((d => {
-            return <tbody>
-                <tr>
-                    <td>{d.releaseDate.toString()}</td>
-                    <td>{d.artist}</td>
-                    <td>{d.album}</td>
-                </tr>
-            </tbody>
+            return <Tbody>
+                <Tr>
+                    <Td>{d.releaseDate.toString()}</Td>
+                    <Td>{d.artist}</Td>
+                    <Td>{d.album}</Td>
+                </Tr>
+            </Tbody>
         }))
     )
 }
 
 
 const MonthTabs = ({selectedIndex, setSelectedIndex}) => {
+    
     var mL = ['All', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     return (
         <>
@@ -53,7 +57,7 @@ const MonthTabs = ({selectedIndex, setSelectedIndex}) => {
 }
 
 export default function CollapsibleTable({data}) {
-    const [selectedIndex, setSelectedIndex] = useState(0)
+    const [selectedIndex, setSelectedIndex] = useState(getMonth(new Date())+1)
     const headersArray = [
         "Release Date",
         "Artist",
@@ -63,10 +67,10 @@ export default function CollapsibleTable({data}) {
     return (
         <div className="table-container">
             <MonthTabs selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />
-            <table className="table is-bordered">
+            <Table className="table is-bordered">
                 <Headers headersArray={headersArray} />
                 <Content data={data} />
-            </table>
+            </Table>
         </div>
     )
 }
