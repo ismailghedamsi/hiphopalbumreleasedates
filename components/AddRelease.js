@@ -4,6 +4,8 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { supabase } from "../supabaseClient";
 import { DatePicker } from "@mantine/dates";
+import { format, getMonth } from "date-fns";
+import dayjs from "dayjs";
 
 const schema = yup.object({
   releaseDate: yup.string().required().min(2),
@@ -11,7 +13,7 @@ const schema = yup.object({
   artist: yup.string().required().min(2),
 })
 
-export default function AddRelease({setInsertedData}) {
+export default function AddRelease({setInsertedData, setSelectedIndex}) {
 
   const { register, control, handleSubmit,reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
@@ -19,26 +21,32 @@ export default function AddRelease({setInsertedData}) {
   const [data, setData] = useState("");
 
   const insertRelease = async (rel) => {
-    rel.releaseDate = new Date (rel.releaseDate).toISOString()
-    const { error, data } = await supabase.from("Releases").insert(rel).select('*')
+    rel.releaseDate =   dayjs(rel.releaseDate).format('YYYY-MM-DD')
+  
+    console.log("rel ",rel)
+    const { error, data } = await supabase.from("releases").insert(rel).select('*')
     console.log("inserted ", data)
-    console.log("error ",error)
+    // console.log("error ",error)
     if(data){
       setInsertedData(data)
+      if(data && data.length > 0 && !isNaN(getMonth(data[0].releaseDate)+1) ) {
+        console.log("ca rentre")
+        setSelectedIndex(getMonth(data[0].releaseDate)+1)
+      }
       reset()
     }
-    console.log("insert error ",error)
+    // console.log("insert error ",error)
   }
 
   return (
     <form onSubmit={handleSubmit((data) => insertRelease(data))}>
-      <div class="field">
-        <label class="label">Release Date</label>
-        <div class="control">
+      <div className="field">
+        <label className="label">Release Date</label>
+        <div className="control">
           <Controller
             name="releaseDate"
             control={control}
-            render={({ field }) => <DatePicker placeholder="Pick date" label="Event date" withAsterisk {...field} dateParser={(dateString) => new Date(dateString).toISOString()} />}
+            render={({ field }) => <DatePicker clearable={false} placeholder="Pick date" label="Event date" withAsterisk {...field} dateParser={(dateString) => new Date(dateString).toISOString()} />}
           />
           <p>{errors.releaseDate?.message}</p>
         </div>
@@ -46,29 +54,29 @@ export default function AddRelease({setInsertedData}) {
       </div>
 
 
-      <div class="field">
-        <label class="label">Artist</label>
-        <div class="control">
-          <input {...register("artist")} class="input" type="text" placeholder="Type an artist name" />
+      <div className="field">
+        <label className="label">Artist</label>
+        <div className="control">
+          <input {...register("artist")} className="input" type="text" placeholder="Type an artist name" />
           <p>{errors.artist?.message}</p>
         </div>
       </div>
 
-      <div class="field">
-        <label class="label">Album</label>
-        <div class="control">
-          <input {...register("album")} class="input" type="text" placeholder="Type an album name" />
+      <div className="field">
+        <label className="label">Album</label>
+        <div className="control">
+          <input {...register("album")} className="input" type="text" placeholder="Type an album name" />
           <p>{errors.album?.message}</p>
         </div>
       </div>
 
 
-      <div class="field is-grouped">
-        <div class="control">
-          <button class="button is-link">Submit</button>
+      <div className="field is-grouped">
+        <div className="control">
+          <button className="button is-link">Submit</button>
         </div>
-        <div class="control">
-          <button class="button is-link is-light">Cancel</button>
+        <div className="control">
+          <button className="button is-link is-light">Cancel</button>
         </div>
       </div>
     </form>

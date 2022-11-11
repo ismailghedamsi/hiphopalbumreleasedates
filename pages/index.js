@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import AddRelease from '../components/AddRelease'
 import CollapsibleTable from '../components/CollapsibleTable'
 import { supabase } from '../supabaseClient';
-import {getMonth} from 'date-fns'
+import {getMonth, parseISO} from 'date-fns'
 
 export const getStaticProps = async () => {
   const res = await fetch("https://jsonplaceholder.typicode.com/users")
@@ -19,7 +19,7 @@ const MonthTabs = ({selectedIndex, setSelectedIndex}) => {
   var mL = ['All', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   return (
       <>
-          <div class="tabs is-toggle is-toggle-rounded ">
+          <div className="tabs is-toggle is-toggle-rounded ">
               <ul>
                   {mL.map((month, index) => {
                       return (
@@ -41,8 +41,7 @@ const MonthTabs = ({selectedIndex, setSelectedIndex}) => {
  const  Home = ({users}) => {
   const [releases, setReleases] = useState([])
   const [insertedData, setInsertedData] = useState([])
-  console.log("aaa month ", getMonth(new Date()+1))
-  const [selectedIndex, setSelectedIndex] = useState(getMonth(new Date())+1)
+  const [selectedIndex, setSelectedIndex] = useState(new Date().getMonth()+1)
 
 
   function getDaysInMonth(year, month) {
@@ -51,13 +50,12 @@ const MonthTabs = ({selectedIndex, setSelectedIndex}) => {
 
   const getReleases = async (month) => {
     console.log("selectedIndex", selectedIndex)
-    let query = supabase.from('Releases').select()
+    let query = supabase.from('releases').select()
     if(selectedIndex != 0){
       query = query.gte("releaseDate",`2022-${selectedIndex}-01`).lte("releaseDate",`2022-${selectedIndex}-${getDaysInMonth(2022,selectedIndex)}`)
     }
     query = query.order('releaseDate', { ascending: true })
     const { data, error } = await query
-    
     if(!error){
       setReleases(data)
     }
@@ -66,11 +64,11 @@ const MonthTabs = ({selectedIndex, setSelectedIndex}) => {
   }
 
   useEffect(() => {
+
     getReleases()
   }, [insertedData, selectedIndex])
 
 
-  releases
   return (
     <>
     <Head>
@@ -82,7 +80,7 @@ const MonthTabs = ({selectedIndex, setSelectedIndex}) => {
       <h1>Homepage</h1>
       <MonthTabs selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />
       <CollapsibleTable data={releases}/>
-      <AddRelease setInsertedData={setInsertedData}/>
+      <AddRelease setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex}/>
       {/* { users.map(u => {
         return <div key={u.id}>
             <Link href={'users/'+ u.id}>
