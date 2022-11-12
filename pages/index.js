@@ -4,11 +4,14 @@ import AddRelease from '../components/AddRelease'
 import CollapsibleTable from '../components/CollapsibleTable'
 import { supabase } from '../supabaseClient';
 import { getMonth, parseISO, setYear } from 'date-fns'
-import { Select } from '@mantine/core';
+import { Col, Grid, Select, SimpleGrid } from '@mantine/core';
+import { isMobile } from 'react-device-detect';
+import { useMediaQuery } from 'react-responsive';
 
 export const getStaticProps = async () => {
   const res = await fetch("https://jsonplaceholder.typicode.com/users")
   const data = await res.json()
+
 
   return {
     props: { users: data }
@@ -44,17 +47,30 @@ const Home = ({ users }) => {
   const [insertedData, setInsertedData] = useState([])
   const [selectedIndex, setSelectedIndex] = useState(new Date().getMonth() + 1)
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
-
+  const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1000px)' })
+  console.log("isMobile ", isMobile)
+  var monthList = [ {label :'January',value: 1}, {label: 'February',value: 2}, {label: 'March',value: 3}, 
+  {label: 'April',value: 4}, {label : 'May',value: 5}, {label: 'June',value: 6},
+   {label:'July',value: 7}, {label : 'August',value: 8}, {label:'September',value: 9},
+    {label: 'October',value: 10}, {label : 'November',value: 11},
+   {label : 'December', value: 12}];
 
   function getDaysInMonth(year, month) {
     return new Date(year, month, 0).getDate();
+  }
+
+  const appendZero = (month) =>{
+    if(month < 10){
+      return "0"+month
+    }
+    return month
   }
 
   const getReleases = async (month) => {
 
     let query = supabase.from('releases').select()
     if (selectedIndex != 0) {
-      query = query.gte("releaseDate", `${selectedYear}-${selectedIndex}-01`).lte("releaseDate", `${selectedYear}-${selectedIndex}-${getDaysInMonth(2022, selectedIndex)}`)
+      query = query.gte("releaseDate", `${selectedYear}-${appendZero(selectedIndex)}-01`).lte("releaseDate", `${selectedYear}-${appendZero(selectedIndex)}-${getDaysInMonth(selectedYear, selectedIndex)}`)
     }
     query = query.order('releaseDate', { ascending: true })
     const { data, error } = await query
@@ -69,6 +85,15 @@ const Home = ({ users }) => {
     getReleases()
   }, [insertedData, selectedIndex, selectedYear])
 
+  // monthList.filter(m => {return m.value ===  new Date().getMonth()
+
+  const getDefaultMonth = () => {
+    console.log("aaa ",monthList.filter(m => {return m.value ===  new Date().getMonth()+1})[0].value)
+    return monthList.filter(m => {return m.value ===  new Date().getMonth()+1})
+  }
+
+  getDefaultMonth()
+
 
   return (
     <>
@@ -78,7 +103,15 @@ const Home = ({ users }) => {
       </Head>
       <div
       >
-        
+
+        {isTabletOrMobile && <Select
+          label="Select a month"
+          placeholder="Select a month"
+          onChange={setSelectedIndex}
+          defaultValue={monthList.filter(m => {return m.value ===  new Date().getMonth()+1})[0].value}
+          data={monthList}
+        />}
+
         <Select
           label="Select a year"
           placeholder="Select a year"
@@ -89,9 +122,9 @@ const Home = ({ users }) => {
             { value: 2023, label: '2023' },
           ]}
         />
-        <MonthTabs selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />
+        {!isTabletOrMobile && <MonthTabs selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />}
         <CollapsibleTable data={releases} />
-        <AddRelease setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} />
+        <AddRelease setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
 
         {/* { users.map(u => {
         return <div key={u.id}>

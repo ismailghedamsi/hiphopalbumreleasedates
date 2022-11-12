@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { supabase } from "../supabaseClient";
 import { DatePicker } from "@mantine/dates";
-import { format, getMonth } from "date-fns";
+import { format, getMonth, getYear } from "date-fns";
 import dayjs from "dayjs";
 
 const schema = yup.object({
@@ -13,7 +13,7 @@ const schema = yup.object({
   artist: yup.string().required().min(2),
 })
 
-export default function AddRelease({setInsertedData, setSelectedIndex}) {
+export default function AddRelease({setInsertedData, setSelectedIndex, setSelectedYear}) {
 
   const { register, control, handleSubmit,reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
@@ -23,19 +23,18 @@ export default function AddRelease({setInsertedData, setSelectedIndex}) {
   const insertRelease = async (rel) => {
     rel.releaseDate =   dayjs(rel.releaseDate).format('YYYY-MM-DD')
   
-    console.log("rel ",rel)
     const { error, data } = await supabase.from("releases").insert(rel).select('*')
-    console.log("inserted ", data)
-    // console.log("error ",error)
+
     if(data){
       setInsertedData(data)
       if(data && data.length > 0 && !isNaN(getMonth(data[0].releaseDate)+1) ) {
         console.log("ca rentre")
         setSelectedIndex(getMonth(data[0].releaseDate)+1)
+        setSelectedYear(getYear(data[0].releaseDate))
+
       }
       reset()
     }
-    // console.log("insert error ",error)
   }
 
   return (
