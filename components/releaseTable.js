@@ -1,5 +1,5 @@
 import { Textarea, TextInput } from '@mantine/core';
-import { IconAt, IconSearch } from '@tabler/icons';
+import { IconAt, IconEraser, IconSearch } from '@tabler/icons';
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
 
@@ -18,13 +18,16 @@ const Headers = ({ headersArray }) => {
     )
 }
 
-const Content = ({ data }) => {
+const Content = ({ data,searchedArtistName, setSearchedArtistName, setSearchedAlbumName }) => {
     return (
         <Tbody>
             <Tr>
                 <Td><TextInput label="" placeholder="Release Date" icon={<IconSearch size={14} />} /></Td>
-                <Td><TextInput label="" placeholder="Artist name" icon={<IconSearch size={14} />} /></Td>
-                <Td><TextInput label="" placeholder="Album name" icon={<IconSearch size={14} />} /></Td>
+                <Td><TextInput  onChange={(event) => setSearchedArtistName(event.currentTarget.value)}
+                 label="" placeholder="Artist name" 
+                icon={<IconSearch size={14} />} />
+                  </Td>
+                <Td><TextInput onChange={(event) => setSearchedAlbumName(event.currentTarget.value)}  label="" placeholder="Album name" icon={<IconSearch size={14} />} /></Td>
             </Tr>
             {data.map((d, index) => {
                 return <Tr key={index}>
@@ -39,7 +42,7 @@ const Content = ({ data }) => {
 }
 
 
-export default function CollapsibleTable({ data }) {
+export default function CollapsibleTable({ data,searchedArtistName, setSearchedArtistName, setSearchedAlbumName }) {
 
     const headersArray = [
         "Release Date",
@@ -52,7 +55,7 @@ export default function CollapsibleTable({ data }) {
 
             <Table className="table is-bordered">
                 <Headers headersArray={headersArray} />
-                <Content data={data} />
+                <Content setSearchedAlbumName={setSearchedAlbumName} setSearchedArtistName={setSearchedArtistName} data={data} />
             </Table>
         </div>
     )

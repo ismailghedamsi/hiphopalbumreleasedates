@@ -1,12 +1,13 @@
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import AddRelease from '../components/AddRelease'
-import CollapsibleTable from '../components/CollapsibleTable'
 import { supabase } from '../supabaseClient';
 import { getMonth, parseISO, setYear } from 'date-fns'
 import { Col, Grid, Select, SimpleGrid } from '@mantine/core';
 import { isMobile } from 'react-device-detect';
 import { useMediaQuery } from 'react-responsive';
+import CollapsibleTable from '../components/releaseTable';
+import { CSVLink } from 'react-csv';
 
 export const getStaticProps = async () => {
   const res = await fetch("https://jsonplaceholder.typicode.com/users")
@@ -47,8 +48,11 @@ const Home = ({ users }) => {
   const [insertedData, setInsertedData] = useState([])
   const [selectedIndex, setSelectedIndex] = useState(new Date().getMonth() + 1)
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+  const [searchedArtistName, setSearchedArtistName] = useState("")
+  const [searchedAlbumName, setSearchedAlbumName] = useState("")
   const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1000px)' })
-  console.log("isMobile ", isMobile)
+
+
   var monthList = [ {label :'January',value: 1}, {label: 'February',value: 2}, {label: 'March',value: 3}, 
   {label: 'April',value: 4}, {label : 'May',value: 5}, {label: 'June',value: 6},
    {label:'July',value: 7}, {label : 'August',value: 8}, {label:'September',value: 9},
@@ -72,6 +76,15 @@ const Home = ({ users }) => {
     if (selectedIndex != 0) {
       query = query.gte("releaseDate", `${selectedYear}-${appendZero(selectedIndex)}-01`).lte("releaseDate", `${selectedYear}-${appendZero(selectedIndex)}-${getDaysInMonth(selectedYear, selectedIndex)}`)
     }
+
+    if(searchedArtistName !== ""){
+      query = query.ilike('artist', `%${searchedArtistName}%`)
+    }
+
+    if(searchedAlbumName !== ""){
+      query = query.ilike('album', `%${searchedAlbumName}%`)
+    }
+
     query = query.order('releaseDate', { ascending: true })
     const { data, error } = await query
     if (!error) {
@@ -83,12 +96,20 @@ const Home = ({ users }) => {
   useEffect(() => {
 
     getReleases()
-  }, [insertedData, selectedIndex, selectedYear])
+  }, [insertedData, selectedIndex, selectedYear, searchedArtistName, searchedAlbumName])
 
-  // monthList.filter(m => {return m.value ===  new Date().getMonth()
+  const getLoggedUser = async () => {
+    const user = await supabase.auth.getUser()
+    return user.data.user
+  }
+
+
+  useEffect(() => {
+    console.log("logged user ", getLoggedUser())
+  },[])
+
 
   const getDefaultMonth = () => {
-    console.log("aaa ",monthList.filter(m => {return m.value ===  new Date().getMonth()+1})[0].value)
     return monthList.filter(m => {return m.value ===  new Date().getMonth()+1})
   }
 
@@ -123,8 +144,9 @@ const Home = ({ users }) => {
           ]}
         />
         {!isTabletOrMobile && <MonthTabs selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />}
-        <CollapsibleTable data={releases} />
+        <CollapsibleTable searchedArtistName={searchedArtistName} setSearchedAlbumName={setSearchedAlbumName} setSearchedArtistName={setSearchedArtistName} data={releases} />
         <AddRelease setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
+        <CSVLink data={releases}>Download me</CSVLink>;
 
         {/* { users.map(u => {
         return <div key={u.id}>
