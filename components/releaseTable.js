@@ -1,8 +1,8 @@
-import { Textarea, TextInput } from '@mantine/core';
+import { Select, Textarea, TextInput } from '@mantine/core';
 import { IconAt, IconEraser, IconSearch } from '@tabler/icons';
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
-
+import { sortBy, uniq } from 'lodash';
 const Headers = ({ headersArray }) => {
     console.log(headersArray[0])
     return (
@@ -18,16 +18,35 @@ const Headers = ({ headersArray }) => {
     )
 }
 
-const Content = ({ data,searchedArtistName, setSearchedArtistName, setSearchedAlbumName }) => {
+const Content = ({ dates, data, setSearchedDay, setSearchedArtistName, setSearchedAlbumName }) => {
+  
+    let sorted = dates.sort(function(a,b) {
+        console.log("a b ",a,b)
+        a = a.releaseDate.split('-').reverse().join('');
+        b = b.releaseDate.split('-').reverse().join('');
+        return a > b ? 1 : a < b ? -1 : 0;
+        // return a.localeCompare(b);         // <-- alternative 
+      });
+
+      console.log("dates ",sorted)
+   
     return (
         <Tbody>
             <Tr>
-                <Td><TextInput label="" placeholder="Release Date" icon={<IconSearch size={14} />} /></Td>
-                <Td><TextInput  onChange={(event) => setSearchedArtistName(event.currentTarget.value)}
-                 label="" placeholder="Artist name" 
-                icon={<IconSearch size={14} />} />
-                  </Td>
-                <Td><TextInput onChange={(event) => setSearchedAlbumName(event.currentTarget.value)}  label="" placeholder="Album name" icon={<IconSearch size={14} />} /></Td>
+                <Td>
+                    <Select
+                        label=""
+                        placeholder="Select a date"
+                        defaultValue={new Date().getFullYear()}
+                        onChange={setSearchedDay}
+                        data={dates.map(e => e.releaseDate)}
+                    />
+                </Td>
+                <Td><TextInput onChange={(event) => setSearchedArtistName(event.currentTarget.value)}
+                    label="" placeholder="Artist name"
+                    icon={<IconSearch size={14} />} />
+                </Td>
+                <Td><TextInput onChange={(event) => setSearchedAlbumName(event.currentTarget.value)} label="" placeholder="Album name" icon={<IconSearch size={14} />} /></Td>
             </Tr>
             {data.map((d, index) => {
                 return <Tr key={index}>
@@ -42,7 +61,7 @@ const Content = ({ data,searchedArtistName, setSearchedArtistName, setSearchedAl
 }
 
 
-export default function CollapsibleTable({ data,searchedArtistName, setSearchedArtistName, setSearchedAlbumName }) {
+export default function CollapsibleTable({ dates, data, setSearchedDay, setSearchedArtistName, setSearchedAlbumName }) {
 
     const headersArray = [
         "Release Date",
@@ -55,7 +74,7 @@ export default function CollapsibleTable({ data,searchedArtistName, setSearchedA
 
             <Table className="table is-bordered">
                 <Headers headersArray={headersArray} />
-                <Content setSearchedAlbumName={setSearchedAlbumName} setSearchedArtistName={setSearchedArtistName} data={data} />
+                <Content dates={dates} setSearchedDay={setSearchedDay} setSearchedAlbumName={setSearchedAlbumName} setSearchedArtistName={setSearchedArtistName} data={data} />
             </Table>
         </div>
     )

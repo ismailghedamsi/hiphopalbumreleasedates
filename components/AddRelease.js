@@ -28,17 +28,15 @@ export default function AddRelease({setInsertedData, setSelectedIndex, setSelect
     if(data){
       setInsertedData(data)
       if(data && data.length > 0 && !isNaN(getMonth(data[0].releaseDate)+1) ) {
-        console.log("ca rentre")
         setSelectedIndex(getMonth(data[0].releaseDate)+1)
         setSelectedYear(getYear(data[0].releaseDate))
-
       }
       reset()
     }
   }
 
   return (
-    <form onSubmit={handleSubmit((data) => insertRelease(data))}>
+    <form style={{ marginLeft : "5px", paddingLeft: "10px"}} onSubmit={handleSubmit((data) => insertRelease(data))}>
       <div className="field">
         <label className="label">Release Date</label>
         <div className="control">

@@ -50,6 +50,8 @@ const Home = ({ users }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
   const [searchedArtistName, setSearchedArtistName] = useState("")
   const [searchedAlbumName, setSearchedAlbumName] = useState("")
+  const [searchedDay, setSearchedDay] = useState("")
+  const [dates, setDates] = useState([])
   const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1000px)' })
 
 
@@ -85,6 +87,12 @@ const Home = ({ users }) => {
       query = query.ilike('album', `%${searchedAlbumName}%`)
     }
 
+
+    if(searchedDay !== ""){
+      console.log("searched day ",searchedDay)
+      query = query.eq("releaseDate", searchedDay)
+    }
+
     query = query.order('releaseDate', { ascending: true })
     const { data, error } = await query
     if (!error) {
@@ -93,10 +101,18 @@ const Home = ({ users }) => {
 
   }
 
-  useEffect(() => {
+  const getUniqueDays = async () => {
+   const {data, error}  = await supabase.from('distinct_dates').select("releaseDate").gte("releaseDate", `${selectedYear}-${appendZero(selectedIndex)}-01`).lte("releaseDate", `${selectedYear}-${appendZero(selectedIndex)}-${getDaysInMonth(selectedYear, selectedIndex)}`)
+   if (!error) {
+    setDates(data)
+   }
+  }
 
+  useEffect(() => {
+    console.log("searchedDay ", searchedDay)
+    getUniqueDays()
     getReleases()
-  }, [insertedData, selectedIndex, selectedYear, searchedArtistName, searchedAlbumName])
+  }, [insertedData, selectedIndex, selectedYear, searchedArtistName, searchedAlbumName, searchedDay])
 
   const getLoggedUser = async () => {
     const user = await supabase.auth.getUser()
@@ -144,7 +160,7 @@ const Home = ({ users }) => {
           ]}
         />
         {!isTabletOrMobile && <MonthTabs selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />}
-        <CollapsibleTable searchedArtistName={searchedArtistName} setSearchedAlbumName={setSearchedAlbumName} setSearchedArtistName={setSearchedArtistName} data={releases} />
+        <CollapsibleTable dates={dates} setSearchedDay={setSearchedDay} searchedArtistName={searchedArtistName} setSearchedAlbumName={setSearchedAlbumName} setSearchedArtistName={setSearchedArtistName} data={releases} />
         <AddRelease setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
         <CSVLink data={releases}>Download me</CSVLink>;
 
