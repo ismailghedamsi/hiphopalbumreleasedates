@@ -5,9 +5,10 @@ import Navbar from "./Navbar"
 
 const Layout = ({children}) => {
     const [appContext, setAppContext] = useState("default")
+    const [loggedUser, setLoggedUser] = useState()
     const anyValue = 5
    return (
-    <AppContext.Provider value={{ appContext, setAppContext, anyValue}}>
+    <AppContext.Provider value={{ loggedUser, setLoggedUser, appContext, setAppContext, anyValue}}>
         <div className="content">
             <Navbar/>
                 {children}

@@ -4,17 +4,16 @@ import { supabase } from "../supabaseClient"
 import AppContext from "./AppContext"
 
 const Navbar = () => {
-    const {anyValue} = useContext(AppContext)
-    const [loggedUser, setLoggedUser] = useState()
-    const getLoggedUser =  () => {
-          supabase.auth.getUser().then(res => setLoggedUser(res.data.user))
+    const {loggedUser, setLoggedUser} = useContext(AppContext)
+    const getLoggedUser =  async () => {
+          const res = await supabase.auth.getUser()
+          setLoggedUser(res.data.user)
         
       }
       useEffect(() => {
         getLoggedUser()
       },[])
 
-      console.log("anyValue ",anyValue)
 
     return (
         <nav>

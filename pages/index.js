@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import AddRelease from '../components/AddRelease'
 import { supabase } from '../supabaseClient';
 import { getMonth, parseISO, setYear } from 'date-fns'
@@ -8,6 +8,7 @@ import { isMobile } from 'react-device-detect';
 import { useMediaQuery } from 'react-responsive';
 import CollapsibleTable from '../components/releaseTable';
 import { CSVLink } from 'react-csv';
+import AppContext from '../components/AppContext';
 
 export const getStaticProps = async () => {
   const res = await fetch("https://jsonplaceholder.typicode.com/users")
@@ -53,6 +54,7 @@ const Home = ({ users }) => {
   const [searchedDay, setSearchedDay] = useState("-")
   const [dates, setDates] = useState([])
   const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1000px)' })
+  const {loggedUser, setLoggedUser} = useContext(AppContext)
 
 
   var monthList = [ {label :'January',value: 1}, {label: 'February',value: 2}, {label: 'March',value: 3}, 
@@ -112,17 +114,7 @@ const Home = ({ users }) => {
     console.log("searchedDay ", searchedDay)
     getUniqueDays()
     getReleases()
-  }, [insertedData, selectedIndex, selectedYear, searchedArtistName, searchedAlbumName, searchedDay])
-
-  const getLoggedUser = async () => {
-    const user = await supabase.auth.getUser()
-    return user.data.user
-  }
-
-
-  useEffect(() => {
-    console.log("logged user ", getLoggedUser())
-  },[])
+  }, [insertedData, selectedIndex, selectedYear, searchedArtistName, searchedAlbumName, searchedDay, loggedUser])
 
 
   const getDefaultMonth = () => {
@@ -161,7 +153,7 @@ const Home = ({ users }) => {
         />
         {!isTabletOrMobile && <MonthTabs selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />}
         <CollapsibleTable dates={dates} setSearchedDay={setSearchedDay} searchedArtistName={searchedArtistName} setSearchedAlbumName={setSearchedAlbumName} setSearchedArtistName={setSearchedArtistName} data={releases} />
-        <AddRelease setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
+        {loggedUser && <AddRelease setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />}
         <CSVLink data={releases}>Download me</CSVLink>;
 
         {/* { users.map(u => {

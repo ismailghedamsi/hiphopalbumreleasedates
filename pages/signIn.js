@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { appendErrors, Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { supabase } from "../supabaseClient";
 import { Router, useRouter } from "next/router";
+import AppContext from "../components/AppContext";
 
 
 const schema = yup.object({
@@ -13,6 +14,7 @@ const schema = yup.object({
 
 export default function SignIn() {
     const router = useRouter()
+    const {loggedUser, setLoggedUser} = useContext(AppContext)
 
   const { register, control, handleSubmit,reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
@@ -26,12 +28,14 @@ export default function SignIn() {
         password : data.password
     })
 
-
+    setLoggedUser(user.data.user)
      console.log("user ",user.data.user)
      user.data.user && router.push("/")
 
 
   }
+
+
 
   return (
     <form style={{ marginLeft : "5px", paddingLeft: "10px"}} onSubmit={handleSubmit((data) => login(data))}>
