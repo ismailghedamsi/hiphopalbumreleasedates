@@ -50,7 +50,7 @@ const Home = ({ users }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
   const [searchedArtistName, setSearchedArtistName] = useState("")
   const [searchedAlbumName, setSearchedAlbumName] = useState("")
-  const [searchedDay, setSearchedDay] = useState("")
+  const [searchedDay, setSearchedDay] = useState("-")
   const [dates, setDates] = useState([])
   const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1000px)' })
 
@@ -88,7 +88,7 @@ const Home = ({ users }) => {
     }
 
 
-    if(searchedDay !== ""){
+    if(searchedDay !== "-"){
       console.log("searched day ",searchedDay)
       query = query.eq("releaseDate", searchedDay)
     }

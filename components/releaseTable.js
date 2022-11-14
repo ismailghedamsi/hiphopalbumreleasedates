@@ -39,7 +39,7 @@ const Content = ({ dates, data, setSearchedDay, setSearchedArtistName, setSearch
                         placeholder="Select a date"
                         defaultValue={new Date().getFullYear()}
                         onChange={setSearchedDay}
-                        data={dates.map(e => e.releaseDate)}
+                        data={["-", ...dates.map(e => e.releaseDate)]}
                     />
                 </Td>
                 <Td><TextInput onChange={(event) => setSearchedArtistName(event.currentTarget.value)}
