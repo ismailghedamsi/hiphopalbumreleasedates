@@ -1,26 +1,27 @@
-import { useEffect, useState } from "react";
-import { appendErrors, Controller, useForm } from "react-hook-form";
+import {useState } from "react";
+import {  Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { supabase } from "../supabaseClient";
 import { DatePicker } from "@mantine/dates";
-import { format, getMonth, getYear } from "date-fns";
+import { getMonth, getYear } from "date-fns";
 import dayjs from "dayjs";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import "../styles/AddRelease.module.css"
+import { TextInput } from "@mantine/core";
 
 const schema = yup.object({
-  releaseDate: yup.string().required().min(2),
-  album: yup.string().required().min(2),
-  artist: yup.string().required().min(2),
+  releaseDate: yup.string().required("You need to select a release date").min(2),
+  album: yup.string().required("You need to select the album name").min(2),
+  artist: yup.string().required("You need to select the artist name").min(2),
 })
 
 export default function AddRelease({setInsertedData, setSelectedIndex, setSelectedYear}) {
 
-  const { register, control, handleSubmit,reset, formState: { errors } } = useForm({
+  const { control, handleSubmit,reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   });
-  const [data, setData] = useState("");
 
   const notify = () =>  toast.error("Error Notification !", {
     position: toast.POSITION.TOP_LEFT
@@ -53,30 +54,32 @@ export default function AddRelease({setInsertedData, setSelectedIndex, setSelect
             <Controller
               name="releaseDate"
               control={control}
-              render={({ field }) => <DatePicker clearable={false} placeholder="Pick date" label="Event date" withAsterisk {...field} dateParser={(dateString) => new Date(dateString).toISOString()} />}
+              render={({ field }) => <DatePicker error={errors.releaseDate?.message} clearable={false} placeholder="Pick date" label="" withAsterisk {...field} dateParser={(dateString) => new Date(dateString).toISOString()} />}
             />
-            <p>{errors.releaseDate?.message}</p>
           </div>
-
         </div>
-
 
         <div className="field">
           <label className="label">Artist</label>
           <div className="control">
-            <input {...register("artist")} className="input" type="text" placeholder="Type an artist name" />
-            <p>{errors.artist?.message}</p>
+          <Controller
+              name="artist"
+              control={control}
+              render={({ field }) =>   <TextInput error={errors.artist?.message}  placeholder="Type an artist name"  {...field} />}
+            />
           </div>
         </div>
 
         <div className="field">
           <label className="label">Album</label>
           <div className="control">
-            <input {...register("album")} className="input" type="text" placeholder="Type an album name" />
-            <p>{errors.album?.message}</p>
+            <Controller
+              name="album"
+              control={control}
+              render={({ field }) =>   <TextInput error={errors.album?.message} placeholder="Type an album name"  {...field} />}
+            />
           </div>
         </div>
-
 
         <div className="field is-grouped">
           <div className="control">
