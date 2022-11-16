@@ -78,7 +78,7 @@ export default function CollapsibleTable({ dates, data, setSearchedDay, setSearc
     console.log("releaseDate loggeduser ",loggedUser)
 
     return (
-        <div className="table-container" style={{ marginLeft: "5px", paddingLeft: "10px" }} >
+        <div className="table-container" style={{margin: "auto 0"}} >
 
             <Table className="table is-bordered">
                 <Headers headersArray={headersArray} />

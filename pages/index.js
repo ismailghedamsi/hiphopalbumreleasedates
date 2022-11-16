@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react'
 import AddRelease from '../components/AddRelease'
 import { supabase } from '../supabaseClient';
 import { getMonth, parseISO, setYear } from 'date-fns'
-import { Col, Grid, Select, SimpleGrid } from '@mantine/core';
+import { Col, Grid, Modal, Select, SimpleGrid, useMantineTheme } from '@mantine/core';
 import { isMobile } from 'react-device-detect';
 import { useMediaQuery } from 'react-responsive';
 import CollapsibleTable from '../components/releaseTable';
@@ -54,22 +54,24 @@ const Home = ({ users }) => {
   const [searchedDay, setSearchedDay] = useState("-")
   const [dates, setDates] = useState([])
   const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1000px)' })
-  const {loggedUser, setLoggedUser} = useContext(AppContext)
+  const { loggedUser, setLoggedUser } = useContext(AppContext)
+  const [opened, setOpened] = useState(false);
+  const theme = useMantineTheme();
 
 
-  var monthList = [ {label :'January',value: 1}, {label: 'February',value: 2}, {label: 'March',value: 3}, 
-  {label: 'April',value: 4}, {label : 'May',value: 5}, {label: 'June',value: 6},
-   {label:'July',value: 7}, {label : 'August',value: 8}, {label:'September',value: 9},
-    {label: 'October',value: 10}, {label : 'November',value: 11},
-   {label : 'December', value: 12}];
+  var monthList = [{ label: 'January', value: 1 }, { label: 'February', value: 2 }, { label: 'March', value: 3 },
+  { label: 'April', value: 4 }, { label: 'May', value: 5 }, { label: 'June', value: 6 },
+  { label: 'July', value: 7 }, { label: 'August', value: 8 }, { label: 'September', value: 9 },
+  { label: 'October', value: 10 }, { label: 'November', value: 11 },
+  { label: 'December', value: 12 }];
 
   function getDaysInMonth(year, month) {
     return new Date(year, month, 0).getDate();
   }
 
-  const appendZero = (month) =>{
-    if(month < 10){
-      return "0"+month
+  const appendZero = (month) => {
+    if (month < 10) {
+      return "0" + month
     }
     return month
   }
@@ -81,17 +83,17 @@ const Home = ({ users }) => {
       query = query.gte("releaseDate", `${selectedYear}-${appendZero(selectedIndex)}-01`).lte("releaseDate", `${selectedYear}-${appendZero(selectedIndex)}-${getDaysInMonth(selectedYear, selectedIndex)}`)
     }
 
-    if(searchedArtistName !== ""){
+    if (searchedArtistName !== "") {
       query = query.ilike('artist', `%${searchedArtistName}%`)
     }
 
-    if(searchedAlbumName !== ""){
+    if (searchedAlbumName !== "") {
       query = query.ilike('album', `%${searchedAlbumName}%`)
     }
 
 
-    if(searchedDay !== "-"){
-      console.log("searched day ",searchedDay)
+    if (searchedDay !== "-") {
+      console.log("searched day ", searchedDay)
       query = query.eq("releaseDate", searchedDay)
     }
 
@@ -104,10 +106,10 @@ const Home = ({ users }) => {
   }
 
   const getUniqueDays = async () => {
-   const {data, error}  = await supabase.from('distinct_dates').select("releaseDate").gte("releaseDate", `${selectedYear}-${appendZero(selectedIndex)}-01`).lte("releaseDate", `${selectedYear}-${appendZero(selectedIndex)}-${getDaysInMonth(selectedYear, selectedIndex)}`)
-   if (!error) {
-    setDates(data)
-   }
+    const { data, error } = await supabase.from('distinct_dates').select("releaseDate").gte("releaseDate", `${selectedYear}-${appendZero(selectedIndex)}-01`).lte("releaseDate", `${selectedYear}-${appendZero(selectedIndex)}-${getDaysInMonth(selectedYear, selectedIndex)}`)
+    if (!error) {
+      setDates(data)
+    }
   }
 
   useEffect(() => {
@@ -118,7 +120,7 @@ const Home = ({ users }) => {
 
 
   const getDefaultMonth = () => {
-    return monthList.filter(m => {return m.value ===  new Date().getMonth()+1})
+    return monthList.filter(m => { return m.value === new Date().getMonth() + 1 })
   }
 
   getDefaultMonth()
@@ -130,14 +132,28 @@ const Home = ({ users }) => {
         <title>Hip Hop Album Releases</title>
         <meta name="keywords" content='release dates' />
       </Head>
-      <div
-      >
-
+      <div style={{margin : "10px"}}>
+        {loggedUser && <Modal
+          opened={opened}
+          centered
+          
+          onClose={() => setOpened(false)}
+          transition="fade"
+          transitionDuration={600}
+          transitionTimingFunction="ease"
+          title="Add a release"
+        >
+          <AddRelease closeOnClickOutside closeOnEscape setOpened={setOpened} setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
+        </Modal>
+        }
+        <div class="box has-text-centered">
+          {loggedUser ? <button onClick={() => setOpened(true)}>Add a release</button> : <button>Login to add a release</button>}
+        </div>
         {isTabletOrMobile && <Select
           label="Select a month"
           placeholder="Select a month"
           onChange={setSelectedIndex}
-          defaultValue={monthList.filter(m => {return m.value ===  new Date().getMonth()+1})[0].value}
+          defaultValue={monthList.filter(m => { return m.value === new Date().getMonth() + 1 })[0].value}
           data={monthList}
         />}
 
@@ -153,7 +169,6 @@ const Home = ({ users }) => {
         />
         {!isTabletOrMobile && <MonthTabs selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />}
         <CollapsibleTable dates={dates} setSearchedDay={setSearchedDay} searchedArtistName={searchedArtistName} setSearchedAlbumName={setSearchedAlbumName} setSearchedArtistName={setSearchedArtistName} data={releases} />
-        {loggedUser && <AddRelease setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />}
         <CSVLink data={releases}>Download me</CSVLink>;
 
         {/* { users.map(u => {

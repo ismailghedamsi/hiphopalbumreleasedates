@@ -33,7 +33,6 @@ const Navbar = () => {
                  border: "none",
                  padding: "0 !important",
                  fontFamily: "arial, sans-serif",
-                 color: "#0000EE",
                  cursor: "pointer"
             }} type="button"
             > Sign out</button>}

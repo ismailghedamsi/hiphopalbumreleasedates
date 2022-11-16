@@ -12,12 +12,12 @@ import "../styles/AddRelease.module.css"
 import { TextInput } from "@mantine/core";
 
 const schema = yup.object({
-  releaseDate: yup.string().required("You need to select a release date").min(2),
-  album: yup.string().required("You need to select the album name").min(2),
+  releaseDate: yup.string().required("You need to select a release date"),
+  album: yup.string().required("You need to select the album name").min(2, "An artist name can't be of two characters "),
   artist: yup.string().required("You need to select the artist name").min(2),
 })
 
-export default function AddRelease({setInsertedData, setSelectedIndex, setSelectedYear}) {
+export default function AddRelease({setOpened, setInsertedData, setSelectedIndex, setSelectedYear}) {
 
   const { control, handleSubmit,reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
@@ -54,7 +54,7 @@ export default function AddRelease({setInsertedData, setSelectedIndex, setSelect
             <Controller
               name="releaseDate"
               control={control}
-              render={({ field }) => <DatePicker error={errors.releaseDate?.message} clearable={false} placeholder="Pick date" label="" withAsterisk {...field} dateParser={(dateString) => new Date(dateString).toISOString()} />}
+              render={({ field }) => <DatePicker focusable data-autofocus  error={errors.releaseDate?.message} clearable={false} placeholder="Pick date" label="" withAsterisk {...field} dateParser={(dateString) => new Date(dateString).toISOString()} />}
             />
           </div>
         </div>
@@ -65,7 +65,7 @@ export default function AddRelease({setInsertedData, setSelectedIndex, setSelect
           <Controller
               name="artist"
               control={control}
-              render={({ field }) =>   <TextInput error={errors.artist?.message}  placeholder="Type an artist name"  {...field} />}
+              render={({ field }) =>  <TextInput error={errors.artist?.message}  placeholder="Type an artist name"  {...field} />}
             />
           </div>
         </div>
@@ -86,7 +86,7 @@ export default function AddRelease({setInsertedData, setSelectedIndex, setSelect
             <button className="button is-link">Submit</button>
           </div>
           <div className="control">
-            <button className="button is-link is-light">Cancel</button>
+            <button onClick={() => {reset(); setOpened(false)}} className="button is-link is-light">Cancel</button>
           </div>
         </div>
       </form>

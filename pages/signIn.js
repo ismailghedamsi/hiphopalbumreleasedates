@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { appendErrors, Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
@@ -19,8 +19,7 @@ export default function SignIn() {
   const { register, control, handleSubmit,reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   });
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
+
 
   const login = async (data) => {
     const user = await supabase.auth.signInWithPassword({
@@ -58,7 +57,7 @@ export default function SignIn() {
 
       <div className="field is-grouped">
         <div className="control">
-          <button className="button is-link">Subscribe</button>
+          <button className="button is-link">Login</button>
         </div>
         <div className="control">
           <button className="button is-link is-light">Cancel</button>
