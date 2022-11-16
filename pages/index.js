@@ -9,6 +9,7 @@ import { useMediaQuery } from 'react-responsive';
 import CollapsibleTable from '../components/releaseTable';
 import { CSVLink } from 'react-csv';
 import AppContext from '../components/AppContext';
+import { useRouter } from 'next/router'
 
 export const getStaticProps = async () => {
   const res = await fetch("https://jsonplaceholder.typicode.com/users")
@@ -57,6 +58,7 @@ const Home = ({ users }) => {
   const { loggedUser, setLoggedUser } = useContext(AppContext)
   const [opened, setOpened] = useState(false);
   const theme = useMantineTheme();
+  const router = useRouter()
 
 
   var monthList = [{ label: 'January', value: 1 }, { label: 'February', value: 2 }, { label: 'March', value: 3 },
@@ -147,7 +149,7 @@ const Home = ({ users }) => {
         </Modal>
         }
         <div class="box has-text-centered">
-          {loggedUser ? <button onClick={() => setOpened(true)}>Add a release</button> : <button>Login to add a release</button>}
+          {loggedUser ? <button onClick={() => setOpened(true)}>Add a release</button> : <button onClick={() => router.push("/login")}>Login to add a release</button>}
         </div>
         {isTabletOrMobile && <Select
           label="Select a month"
