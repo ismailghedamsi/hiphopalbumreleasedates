@@ -23,19 +23,15 @@ const Navbar = () => {
             <a href="/">Home</a>
             <a href="/register">Register</a>
             {!loggedUser ? <a href="/signIn">Login</a>  :
-            <button 
+            <a  hre="#"
             onClick={async () => {await supabase.auth.signOut()
                 setLoggedUser(null)
             }}
-            style={{
-                 background: "none!important",
-                 marginLeft: "5px",
-                 border: "none",
-                 padding: "0 !important",
-                 fontFamily: "arial, sans-serif",
-                 cursor: "pointer"
-            }} type="button"
-            > Sign out</button>}
+             type="button"
+            > Sign out</a>}
+            <a target={"_blank"} href= "https://www.buymeacoffee.com/ismailghedp">
+                Donate
+            </a>
         
         </nav>
     )

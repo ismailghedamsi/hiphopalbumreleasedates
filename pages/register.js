@@ -22,12 +22,11 @@ export default function Register() {
   const [data, setData] = useState("");
 
   const handleRegistration = async (data) => {
-    console.log("data ",data)
+
     const {user, session, error} = await supabase.auth.signUp({
         email : data.email,
         password : data.password
     })
-    error ? console.log("error ",error) : console.log("user ",user)
   }
 
   return (

@@ -9,7 +9,6 @@ import { useContext } from 'react';
 import AppContext from './AppContext';
 
 const Headers = ({ headersArray }) => {
-    console.log(headersArray[0])
     return (
         <Thead>
             <Tr>
@@ -26,11 +25,9 @@ const Headers = ({ headersArray }) => {
 const Content = ({ dates, data, setSearchedDay, setSearchedArtistName, setSearchedAlbumName }) => {
 
     let sorted = dates.sort(function (a, b) {
-        console.log("a b ", a, b)
         a = a.releaseDate.split('-').reverse().join('');
         b = b.releaseDate.split('-').reverse().join('');
         return a > b ? 1 : a < b ? -1 : 0;
-        // return a.localeCompare(b);         // <-- alternative 
     });
 
     console.log("dates ", sorted)
@@ -68,14 +65,11 @@ const Content = ({ dates, data, setSearchedDay, setSearchedArtistName, setSearch
 
 
 export default function CollapsibleTable({ dates, data, setSearchedDay, setSearchedArtistName, setSearchedAlbumName }) {
-    const {loggedUser} = useContext(AppContext)
     const headersArray = [
         "Release Date",
         "Artist",
         "Album"
     ]
-
-    console.log("releaseDate loggeduser ",loggedUser)
 
     return (
         <div className="table-container" style={{margin: "auto 0"}} >

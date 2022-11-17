@@ -23,9 +23,14 @@ export default function AddRelease({setOpened, setInsertedData, setSelectedIndex
     resolver: yupResolver(schema)
   });
 
-  const notify = () =>  toast.error("Error Notification !", {
-    position: toast.POSITION.TOP_LEFT
-  });;
+  const duplicateToast = () =>  toast.error("Release already exists", {
+    position: toast.POSITION.BOTTOM_CENTER
+  });
+
+  const success = () =>  toast.success("The release was added", {
+    position: toast.POSITION.BOTTOM_CENTER
+  });
+
 
   const insertRelease = async (rel) => {
     rel.releaseDate =   dayjs(rel.releaseDate).format('YYYY-MM-DD')
@@ -38,10 +43,12 @@ export default function AddRelease({setOpened, setInsertedData, setSelectedIndex
         setSelectedIndex(getMonth(data[0].releaseDate)+1)
         setSelectedYear(getYear(data[0].releaseDate))
       }
-      reset()
+      reset({releaseDate: data[0].releaseDate,  album : "", artist : ""})
+      success()
+
     }
     if(error){
-      notify()
+      duplicateToast()
     }
   }
 
@@ -54,7 +61,7 @@ export default function AddRelease({setOpened, setInsertedData, setSelectedIndex
             <Controller
               name="releaseDate"
               control={control}
-              render={({ field }) => <DatePicker focusable data-autofocus  error={errors.releaseDate?.message} clearable={false} placeholder="Pick date" label="" withAsterisk {...field} dateParser={(dateString) => new Date(dateString).toISOString()} />}
+              render={({ field }) => <DatePicker clearable={false}  defaultValue={""} focusable data-autofocus  error={errors.releaseDate?.message} placeholder="Pick date" label="" withAsterisk {...field} dateParser={(dateString) => new Date(dateString).toISOString()} />}
             />
           </div>
         </div>
@@ -83,10 +90,7 @@ export default function AddRelease({setOpened, setInsertedData, setSelectedIndex
 
         <div className="field is-grouped">
           <div className="control">
-            <button className="button is-link">Submit</button>
-          </div>
-          <div className="control">
-            <button onClick={() => {reset(); setOpened(false)}} className="button is-link is-light">Cancel</button>
+            <button type="submit" className="button is-link">Add</button>
           </div>
         </div>
       </form>

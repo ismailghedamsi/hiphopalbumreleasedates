@@ -32,7 +32,7 @@ const MonthTabs = ({ selectedIndex, setSelectedIndex }) => {
             return (
               <li key={index} onClick={() => setSelectedIndex(index)} className={index === selectedIndex ? "is-active" : ""}>
                 <a>
-                  <span className="is-size-7">{month}</span>
+                  <span style={{fontSize : "11.7px"}}>{month}</span>
                 </a>
               </li>
             )
@@ -43,7 +43,6 @@ const MonthTabs = ({ selectedIndex, setSelectedIndex }) => {
     </>
   )
 }
-
 
 const Home = ({ users }) => {
   const [releases, setReleases] = useState([])
@@ -95,7 +94,6 @@ const Home = ({ users }) => {
 
 
     if (searchedDay !== "-") {
-      console.log("searched day ", searchedDay)
       query = query.eq("releaseDate", searchedDay)
     }
 
@@ -115,7 +113,6 @@ const Home = ({ users }) => {
   }
 
   useEffect(() => {
-    console.log("searchedDay ", searchedDay)
     getUniqueDays()
     getReleases()
   }, [insertedData, selectedIndex, selectedYear, searchedArtistName, searchedAlbumName, searchedDay, loggedUser])
@@ -149,12 +146,13 @@ const Home = ({ users }) => {
         </Modal>
         }
         <div class="box has-text-centered">
-          {loggedUser ? <button onClick={() => setOpened(true)}>Add a release</button> : <button onClick={() => router.push("/login")}>Login to add a release</button>}
+          {loggedUser ? <button onClick={() => setOpened(true)}>Add a release</button> : <button onClick={() => router.push("/signIn")}>Login to add a release</button>}
         </div>
         {isTabletOrMobile && <Select
           label="Select a month"
           placeholder="Select a month"
           onChange={setSelectedIndex}
+          sx={{marginBottom : "20px"}}
           defaultValue={monthList.filter(m => { return m.value === new Date().getMonth() + 1 })[0].value}
           data={monthList}
         />}
@@ -164,6 +162,7 @@ const Home = ({ users }) => {
           placeholder="Select a year"
           onChange={setSelectedYear}
           defaultValue={new Date().getFullYear()}
+          sx={{marginBottom : "20px"}}
           data={[
             { value: 2022, label: '2022' },
             { value: 2023, label: '2023' },
@@ -171,15 +170,7 @@ const Home = ({ users }) => {
         />
         {!isTabletOrMobile && <MonthTabs selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />}
         <CollapsibleTable dates={dates} setSearchedDay={setSearchedDay} searchedArtistName={searchedArtistName} setSearchedAlbumName={setSearchedAlbumName} setSearchedArtistName={setSearchedArtistName} data={releases} />
-        <CSVLink data={releases}>Download me</CSVLink>;
-
-        {/* { users.map(u => {
-        return <div key={u.id}>
-            <Link href={'users/'+ u.id}>
-              <h3>{u.name}</h3>
-            </Link>
-        </div>
-      })} */}
+        {/* <CSVLink data={releases}>Download me</CSVLink>; */}
       </div>
     </>
   )
