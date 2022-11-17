@@ -22,8 +22,8 @@ export const getStaticProps = async () => {
 }
 
 const MonthTabs = ({ selectedIndex, setSelectedIndex }) => {
-
-  var mL = ['All', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  console.log("selected index ",selectedIndex)
+  var mL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   return (
     <>
       <div className="tabs is-toggle is-toggle-rounded ">
@@ -53,6 +53,7 @@ const Home = ({ users }) => {
   const [searchedAlbumName, setSearchedAlbumName] = useState("")
   const [searchedDay, setSearchedDay] = useState("-")
   const [dates, setDates] = useState([])
+  const [defaultValueYearSelect, setDefaultValueYearSelect] = useState(new Date().getFullYear())
   const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1000px)' })
   const { loggedUser, setLoggedUser } = useContext(AppContext)
   const [opened, setOpened] = useState(false);
@@ -78,11 +79,10 @@ const Home = ({ users }) => {
   }
 
   const getReleases = async (month) => {
-
+    console.log("get release selected index ",selectedIndex)
     let query = supabase.from('releases').select()
-    if (selectedIndex != 0) {
-      query = query.gte("releaseDate", `${selectedYear}-${appendZero(selectedIndex)}-01`).lte("releaseDate", `${selectedYear}-${appendZero(selectedIndex)}-${getDaysInMonth(selectedYear, selectedIndex)}`)
-    }
+      query = query.gte("releaseDate", `${selectedYear}-${appendZero(selectedIndex+1)}-01`).lte("releaseDate", `${selectedYear}-${appendZero(selectedIndex+1)}-${getDaysInMonth(selectedYear, selectedIndex)}`)
+    
 
     if (searchedArtistName !== "") {
       query = query.ilike('artist', `%${searchedArtistName}%`)
@@ -113,9 +113,10 @@ const Home = ({ users }) => {
   }
 
   useEffect(() => {
+    console.log("default ",defaultValueYearSelect)
     getUniqueDays()
     getReleases()
-  }, [insertedData, selectedIndex, selectedYear, searchedArtistName, searchedAlbumName, searchedDay, loggedUser])
+  }, [defaultValueYearSelect, insertedData, selectedIndex, selectedYear, searchedArtistName, searchedAlbumName, searchedDay, loggedUser])
 
 
   const getDefaultMonth = () => {
@@ -142,7 +143,7 @@ const Home = ({ users }) => {
           transitionTimingFunction="ease"
           title="Add a release"
         >
-          <AddRelease closeOnClickOutside closeOnEscape setOpened={setOpened} setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
+          <AddRelease setDefaultValueYearSelect={setDefaultValueYearSelect} closeOnClickOutside closeOnEscape setOpened={setOpened} setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
         </Modal>
         }
         <div class="box has-text-centered">
@@ -161,7 +162,7 @@ const Home = ({ users }) => {
           label="Select a year"
           placeholder="Select a year"
           onChange={setSelectedYear}
-          defaultValue={new Date().getFullYear()}
+          value={defaultValueYearSelect}
           sx={{marginBottom : "20px"}}
           data={[
             { value: 2022, label: '2022' },

@@ -17,7 +17,7 @@ const schema = yup.object({
   artist: yup.string().required("You need to select the artist name").min(2),
 })
 
-export default function AddRelease({setOpened, setInsertedData, setSelectedIndex, setSelectedYear}) {
+export default function AddRelease({setDefaultValueYearSelect, setOpened, setInsertedData, setSelectedIndex, setSelectedYear}) {
 
   const { control, handleSubmit,reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
@@ -36,12 +36,13 @@ export default function AddRelease({setOpened, setInsertedData, setSelectedIndex
     rel.releaseDate =   dayjs(rel.releaseDate).format('YYYY-MM-DD')
   
     const { error, data } = await supabase.from("releases").insert(rel).select('*')
-
+    console.log("data[0].year ", getYear(data[0].releaseDate))
     if(data){
       setInsertedData(data)
       if(data && data.length > 0 && !isNaN(getMonth(data[0].releaseDate)+1) ) {
-        setSelectedIndex(getMonth(data[0].releaseDate)+1)
+        setSelectedIndex(getMonth(data[0].releaseDate))
         setSelectedYear(getYear(data[0].releaseDate))
+        setDefaultValueYearSelect(getYear(data[0].releaseDate))
       }
       reset({releaseDate: data[0].releaseDate,  album : "", artist : ""})
       success()
