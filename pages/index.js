@@ -2,14 +2,19 @@ import Head from 'next/head'
 import { useContext, useEffect, useState } from 'react'
 import AddRelease from '../components/AddRelease'
 import { supabase } from '../supabaseClient';
-import { getMonth, parseISO, setYear } from 'date-fns'
-import { Col, Grid, Modal, Select, SimpleGrid, useMantineTheme } from '@mantine/core';
+import { Col, Grid, Modal, useMantineTheme } from '@mantine/core';
 import { isMobile } from 'react-device-detect';
 import { useMediaQuery } from 'react-responsive';
 import CollapsibleTable from '../components/releaseTable';
 import { CSVLink } from 'react-csv';
 import AppContext from '../components/AppContext';
 import { useRouter } from 'next/router'
+import dayjs from 'dayjs';
+import MonthYearPicker from '../components/MonthPicker';
+
+
+
+
 
 export const getStaticProps = async () => {
   const res = await fetch("https://jsonplaceholder.typicode.com/users")
@@ -22,7 +27,7 @@ export const getStaticProps = async () => {
 }
 
 const MonthTabs = ({ selectedIndex, setSelectedIndex }) => {
-  console.log("selected index ",selectedIndex)
+  console.log("selected index ", selectedIndex)
   var mL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   return (
     <>
@@ -32,7 +37,7 @@ const MonthTabs = ({ selectedIndex, setSelectedIndex }) => {
             return (
               <li key={index} onClick={() => setSelectedIndex(index)} className={index === selectedIndex ? "is-active" : ""}>
                 <a>
-                  <span style={{fontSize : "11.7px"}}>{month}</span>
+                  <span style={{ fontSize: "11.7px" }}>{month}</span>
                 </a>
               </li>
             )
@@ -55,10 +60,26 @@ const Home = ({ users }) => {
   const [dates, setDates] = useState([])
   const [defaultValueYearSelect, setDefaultValueYearSelect] = useState(new Date().getFullYear())
   const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1000px)' })
+  const [selectYearsOptions, setSelectYearsOptions] = useState([])
   const { loggedUser, setLoggedUser } = useContext(AppContext)
   const [opened, setOpened] = useState(false);
+  const [monthYear, setMonthYear] = useState({});
   const theme = useMantineTheme();
   const router = useRouter()
+  const [selectedDate, setSelectedDate] = useState(
+    Date.now()
+  );
+  const [startDate, setStartDate] = useState(new Date());
+  const [month, setMonth] = useState(new Date().getMonth()+1)
+  const [year, setYear] = useState(new Date().getFullYear())
+
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    console.log("date ", new Date(date).getMonth())
+  };
+
+
 
 
   var monthList = [{ label: 'January', value: 1 }, { label: 'February', value: 2 }, { label: 'March', value: 3 },
@@ -78,11 +99,12 @@ const Home = ({ users }) => {
     return month
   }
 
-  const getReleases = async (month) => {
-    console.log("get release selected index ",selectedIndex)
+  const getReleases = async () => {
+    console.log("year ", year)
+    console.log("month ", month)
     let query = supabase.from('releases').select()
-      query = query.gte("releaseDate", `${selectedYear}-${appendZero(selectedIndex+1)}-01`).lte("releaseDate", `${selectedYear}-${appendZero(selectedIndex+1)}-${getDaysInMonth(selectedYear, selectedIndex)}`)
-    
+    query = query.gte("releaseDate", `${year}-${appendZero(month)}-01`).lte("releaseDate", `${year}-${appendZero(month)}-${getDaysInMonth(selectedYear, selectedIndex)}`)
+
 
     if (searchedArtistName !== "") {
       query = query.ilike('artist', `%${searchedArtistName}%`)
@@ -106,17 +128,18 @@ const Home = ({ users }) => {
   }
 
   const getUniqueDays = async () => {
-    const { data, error } = await supabase.from('distinct_dates').select("releaseDate").gte("releaseDate", `${selectedYear}-${appendZero(selectedIndex)}-01`).lte("releaseDate", `${selectedYear}-${appendZero(selectedIndex)}-${getDaysInMonth(selectedYear, selectedIndex)}`)
+    const { data, error } = await supabase.from('distinct_dates').select("releaseDate").gte("releaseDate", `${year}-${appendZero(month)}-01`).lte("releaseDate", `${year}-${appendZero(month)}-${getDaysInMonth(year, month)}`)
     if (!error) {
       setDates(data)
     }
   }
 
   useEffect(() => {
-    console.log("default ",defaultValueYearSelect)
+    console.log("startDate ", startDate)
     getUniqueDays()
     getReleases()
-  }, [defaultValueYearSelect, insertedData, selectedIndex, selectedYear, searchedArtistName, searchedAlbumName, searchedDay, loggedUser])
+    generateYearsList()
+  }, [year, month, startDate, defaultValueYearSelect, insertedData, selectedIndex, selectedYear, searchedArtistName, searchedAlbumName, searchedDay, loggedUser])
 
 
   const getDefaultMonth = () => {
@@ -125,6 +148,25 @@ const Home = ({ users }) => {
 
   getDefaultMonth()
 
+  const generateYearsList = async () => {
+    const { data, error } = await supabase.from('distinct_years').select("*")
+
+    if (!error) {
+      const newList = data.map(({ label, ...rest }) => ({
+        label: String(label),
+        ...rest,
+      }));
+      setSelectYearsOptions(newList)
+    } else {
+      console.log("error ", error)
+    }
+  }
+
+  const range = {
+    min: { year: 1900, month: 3 },
+    max: { year: 2025, month: 2 }
+  };
+
 
   return (
     <>
@@ -132,44 +174,46 @@ const Home = ({ users }) => {
         <title>Hip Hop Album Releases</title>
         <meta name="keywords" content='release dates' />
       </Head>
-      <div style={{margin : "10px"}}>
+      <div style={{ margin: "10px" }}>
         {loggedUser && <Modal
           opened={opened}
           centered
-          
+
           onClose={() => setOpened(false)}
           transition="fade"
           transitionDuration={600}
           transitionTimingFunction="ease"
           title="Add a release"
         >
-          <AddRelease setDefaultValueYearSelect={setDefaultValueYearSelect} closeOnClickOutside closeOnEscape setOpened={setOpened} setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
+          <AddRelease setStartDate={setStartDate} setYear={setYear} setMonth={setMonth} setDefaultValueYearSelect={setDefaultValueYearSelect} closeOnClickOutside closeOnEscape setOpened={setOpened} setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
         </Modal>
         }
         <div class="box has-text-centered">
           {loggedUser ? <button onClick={() => setOpened(true)}>Add a release</button> : <button onClick={() => router.push("/signIn")}>Login to add a release</button>}
         </div>
-        {isTabletOrMobile && <Select
+
+        Select a month
+        <MonthYearPicker startDate={startDate} setStartDate={setStartDate} setMonth={setMonth} setYear={setYear} />
+
+
+        {/* <ReactSelect
           label="Select a month"
           placeholder="Select a month"
           onChange={setSelectedIndex}
-          sx={{marginBottom : "20px"}}
+          sx={{ marginBottom: "20px" }}
           defaultValue={monthList.filter(m => { return m.value === new Date().getMonth() + 1 })[0].value}
-          data={monthList}
-        />}
+          options={selectYearsOptions}
+        />
 
-        <Select
+        <ReactSelect
           label="Select a year"
           placeholder="Select a year"
           onChange={setSelectedYear}
           value={defaultValueYearSelect}
-          sx={{marginBottom : "20px"}}
-          data={[
-            { value: 2022, label: '2022' },
-            { value: 2023, label: '2023' },
-          ]}
-        />
-        {!isTabletOrMobile && <MonthTabs selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />}
+          sx={{ marginBottom: "20px" }}
+          options={selectYearsOptions}
+        /> */}
+
         <CollapsibleTable dates={dates} setSearchedDay={setSearchedDay} searchedArtistName={searchedArtistName} setSearchedAlbumName={setSearchedAlbumName} setSearchedArtistName={setSearchedArtistName} data={releases} />
         {/* <CSVLink data={releases}>Download me</CSVLink>; */}
       </div>
