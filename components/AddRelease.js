@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { supabase } from "../supabaseClient";
 import { DatePicker } from "@mantine/dates";
-import { getMonth, getYear } from "date-fns";
+import { addMonths, getMonth, getYear } from "date-fns";
 import dayjs from "dayjs";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -17,7 +17,7 @@ const schema = yup.object({
   artist: yup.string().required("You need to select the artist name").min(2),
 })
 
-export default function AddRelease({setDefaultValueYearSelect, setOpened, setInsertedData, setSelectedIndex, setSelectedYear}) {
+export default function AddRelease({setStartDate, setDefaultValueYearSelect,setYear, setMonth, setOpened, setInsertedData, setSelectedIndex, setSelectedYear}) {
 
   const { control, handleSubmit,reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
@@ -35,14 +35,20 @@ export default function AddRelease({setDefaultValueYearSelect, setOpened, setIns
   const insertRelease = async (rel) => {
     rel.releaseDate =   dayjs(rel.releaseDate).format('YYYY-MM-DD')
   
-    const { error, data } = await supabase.from("releases").insert(rel).select('*')
-    console.log("data[0].year ", getYear(data[0].releaseDate))
+    const { error, data } = await supabase.from("releases_duplicate").insert(rel).select('*')
     if(data){
+      console.log("data[0].releasedate ", new Date(data[0].releaseDate))
       setInsertedData(data)
-      if(data && data.length > 0 && !isNaN(getMonth(data[0].releaseDate)+1) ) {
-        setSelectedIndex(getMonth(data[0].releaseDate))
+      if(data && data.length > 0 && !isNaN(new Date(data[0].releaseDate).getMonth()+1))  {
+        console.log("ca rentre")
+        console.log("addRelease startDate ", addMonths(data[0].releaseDate,1))
+        setSelectedIndex(data[0].releaseDate)
+        setMonth(new Date(data[0].releaseDate).getMonth()+1)
+        setYear( new Date(data[0].releaseDate).getFullYear())
+        setStartDate(new Date(data[0].releaseDate))
         setSelectedYear(getYear(data[0].releaseDate))
         setDefaultValueYearSelect(getYear(data[0].releaseDate))
+
       }
       reset({releaseDate: data[0].releaseDate,  album : "", artist : ""})
       success()
