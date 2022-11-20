@@ -35,7 +35,7 @@ export default function AddRelease({setStartDate, setDefaultValueYearSelect,setY
   const insertRelease = async (rel) => {
     rel.releaseDate =   dayjs(rel.releaseDate).format('YYYY-MM-DD')
   
-    const { error, data } = await supabase.from("releases_duplicate").insert(rel).select('*')
+    const { error, data } = await supabase.from("releases").insert(rel).select('*')
     if(data){
       console.log("data[0].releasedate ", new Date(data[0].releaseDate))
       setInsertedData(data)
