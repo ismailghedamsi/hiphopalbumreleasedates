@@ -35,13 +35,11 @@ export default function AddRelease({setStartDate, setDefaultValueYearSelect,setY
   const insertRelease = async (rel) => {
     rel.releaseDate =   dayjs(rel.releaseDate).format('YYYY-MM-DD')
   
-    const { error, data } = await supabase.from("releases").insert(rel).select('*')
+    const { error, data } = await supabase.from("releases_duplicate").insert(rel).select('*')
     if(data){
       console.log("data[0].releasedate ", new Date(data[0].releaseDate))
       setInsertedData(data)
       if(data && data.length > 0 && !isNaN(new Date(data[0].releaseDate).getMonth()+1))  {
-        console.log("ca rentre")
-        console.log("addRelease startDate ", addMonths(data[0].releaseDate,1))
         setSelectedIndex(data[0].releaseDate)
         setMonth(new Date(data[0].releaseDate).getMonth()+1)
         setYear( new Date(data[0].releaseDate).getFullYear())
@@ -91,6 +89,17 @@ export default function AddRelease({setStartDate, setDefaultValueYearSelect,setY
               name="album"
               control={control}
               render={({ field }) =>   <TextInput error={errors.album?.message} placeholder="Type an album name"  {...field} />}
+            />
+          </div>
+        </div>
+
+        <div className="field">
+          <label className="label">Album cover</label>
+          <div className="control">
+          <Controller
+              name="cover"
+              control={control}
+              render={({ field }) =>  <TextInput error={errors.cover?.message}  placeholder="Insert the link to the cover image"  {...field} />}
             />
           </div>
         </div>

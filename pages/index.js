@@ -11,7 +11,9 @@ import AppContext from '../components/AppContext';
 import { useRouter } from 'next/router'
 import dayjs from 'dayjs';
 import MonthYearPicker from '../components/MonthPicker';
-
+import * as React from 'react';
+import { Box } from '@mui/system';
+import { Label } from '@mui/icons-material';
 
 
 
@@ -70,7 +72,7 @@ const Home = ({ users }) => {
     Date.now()
   );
   const [startDate, setStartDate] = useState(new Date());
-  const [month, setMonth] = useState(new Date().getMonth()+1)
+  const [month, setMonth] = useState(new Date().getMonth() + 1)
   const [year, setYear] = useState(new Date().getFullYear())
 
 
@@ -102,7 +104,7 @@ const Home = ({ users }) => {
   const getReleases = async () => {
     console.log("year ", year)
     console.log("month ", month)
-    let query = supabase.from('releases').select()
+    let query = supabase.from('releases_duplicate').select()
     query = query.gte("releaseDate", `${year}-${appendZero(month)}-01`).lte("releaseDate", `${year}-${appendZero(month)}-${getDaysInMonth(selectedYear, selectedIndex)}`)
 
 
@@ -128,7 +130,7 @@ const Home = ({ users }) => {
   }
 
   const getUniqueDays = async () => {
-    const { data, error } = await supabase.from('distinct_dates').select("releaseDate").gte("releaseDate", `${year}-${appendZero(month)}-01`).lte("releaseDate", `${year}-${appendZero(month)}-${getDaysInMonth(year, month)}`)
+    const { data, error } = await supabase.from('distinct_dates_duplicate').select("releaseDate").gte("releaseDate", `${year}-${appendZero(month)}-01`).lte("releaseDate", `${year}-${appendZero(month)}-${getDaysInMonth(year, month)}`)
     if (!error) {
       setDates(data)
     }
@@ -149,7 +151,7 @@ const Home = ({ users }) => {
   getDefaultMonth()
 
   const generateYearsList = async () => {
-    const { data, error } = await supabase.from('distinct_years').select("*")
+    const { data, error } = await supabase.from('distinct_years_duplicate').select("*")
 
     if (!error) {
       const newList = data.map(({ label, ...rest }) => ({
@@ -162,12 +164,6 @@ const Home = ({ users }) => {
     }
   }
 
-  const range = {
-    min: { year: 1900, month: 3 },
-    max: { year: 2025, month: 2 }
-  };
-
-
   return (
     <>
       <Head>
@@ -175,47 +171,43 @@ const Home = ({ users }) => {
         <meta name="keywords" content='release dates' />
       </Head>
       <div style={{ margin: "10px" }}>
-        {loggedUser && <Modal
-          opened={opened}
-          centered
+        <Box sx={{display : "flex", flexDirection : "row"}}>
+          <Box item>
+            <a href="#" class="button is-floating is-primary">
+              <i class="fa-solid fa-up-to-line"></i> Top
+            </a>
+          </Box>
 
-          onClose={() => setOpened(false)}
-          transition="fade"
-          transitionDuration={600}
-          transitionTimingFunction="ease"
-          title="Add a release"
-        >
-          <AddRelease setStartDate={setStartDate} setYear={setYear} setMonth={setMonth} setDefaultValueYearSelect={setDefaultValueYearSelect} closeOnClickOutside closeOnEscape setOpened={setOpened} setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
-        </Modal>
-        }
-        <div class="box has-text-centered">
-          {loggedUser ? <button onClick={() => setOpened(true)}>Add a release</button> : <button onClick={() => router.push("/signIn")}>Login to add a release</button>}
-        </div>
+          <Box item>
 
-        Select a month
-        <MonthYearPicker startDate={startDate} setStartDate={setStartDate} setMonth={setMonth} setYear={setYear} />
+            {loggedUser && <Modal
+              opened={opened}
+              centered
+
+              onClose={() => setOpened(false)}
+              transition="fade"
+              transitionDuration={600}
+              transitionTimingFunction="ease"
+              title="Add a release"
+            >
+              <AddRelease setStartDate={setStartDate} setYear={setYear} setMonth={setMonth} setDefaultValueYearSelect={setDefaultValueYearSelect} closeOnClickOutside closeOnEscape setOpened={setOpened} setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
+            </Modal>
+            }
+            <div class="box has-text-centered">
+              {loggedUser ? <button onClick={() => setOpened(true)}>Add a release</button> : <button onClick={() => router.push("/signIn")}>Login to add a release</button>}
+            </div>
+
+            <Box sx={{  display:"flex", justifyContent:"center", alignItems:"center", mb:"5px"}}>
+            <label style={{marginRight : "10px"}}>Select a month</label>
+            <MonthYearPicker startDate={startDate} setStartDate={setStartDate} setMonth={setMonth} setYear={setYear} />
+
+            </Box>
 
 
-        {/* <ReactSelect
-          label="Select a month"
-          placeholder="Select a month"
-          onChange={setSelectedIndex}
-          sx={{ marginBottom: "20px" }}
-          defaultValue={monthList.filter(m => { return m.value === new Date().getMonth() + 1 })[0].value}
-          options={selectYearsOptions}
-        />
-
-        <ReactSelect
-          label="Select a year"
-          placeholder="Select a year"
-          onChange={setSelectedYear}
-          value={defaultValueYearSelect}
-          sx={{ marginBottom: "20px" }}
-          options={selectYearsOptions}
-        /> */}
-
-        <CollapsibleTable dates={dates} setSearchedDay={setSearchedDay} searchedArtistName={searchedArtistName} setSearchedAlbumName={setSearchedAlbumName} setSearchedArtistName={setSearchedArtistName} data={releases} />
-        {/* <CSVLink data={releases}>Download me</CSVLink>; */}
+            <CollapsibleTable loggedUser={loggedUser} dates={dates} setSearchedDay={setSearchedDay} searchedArtistName={searchedArtistName} setSearchedAlbumName={setSearchedAlbumName} setSearchedArtistName={setSearchedArtistName} data={releases} />
+            {/* <CSVLink data={releases}>Download me</CSVLink>; */}
+          </Box>
+        </Box>
       </div>
     </>
   )
