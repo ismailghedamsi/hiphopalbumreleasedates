@@ -21,9 +21,10 @@ const Navbar = () => {
                 <Image alt="hip hop logo" priority src="/logo.png" width={300} height={300}/>
             </div>
             <a href="/">Home</a>
-            <a href="/register">Register</a>
+            {!loggedUser ? <a href="/register">Register</a> : ""}
             {!loggedUser ? <a href="/signIn">Login</a>  :
             <a  hre="#"
+            style={{wordBreak : "break-word"}}
             onClick={async () => {await supabase.auth.signOut()
                 setLoggedUser(null)
             }}
