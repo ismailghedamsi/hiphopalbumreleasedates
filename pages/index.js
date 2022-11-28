@@ -173,8 +173,8 @@ const Home = ({ users }) => {
       <div style={{ margin: "10px" }}>
         <Box sx={{display : "flex", flexDirection : "row"}}>
           <Box item>
-            <a href="#" class="button is-floating is-primary">
-              <i class="fa-solid fa-up-to-line"></i> Top
+            <a href="#" className="button is-floating is-primary">
+              <i className="fa-solid fa-up-to-line"></i> Top
             </a>
           </Box>
 
@@ -193,7 +193,7 @@ const Home = ({ users }) => {
               <AddRelease setStartDate={setStartDate} setYear={setYear} setMonth={setMonth} setDefaultValueYearSelect={setDefaultValueYearSelect} closeOnClickOutside closeOnEscape setOpened={setOpened} setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
             </Modal>
             }
-            <div class="box has-text-centered">
+            <div className="box has-text-centered">
               {loggedUser ? <button onClick={() => setOpened(true)}>Add a release</button> : <button onClick={() => router.push("/signIn")}>Login to add a release</button>}
             </div>
 
@@ -204,7 +204,7 @@ const Home = ({ users }) => {
             </Box>
 
 
-            <CollapsibleTable loggedUser={loggedUser} dates={dates} setSearchedDay={setSearchedDay} searchedArtistName={searchedArtistName} setSearchedAlbumName={setSearchedAlbumName} setSearchedArtistName={setSearchedArtistName} data={releases} />
+            <CollapsibleTable loggedUser={loggedUser} dates={dates} setSearchedDay={setSearchedDay} searchedArtistName={searchedArtistName} setSearchedAlbumName={setSearchedAlbumName} setSearchedArtistName={setSearchedArtistName} data={releases} setData={setReleases} />
             {/* <CSVLink data={releases}>Download me</CSVLink>; */}
           </Box>
         </Box>

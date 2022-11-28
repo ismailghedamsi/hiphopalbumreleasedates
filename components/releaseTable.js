@@ -1,22 +1,23 @@
-import { Select, Textarea, TextInput } from '@mantine/core';
-import { IconAt, IconEraser, IconSearch } from '@tabler/icons';
+import { Group, Image, Modal, Select, SimpleGrid, Text, Textarea, TextInput, useMantineTheme } from '@mantine/core';
+import { IconAt, IconEraser, IconPhoto, IconSearch, IconUpload, IconX } from '@tabler/icons';
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
 import { sortBy, uniq } from 'lodash';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import AppContext from './AppContext';
-import Image from 'next/image';
+import { supabase } from '../supabaseClient';
+import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 
 const Headers = ({ headersArray }) => {
-    
+
     return (
         <Thead>
             <Tr>
                 {
                     headersArray.map((header) => {
-                        console.log("header ",header)
+                        console.log("header ", header)
                         return <Th key={header}>{header}</Th>
                     })
                 }
@@ -27,8 +28,7 @@ const Headers = ({ headersArray }) => {
 
 
 
-const Content = ({ loggedUser, dates, data, setSearchedDay, setSearchedArtistName, setSearchedAlbumName }) => {
-    console.log("data ",data)
+const Content = ({ setReleaseId, setOpened, loggedUser, dates, data, setSearchedDay, setSearchedArtistName, setSearchedAlbumName }) => {
 
     let sorted = dates.sort(function (a, b) {
         a = a.releaseDate.split('-').reverse().join('');
@@ -39,9 +39,9 @@ const Content = ({ loggedUser, dates, data, setSearchedDay, setSearchedArtistNam
     console.log("dates ", sorted)
 
     const getCover = (coverPath) => {
-        if(coverPath === "" && loggedUser){
+        if (coverPath === "" && loggedUser) {
             return "/no_cover_logged.png"
-        }else if(coverPath === "" && loggedUser){
+        } else if (coverPath === "" && loggedUser) {
             return "/no_cover_unogged.png"
         }
         return coverPath
@@ -67,9 +67,10 @@ const Content = ({ loggedUser, dates, data, setSearchedDay, setSearchedArtistNam
                 <Td><TextInput onChange={(event) => setSearchedAlbumName(event.currentTarget.value)} label="" placeholder="Album name" icon={<IconSearch size={14} />} /></Td>
             </Tr>
             {data.map((d, index) => {
+                console.log("release data ", d)
                 return <Tr key={index}>
                     <Td>{d.releaseDate.toString()}</Td>
-                     <Td><img alt={"album cover"} width={200} src={getCover(d.cover)}/></Td>
+                    <Td><img onClick={() => {d.cover === "" && setOpened(true); setReleaseId(d.id) }} alt={"album cover"} width={200} src={getCover(d.cover)} /></Td>
                     <Td>{d.artist}</Td>
                     <Td>{d.album}</Td>
                 </Tr>
@@ -81,7 +82,14 @@ const Content = ({ loggedUser, dates, data, setSearchedDay, setSearchedArtistNam
 
 
 
-export default function CollapsibleTable({ loggedUser, dates, data, setSearchedDay, setSearchedArtistName, setSearchedAlbumName }) {
+export default function CollapsibleTable({ setData, loggedUser, dates, data, setSearchedDay, setSearchedArtistName, setSearchedAlbumName }) {
+    const [opened, setOpened] = useState(false)
+    const [selectCover, setSlectedCover] = useState()
+    const theme = useMantineTheme();
+    const [files, setFiles] = useState([]);
+    const [isUploading, setIsUploading] = useState(false)
+    const [releaseId, setReleaseId] = useState()
+
     const headersArray = [
         "Release Date",
         "Album Cover",
@@ -89,12 +97,96 @@ export default function CollapsibleTable({ loggedUser, dates, data, setSearchedD
         "Album"
     ]
 
-    return (
-        <div className="table-container" style={{margin: "auto 0"}} >
 
+    const coverUploadFailed = () => toast.error("Cover can't be uploaded", {
+        position: toast.POSITION.BOTTOM_CENTER
+    });
+
+    const coverUploadSucceed = () => toast.success("The release was added", {
+        position: toast.POSITION.BOTTOM_CENTER
+    });
+
+
+    return (
+        <div className="table-container" style={{ margin: "auto 0" }} >
+            <Modal
+                opened={opened}
+                centered
+                onClose={() => setOpened(false)}
+                transition="fade"
+                transitionDuration={600}
+                transitionTimingFunction="ease"
+                title="Add a release"
+            >
+                <Dropzone
+                    onDrop={async (files) => {
+                        setFiles(files)
+                        setIsUploading(true)
+                        const { error } = await supabase.storage.from('album-covers').upload(`public/${releaseId}/${files[0].name}`, files[0])
+                        if (!error) {
+                            console.log("${releaseId}/${files[0].name} ", `public/${releaseId}/${files[0].name}`)
+                            const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${releaseId}/${files[0].name}`)
+                            await supabase.from("releases_duplicate").update({ cover : publicURL.data.publicUrl }).eq("id", releaseId)
+                            console.log("publicUrl ", publicURL.data.publicUrl)
+                            let copy = [...data]
+                            let objIndex = copy.findIndex((obj => obj.id == releaseId));
+                            copy[objIndex].cover = publicURL.data.publicUrl 
+                            setData(copy)
+                            coverUploadSucceed()
+                            setOpened(false)
+                        } else {
+                            coverUploadFailed()
+                        }
+                        setIsUploading(false)
+                    }}
+                    onReject={(files) => console.log('rejected files', files)}
+                    maxSize={3 * 1024 ** 2}
+                    multiple={false}
+                    accept={IMAGE_MIME_TYPE}
+                    maxFiles={1}
+                    loading={isUploading}
+                // {...props}
+                >
+                    <Group position="center" spacing="xl" style={{ minHeight: 220, pointerEvents: 'none' }}>
+                        <Dropzone.Accept>
+                            <IconUpload
+                                size={50}
+                                stroke={1.5}
+                                color={theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]}
+                            />
+                        </Dropzone.Accept>
+                        <Dropzone.Reject>
+                            <IconX
+                                size={50}
+                                stroke={1.5}
+                                color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
+                            />
+                        </Dropzone.Reject>
+                        <Dropzone.Idle>
+                            <IconPhoto size={50} stroke={1.5} />
+                        </Dropzone.Idle>
+
+                        <div>
+                            <Text size="xl" inline>
+                                Drag images here or click to select files
+                            </Text>
+                            <Text size="sm" color="dimmed" inline mt={7}>
+                                Attach as many files as you like, each file should not exceed 5mb
+                            </Text>
+                        </div>
+                    </Group>
+                </Dropzone>
+            </Modal>
             <Table className="table is-bordered">
                 <Headers headersArray={headersArray} />
-                <Content loggedUser={loggedUser} dates={dates} setSearchedDay={setSearchedDay} setSearchedAlbumName={setSearchedAlbumName} setSearchedArtistName={setSearchedArtistName} data={data} />
+                <Content setReleaseId={setReleaseId}
+                    setOpened={setOpened}
+                    loggedUser={loggedUser}
+                    dates={dates}
+                    setSearchedDay={setSearchedDay}
+                    setSearchedAlbumName={setSearchedAlbumName}
+                    setSearchedArtistName={setSearchedArtistName}
+                    data={data} />
             </Table>
             <ToastContainer />
         </div>
