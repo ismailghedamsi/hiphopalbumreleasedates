@@ -67,7 +67,6 @@ const Content = ({ setReleaseId, setOpened, loggedUser, dates, data, setSearched
                 <Td><TextInput onChange={(event) => setSearchedAlbumName(event.currentTarget.value)} label="" placeholder="Album name" icon={<IconSearch size={14} />} /></Td>
             </Tr>
             {data.map((d, index) => {
-                console.log("release data ", d)
                 return <Tr key={index}>
                     <Td>{d.releaseDate.toString()}</Td>
                     <Td><img onClick={() => {d.cover === "" && setOpened(true); setReleaseId(d.id) }} alt={"album cover"} width={200} src={getCover(d.cover)} /></Td>
@@ -121,23 +120,25 @@ export default function CollapsibleTable({ setData, loggedUser, dates, data, set
                 <Dropzone
                     onDrop={async (files) => {
                         setFiles(files)
-                        setIsUploading(true)
-                        const { error } = await supabase.storage.from('album-covers').upload(`public/${releaseId}/${files[0].name}`, files[0])
-                        if (!error) {
-                            console.log("${releaseId}/${files[0].name} ", `public/${releaseId}/${files[0].name}`)
-                            const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${releaseId}/${files[0].name}`)
-                            await supabase.from("releases_duplicate").update({ cover : publicURL.data.publicUrl }).eq("id", releaseId)
-                            console.log("publicUrl ", publicURL.data.publicUrl)
-                            let copy = [...data]
-                            let objIndex = copy.findIndex((obj => obj.id == releaseId));
-                            copy[objIndex].cover = publicURL.data.publicUrl 
-                            setData(copy)
-                            coverUploadSucceed()
-                            setOpened(false)
-                        } else {
-                            coverUploadFailed()
+                        if(files.length > 0){
+                            setIsUploading(true)
+                            const { error } = await supabase.storage.from('album-covers').upload(`public/${releaseId}/${files[0].name}`, files[0])
+                            if (!error) {
+                                console.log("${releaseId}/${files[0].name} ", `public/${releaseId}/${files[0].name}`)
+                                const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${releaseId}/${files[0].name}`)
+                                await supabase.from("releases_duplicate").update({ cover : publicURL.data.publicUrl }).eq("id", releaseId)
+                                console.log("publicUrl ", publicURL.data.publicUrl)
+                                let copy = [...data]
+                                let objIndex = copy.findIndex((obj => obj.id == releaseId));
+                                copy[objIndex].cover = publicURL.data.publicUrl 
+                                setData(copy)
+                                coverUploadSucceed()
+                                setOpened(false)
+                            } else {
+                                coverUploadFailed()
+                            }
+                            setIsUploading(false)
                         }
-                        setIsUploading(false)
                     }}
                     onReject={(files) => console.log('rejected files', files)}
                     maxSize={3 * 1024 ** 2}
@@ -145,7 +146,6 @@ export default function CollapsibleTable({ setData, loggedUser, dates, data, set
                     accept={IMAGE_MIME_TYPE}
                     maxFiles={1}
                     loading={isUploading}
-                // {...props}
                 >
                     <Group position="center" spacing="xl" style={{ minHeight: 220, pointerEvents: 'none' }}>
                         <Dropzone.Accept>

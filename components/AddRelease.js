@@ -1,5 +1,5 @@
-import {useState } from "react";
-import {  Controller, useForm } from "react-hook-form";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { supabase } from "../supabaseClient";
@@ -9,7 +9,9 @@ import dayjs from "dayjs";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "../styles/AddRelease.module.css"
-import { TextInput } from "@mantine/core";
+import { Group, Tabs, Text, TextInput, useMantineTheme } from "@mantine/core";
+import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import { IconPhoto, IconUpload, IconX } from "@tabler/icons";
 
 const schema = yup.object({
   releaseDate: yup.string().required("You need to select a release date"),
@@ -17,56 +19,69 @@ const schema = yup.object({
   artist: yup.string().required("You need to select the artist name").min(2),
 })
 
-export default function AddRelease({setStartDate, setDefaultValueYearSelect,setYear, setMonth, setOpened, setInsertedData, setSelectedIndex, setSelectedYear}) {
+export default function AddRelease({ setStartDate, setDefaultValueYearSelect, setYear, setMonth, setOpened, setInsertedData, setSelectedIndex, setSelectedYear }) {
+  const [isUploading, setIsUploading] = useState(false)
+  const [coverSource, setCoverSource] = useState("local")
+  const [files, setFiles] = useState([]);
 
-  const { control, handleSubmit,reset, formState: { errors } } = useForm({
+  const theme = useMantineTheme();
+
+  const { control, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   });
 
-  const duplicateToast = () =>  toast.error("Release already exists", {
+  const duplicateToast = () => toast.error("Release already exists", {
     position: toast.POSITION.BOTTOM_CENTER
   });
 
-  const success = () =>  toast.success("The release was added", {
+  const success = () => toast.success("The release was added", {
     position: toast.POSITION.BOTTOM_CENTER
   });
 
 
   const insertRelease = async (rel) => {
-    rel.releaseDate =   dayjs(rel.releaseDate).format('YYYY-MM-DD')
-  
+    rel.releaseDate = dayjs(rel.releaseDate).format('YYYY-MM-DD')
     const { error, data } = await supabase.from("releases_duplicate").insert(rel).select('*')
-    if(data){
-      console.log("data[0].releasedate ", new Date(data[0].releaseDate))
+
+    if (data) {
+      console.log("addrelease data", data)
+      console.log("data.id", data.id)
+      if(coverSource === "local" && files.length > 0){
+        const { error:errorUpload } = await supabase.storage.from('album-covers').upload(`public/${data[0].id}/${files[0].name}`, files[0])
+        if(!errorUpload){
+          const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${data[0].id}/${files[0].name}`)
+          await supabase.from("releases_duplicate").update({ cover : publicURL.data.publicUrl }).eq("id", data[0].id)
+        }
+      }
       setInsertedData(data)
-      if(data && data.length > 0 && !isNaN(new Date(data[0].releaseDate).getMonth()+1))  {
+      if (data && data.length > 0 && !isNaN(new Date(data[0].releaseDate).getMonth() + 1)) {
         setSelectedIndex(data[0].releaseDate)
-        setMonth(new Date(data[0].releaseDate).getMonth()+1)
-        setYear( new Date(data[0].releaseDate).getFullYear())
+        setMonth(new Date(data[0].releaseDate).getMonth() + 1)
+        setYear(new Date(data[0].releaseDate).getFullYear())
         setStartDate(new Date(data[0].releaseDate))
         setSelectedYear(getYear(data[0].releaseDate))
         setDefaultValueYearSelect(getYear(data[0].releaseDate))
 
       }
-      reset({releaseDate: data[0].releaseDate,  album : "", artist : ""})
+      reset({ releaseDate: data[0].releaseDate, album: "", artist: "" })
       success()
 
     }
-    if(error){
+    if (error) {
       duplicateToast()
     }
   }
 
   return (
     <div>
-      <form style={{ marginLeft : "5px", paddingLeft: "10px"}} onSubmit={handleSubmit((data) => insertRelease(data))}>
+      <form style={{ marginLeft: "5px", paddingLeft: "10px" }} onSubmit={handleSubmit((data) => insertRelease(data))}>
         <div className="field">
           <label className="label">Release Date</label>
           <div className="control">
             <Controller
               name="releaseDate"
               control={control}
-              render={({ field }) => <DatePicker clearable={false}  defaultValue={""} focusable data-autofocus  error={errors.releaseDate?.message} placeholder="Pick date" label="" withAsterisk {...field} dateParser={(dateString) => new Date(dateString).toISOString()} />}
+              render={({ field }) => <DatePicker clearable={false} defaultValue={""} focusable data-autofocus error={errors.releaseDate?.message} placeholder="Pick date" label="" withAsterisk {...field} dateParser={(dateString) => new Date(dateString).toISOString()} />}
             />
           </div>
         </div>
@@ -74,10 +89,10 @@ export default function AddRelease({setStartDate, setDefaultValueYearSelect,setY
         <div className="field">
           <label className="label">Artist</label>
           <div className="control">
-          <Controller
+            <Controller
               name="artist"
               control={control}
-              render={({ field }) =>  <TextInput error={errors.artist?.message}  placeholder="Type an artist name"  {...field} />}
+              render={({ field }) => <TextInput error={errors.artist?.message} placeholder="Type an artist name"  {...field} />}
             />
           </div>
         </div>
@@ -88,21 +103,125 @@ export default function AddRelease({setStartDate, setDefaultValueYearSelect,setY
             <Controller
               name="album"
               control={control}
-              render={({ field }) =>   <TextInput error={errors.album?.message} placeholder="Type an album name"  {...field} />}
+              render={({ field }) => <TextInput error={errors.album?.message} placeholder="Type an album name"  {...field} />}
             />
           </div>
         </div>
 
-        <div className="field">
-          <label className="label">Album cover</label>
-          <div className="control">
-          <Controller
-              name="cover"
-              control={control}
-              render={({ field }) =>  <TextInput error={errors.cover?.message}  placeholder="Insert the link to the cover image"  {...field} />}
-            />
-          </div>
-        </div>
+        <label className="label">Album cover</label>
+        <Tabs
+          defaultValue="local"
+          unstyled
+          onTabChange={(value) => setCoverSource(value)}
+          styles={(theme) => ({
+            tab: {
+              ...theme.fn.focusStyles(),
+              backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
+              color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[9],
+              border: `1px solid ${theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[4]}`,
+              padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
+              cursor: 'pointer',
+              fontSize: theme.fontSizes.sm,
+              display: 'flex',
+              alignItems: 'center',
+
+              '&:disabled': {
+                opacity: 0.5,
+                cursor: 'not-allowed',
+              },
+
+              '&:not(:first-of-type)': {
+                borderLeft: 0,
+              },
+
+              '&:first-of-type': {
+                borderTopLeftRadius: theme.radius.md,
+                borderBottomLeftRadius: theme.radius.md,
+              },
+
+              '&:last-of-type': {
+                borderTopRightRadius: theme.radius.md,
+                borderBottomRightRadius: theme.radius.md,
+              },
+
+              '&[data-active]': {
+                backgroundColor: theme.colors.blue[7],
+                borderColor: theme.colors.blue[7],
+                color: theme.white,
+              },
+            },
+
+            tabIcon: {
+              marginRight: theme.spacing.xs,
+              display: 'flex',
+              alignItems: 'center',
+            },
+
+            tabsList: {
+              display: 'flex',
+            },
+          })}
+        >
+          <Tabs.List styles={{ border: "2px black double" }}>
+            <Tabs.Tab value="local">Local file</Tabs.Tab>
+            <Tabs.Tab value="url">Cover url</Tabs.Tab>
+          </Tabs.List>
+
+          <Tabs.Panel value="local" pt="xs">
+            <Dropzone
+              onDrop={async (files) => {
+                setFiles(files)
+              }}
+              onReject={(files) => console.log('rejected files', files)}
+              maxSize={3 * 1024 ** 2}
+              multiple={false}
+              accept={IMAGE_MIME_TYPE}
+              maxFiles={1}
+              loading={isUploading}
+            >
+              <Group position="center" spacing="xl" style={{ minHeight: 220, pointerEvents: 'none' }}>
+                <Dropzone.Accept>
+                  <IconUpload
+                    size={50}
+                    stroke={1.5}
+                    color={theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]}
+                  />
+                </Dropzone.Accept>
+                <Dropzone.Reject>
+                  <IconX
+                    size={50}
+                    stroke={1.5}
+                    color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
+                  />
+                </Dropzone.Reject>
+                <Dropzone.Idle>
+                  <IconPhoto size={50} stroke={1.5} />
+                </Dropzone.Idle>
+
+                <div>
+                  <Text size="xl" inline>
+                    Drag images here or click to select files
+                  </Text>
+                  <Text size="sm" color="dimmed" inline mt={7}>
+                    Attach as many files as you like, each file should not exceed 5mb
+                  </Text>
+                </div>
+              </Group>
+            </Dropzone>
+          </Tabs.Panel>
+
+          <Tabs.Panel value="url" pt="xs">
+            <div className="field">
+              <div className="control">
+                <Controller
+                  name="cover"
+                  control={control}
+                  render={({ field }) => <TextInput error={errors.cover?.message} placeholder="Insert the link to the cover image"  {...field} />}
+                />
+              </div>
+            </div>
+          </Tabs.Panel>
+        </Tabs>
 
         <div className="field is-grouped">
           <div className="control">
@@ -110,8 +229,8 @@ export default function AddRelease({setStartDate, setDefaultValueYearSelect,setY
           </div>
         </div>
       </form>
-      <ToastContainer/>
+      <ToastContainer />
     </div>
-    
+
   );
 }
