@@ -167,7 +167,7 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
             <Tabs.Tab value="url">Cover url</Tabs.Tab>
           </Tabs.List>
 
-          <Tabs.Panel value="local" pt="xs">
+          <Tabs.Panel value="local" pt="xs" style={{ paddingBottom : "20px"}}>
             <Dropzone
               onDrop={async (files) => {
                 setFiles(files)

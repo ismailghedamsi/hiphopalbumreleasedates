@@ -183,7 +183,6 @@ const Home = ({ users }) => {
             {loggedUser && <Modal
               opened={opened}
               centered
-
               onClose={() => setOpened(false)}
               transition="fade"
               transitionDuration={600}
@@ -193,14 +192,13 @@ const Home = ({ users }) => {
               <AddRelease setStartDate={setStartDate} setYear={setYear} setMonth={setMonth} setDefaultValueYearSelect={setDefaultValueYearSelect} closeOnClickOutside closeOnEscape setOpened={setOpened} setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
             </Modal>
             }
-            <div className="box has-text-centered">
-              {loggedUser ? <button onClick={() => setOpened(true)}>Add a release</button> : <button onClick={() => router.push("/signIn")}>Login to add a release</button>}
+            <div className="has-text-centered">
+              {loggedUser ? <button  style={{marginBottom : "20px"}} onClick={() => setOpened(true)}>Add a release</button> : <button onClick={() => router.push("/signIn")}>Login to add a release</button>}
             </div>
 
-            <Box sx={{  display:"flex", justifyContent:"center", alignItems:"center", mb:"5px"}}>
+            <Box sx={{  display:"flex", justifyContent:"center", alignItems:"center", mb:"20px"}}>
             <label style={{marginRight : "10px"}}>Select a month</label>
             <MonthYearPicker startDate={startDate} setStartDate={setStartDate} setMonth={setMonth} setYear={setYear} />
-
             </Box>
 
 
