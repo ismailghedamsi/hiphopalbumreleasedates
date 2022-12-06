@@ -9,9 +9,9 @@ import dayjs from "dayjs";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "../styles/AddRelease.module.css"
-import { Group, Tabs, Text, TextInput, useMantineTheme } from "@mantine/core";
+import { Group, Image, SimpleGrid, Tabs, Text, TextInput, useMantineTheme } from "@mantine/core";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import { IconPhoto, IconUpload, IconX } from "@tabler/icons";
+import { IconPhoto, IconUpload, IconX, IconHourglass } from "@tabler/icons";
 
 const schema = yup.object({
   releaseDate: yup.string().required("You need to select a release date"),
@@ -26,7 +26,7 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
 
   const theme = useMantineTheme();
 
-  const { control, handleSubmit, reset, formState: { errors } } = useForm({
+  const { control, handleSubmit, reset, formState: { errors,isSubmitting } } = useForm({
     resolver: yupResolver(schema)
   });
 
@@ -38,23 +38,35 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
     position: toast.POSITION.BOTTOM_CENTER
   });
 
+  const fileRejectedToast = () => toast.success("Your cover was rejected", {
+    position: toast.POSITION.BOTTOM_CENTER
+  });
+
 
   const insertRelease = async (rel) => {
-    rel.releaseDate = dayjs(rel.releaseDate).format('YYYY-MM-DD')
-    const { error, data } = await supabase.from("releases_duplicate").insert(rel).select('*')
+    if(!rel.cover){
+      rel.cover = ""
+    }
 
+    rel.releaseDate = dayjs(rel.releaseDate).format('YYYY-MM-DD')
+
+    const { error, data } = await supabase.from("releases_duplicate").insert(rel).select('*')
+  
     if (data) {
-      console.log("addrelease data", data)
-      console.log("data.id", data.id)
-      if(coverSource === "local" && files.length > 0){
-        const { error:errorUpload } = await supabase.storage.from('album-covers').upload(`public/${data[0].id}/${files[0].name}`, files[0])
-        if(!errorUpload){
+      if (coverSource === "local" && files.length > 0) {
+        setIsUploading(true)
+        const { error: errorUpload } = await supabase.storage.from('album-covers').upload(`public/${data[0].id}/${files[0].name}`, files[0])
+        if (!errorUpload) {
           const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${data[0].id}/${files[0].name}`)
-          await supabase.from("releases_duplicate").update({ cover : publicURL.data.publicUrl }).eq("id", data[0].id)
+          await supabase.from("releases_duplicate").update({ cover: publicURL.data.publicUrl }).eq("id", data[0].id)
         }
+        setIsUploading(false)
       }
       setInsertedData(data)
       if (data && data.length > 0 && !isNaN(new Date(data[0].releaseDate).getMonth() + 1)) {
+        const convertToDate = new Date(data[0].releaseDate)
+        var newDate = new Date(convertToDate.setMonth(convertToDate.getMonth()+1));
+        console.log("added data ",newDate)
         setSelectedIndex(data[0].releaseDate)
         setMonth(new Date(data[0].releaseDate).getMonth() + 1)
         setYear(new Date(data[0].releaseDate).getFullYear())
@@ -71,6 +83,19 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
       duplicateToast()
     }
   }
+
+  const previews = files.map((file, index) => {
+    const imageUrl = URL.createObjectURL(file);
+    return (
+      <Image
+        key={index}
+        width={"300px"}
+        height={"300px"}
+        src={imageUrl}
+        imageProps={{ onLoad: () => URL.revokeObjectURL(imageUrl) }}
+      />
+    );
+  });
 
   return (
     <div>
@@ -167,13 +192,13 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
             <Tabs.Tab value="url">Cover url</Tabs.Tab>
           </Tabs.List>
 
-          <Tabs.Panel value="local" pt="xs" style={{ paddingBottom : "20px"}}>
+          <Tabs.Panel value="local" pt="xs" style={{ paddingBottom: "20px" }}>
             <Dropzone
               onDrop={async (files) => {
                 setFiles(files)
               }}
-              onReject={(files) => console.log('rejected files', files)}
-              maxSize={3 * 1024 ** 2}
+              onReject={(files) => fileRejectedToast()}
+              maxSize={5 * 1024 ** 2}
               multiple={false}
               accept={IMAGE_MIME_TYPE}
               maxFiles={1}
@@ -208,6 +233,14 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
                 </div>
               </Group>
             </Dropzone>
+            <h1>Preview</h1>
+            <SimpleGrid
+              cols={4}
+              breakpoints={[{ maxWidth: 'sm', cols: 1 }]}
+              mt={previews.length > 0 ? 'xl' : 0}
+            >
+              {previews}
+            </SimpleGrid>
           </Tabs.Panel>
 
           <Tabs.Panel value="url" pt="xs">
@@ -225,7 +258,7 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
 
         <div className="field is-grouped">
           <div className="control">
-            <button type="submit" className="button is-link">Add</button>
+            <button disabled={isUploading && isSubmitting} type="submit" className="button is-link">Add</button>
           </div>
         </div>
       </form>

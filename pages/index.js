@@ -28,29 +28,6 @@ export const getStaticProps = async () => {
   }
 }
 
-const MonthTabs = ({ selectedIndex, setSelectedIndex }) => {
-  console.log("selected index ", selectedIndex)
-  var mL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  return (
-    <>
-      <div className="tabs is-toggle is-toggle-rounded ">
-        <ul>
-          {mL.map((month, index) => {
-            return (
-              <li key={index} onClick={() => setSelectedIndex(index)} className={index === selectedIndex ? "is-active" : ""}>
-                <a>
-                  <span style={{ fontSize: "11.7px" }}>{month}</span>
-                </a>
-              </li>
-            )
-          })
-          }
-        </ul>
-      </div>
-    </>
-  )
-}
-
 const Home = ({ users }) => {
   const [releases, setReleases] = useState([])
   const [insertedData, setInsertedData] = useState([])
@@ -78,7 +55,6 @@ const Home = ({ users }) => {
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
-    console.log("date ", new Date(date).getMonth())
   };
 
 
@@ -102,8 +78,6 @@ const Home = ({ users }) => {
   }
 
   const getReleases = async () => {
-    console.log("year ", year)
-    console.log("month ", month)
     let query = supabase.from('releases_duplicate').select()
     query = query.gte("releaseDate", `${year}-${appendZero(month)}-01`).lte("releaseDate", `${year}-${appendZero(month)}-${getDaysInMonth(selectedYear, selectedIndex)}`)
 
@@ -137,7 +111,6 @@ const Home = ({ users }) => {
   }
 
   useEffect(() => {
-    console.log("startDate ", startDate)
     getUniqueDays()
     getReleases()
     generateYearsList()
