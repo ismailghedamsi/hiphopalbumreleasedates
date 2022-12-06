@@ -8,7 +8,6 @@ const Navbar = () => {
     const { loggedUser, setLoggedUser } = useContext(AppContext)
     const getLoggedUser = async () => {
         const res = await supabase.auth.getUser()
-        console.log("res ",res)
         setLoggedUser(res.data.user)
 
     }

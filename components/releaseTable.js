@@ -17,7 +17,6 @@ const Headers = ({ headersArray }) => {
             <Tr>
                 {
                     headersArray.map((header) => {
-                        console.log("header ", header)
                         return <Th key={header}>{header}</Th>
                     })
                 }
@@ -36,13 +35,11 @@ const Content = ({ setReleaseId, setOpened, loggedUser, dates, data, setSearched
         return a > b ? 1 : a < b ? -1 : 0;
     });
 
-    console.log("dates ", sorted)
-
     const getCover = (coverPath) => {
         if (coverPath === "" && loggedUser) {
             return "/no_cover_logged.png"
-        } else if (coverPath === "" && loggedUser) {
-            return "/no_cover_unogged.png"
+        } else if (coverPath === "" && !loggedUser) {
+            return "/no_cover_unlogged.png"
         }
         return coverPath
     }
@@ -124,10 +121,8 @@ export default function CollapsibleTable({ setData, loggedUser, dates, data, set
                             setIsUploading(true)
                             const { error } = await supabase.storage.from('album-covers').upload(`public/${releaseId}/${files[0].name}`, files[0])
                             if (!error) {
-                                console.log("${releaseId}/${files[0].name} ", `public/${releaseId}/${files[0].name}`)
                                 const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${releaseId}/${files[0].name}`)
                                 await supabase.from("releases_duplicate").update({ cover : publicURL.data.publicUrl }).eq("id", releaseId)
-                                console.log("publicUrl ", publicURL.data.publicUrl)
                                 let copy = [...data]
                                 let objIndex = copy.findIndex((obj => obj.id == releaseId));
                                 copy[objIndex].cover = publicURL.data.publicUrl 
