@@ -19,7 +19,7 @@ const schema = yup.object({
   artist: yup.string().required("You need to select the artist name").min(2),
 })
 
-export default function AddRelease({ setStartDate, setDefaultValueYearSelect, setYear, setMonth, setOpened, setInsertedData, setSelectedIndex, setSelectedYear }) {
+export default function AddRelease({ setStartDate, setDefaultValueYearSelect, setYear, setMonth,month, setOpened, setInsertedData, setSelectedIndex, setSelectedYear }) {
   const [isUploading, setIsUploading] = useState(false)
   const [coverSource, setCoverSource] = useState("local")
   const [files, setFiles] = useState([]);
@@ -50,6 +50,7 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
 
     rel.releaseDate = dayjs(rel.releaseDate).format('YYYY-MM-DD')
 
+
     const { error, data } = await supabase.from("releases_duplicate").insert(rel).select('*')
   
     if (data) {
@@ -63,12 +64,13 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
         setIsUploading(false)
       }
       setInsertedData(data)
-      if (data && data.length > 0 && !isNaN(new Date(data[0].releaseDate).getMonth() + 1)) {
-        const convertToDate = new Date(data[0].releaseDate)
-        var newDate = new Date(convertToDate.setMonth(convertToDate.getMonth()+1));
-        console.log("added data ",newDate)
-        setSelectedIndex(data[0].releaseDate)
-        setMonth(new Date(data[0].releaseDate).getMonth() + 1)
+      if (data && !isNaN(new Date(data[0].releaseDate).getMonth() + 1)) {
+        var releaseDate = new Date(data[0].releaseDate)
+        var releaseDate = new Date(releaseDate.setHours(releaseDate.getHours()+24));
+        console.log("releaseDate", releaseDate)
+        console.log("insertRelease month ",month)
+        setSelectedIndex(new Date(data[0].releaseDate).getMonth()+1)
+        setMonth(releaseDate.getMonth()+1)
         setYear(new Date(data[0].releaseDate).getFullYear())
         setStartDate(new Date(data[0].releaseDate))
         setSelectedYear(getYear(data[0].releaseDate))
