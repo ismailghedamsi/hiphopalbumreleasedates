@@ -20,7 +20,6 @@ export default function SignIn() {
     resolver: yupResolver(schema)
   });
 
-
   const login = async (data) => {
     const user = await supabase.auth.signInWithPassword({
         email : data.email,
@@ -28,9 +27,7 @@ export default function SignIn() {
     })
 
     setLoggedUser(user.data.user)
-     console.log("user ",user.data.user)
      user.data.user && router.push("/")
-
 
   }
 
