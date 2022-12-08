@@ -22,7 +22,6 @@ const Navbar = () => {
                 mih={20}
                 gap="md"
                 justify="center"
-                bg={"red"}
                 align="center"
                 direction="row"
                 wrap="wrap"
