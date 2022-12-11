@@ -63,7 +63,7 @@ export default function SignIn() {
 
       <div className="field is-grouped">
         <div className="control">
-          <button className="button is-link">Login</button>
+          <button disabled={isLoading} className="button is-link">Login</button>
         </div>
         <div className="control">
           <button className="button is-link is-light">Cancel</button>
