@@ -6,6 +6,9 @@ import { supabase } from "../supabaseClient";
 import { DatePicker } from "@mantine/dates";
 import { format, getMonth, getYear } from "date-fns";
 import dayjs from "dayjs";
+import { useRouter } from "next/router";
+import { red } from "@mui/material/colors";
+import ErrorMessage from "../components/ ErrorMessage";
 
 const schema = yup.object({
   email: yup.string().required().min(2),
@@ -15,7 +18,9 @@ const schema = yup.object({
 })
 
 export default function Register() {
+  const [registerError, setRegisterError] = useState("")
 
+  const router = useRouter()
   const { register, control, handleSubmit,reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   });
@@ -32,6 +37,12 @@ export default function Register() {
           }
         }
     })
+
+    if(!error){
+      router.push("/signIn")
+    }else{
+      setRegisterError(error.message)
+    }
   }
 
   return (
@@ -41,7 +52,8 @@ export default function Register() {
         <label className="label">Email</label>
         <div className="control">
           <input {...register("email")} className="input" type="text" placeholder="Your email" />
-          <p>{errors.email?.message}</p>
+          <ErrorMessage message={registerError}/>
+          <ErrorMessage message={errors.email?.message}/>
         </div>
       </div>
 
@@ -49,7 +61,7 @@ export default function Register() {
         <label className="label">Username</label>
         <div className="control">
           <input {...register("username")} className="input" type="text" placeholder="Your username" />
-          <p>{errors.username?.message}</p>
+          <ErrorMessage message={errors.username?.message}/>
         </div>
       </div>
 
@@ -57,7 +69,7 @@ export default function Register() {
         <label className="label">Password</label>
         <div className="control">
           <input type="password" {...register("password")} className="input"  placeholder="Your password" />
-          <p>{errors.password?.message}</p>
+          <ErrorMessage message={errors.password?.message}/>
         </div>
       </div>
 
@@ -65,7 +77,7 @@ export default function Register() {
         <label className="label">Repeat your password</label>
         <div className="control">
           <input type="password" {...register("rPassword")} className="input" placeholder="Repeat your password" />
-          <p>{errors.rPassword?.message}</p>
+          <ErrorMessage message={errors.rPassword?.message}/>
         </div>
       </div>
 
