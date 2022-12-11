@@ -1,10 +1,11 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { appendErrors, Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { supabase } from "../supabaseClient";
 import { Router, useRouter } from "next/router";
 import AppContext from "../components/AppContext";
+import ErrorMessage from "../components/ ErrorMessage";
 
 
 const schema = yup.object({
@@ -14,6 +15,8 @@ const schema = yup.object({
 
 export default function SignIn() {
     const router = useRouter()
+    const [loginError, setLoginError] = useState("")
+    const [isLoading, setIsLoading] = useState(false)
     const {loggedUser, setLoggedUser} = useContext(AppContext)
 
   const { register, control, handleSubmit,reset, formState: { errors } } = useForm({
@@ -21,17 +24,22 @@ export default function SignIn() {
   });
 
   const login = async (data) => {
-    const user = await supabase.auth.signInWithPassword({
+    setIsLoading(true)
+    const { data:user, error }= await supabase.auth.signInWithPassword({
         email : data.email,
         password : data.password
     })
+    setIsLoading(false)
 
-    setLoggedUser(user.data.user)
-     user.data.user && router.push("/")
+   
+    if(!error && user){
+      setLoggedUser(user.user)
+      router.push("/")
+    }else{
+      setLoginError(error)
+    }
 
   }
-
-
 
   return (
     <form style={{ marginLeft : "5px", paddingLeft: "10px"}} onSubmit={handleSubmit((data) => login(data))}>
@@ -40,7 +48,8 @@ export default function SignIn() {
         <label className="label">Email</label>
         <div className="control">
           <input {...register("email")} className="input" type="text" placeholder="Your email" />
-          <p>{errors.email?.message}</p>
+          <ErrorMessage message={loginError.message}/>
+          <ErrorMessage message={errors.email?.message}/>
         </div>
       </div>
 
@@ -48,7 +57,7 @@ export default function SignIn() {
         <label className="label">Password</label>
         <div className="control">
           <input type="password" {...register("password")} className="input"  placeholder="Your password" />
-          <p>{errors.password?.message}</p>
+          <ErrorMessage message={errors.password?.message}/>
         </div>
       </div>
 
