@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
@@ -12,6 +12,7 @@ import "../styles/AddRelease.module.css"
 import { Group, Image, SimpleGrid, Tabs, Text, TextInput, useMantineTheme } from "@mantine/core";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { IconPhoto, IconUpload, IconX, IconHourglass } from "@tabler/icons";
+import AppContext from "./AppContext";
 
 const schema = yup.object({
   releaseDate: yup.string().required("You need to select a release date"),
@@ -23,6 +24,8 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
   const [isUploading, setIsUploading] = useState(false)
   const [coverSource, setCoverSource] = useState("local")
   const [files, setFiles] = useState([]);
+  const { loggedUser, setLoggedUser } = useContext(AppContext)
+  console.log("logged user username ",loggedUser.id)
 
   const theme = useMantineTheme();
 
@@ -47,11 +50,12 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
     if(!rel.cover){
       rel.cover = ""
     }
-
+    rel.addedBy = loggedUser.id
     rel.releaseDate = dayjs(rel.releaseDate).format('YYYY-MM-DD')
+    console.log("rel ",rel)
 
 
-    const { error, data } = await supabase.from("releases").insert(rel).select('*')
+    const { error, data } = await supabase.from("releases_duplicate").insert(rel).select('*')
   
     if (data) {
       if (coverSource === "local" && files.length > 0) {
@@ -59,7 +63,7 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
         const { error: errorUpload } = await supabase.storage.from('album-covers').upload(`public/${data[0].id}/${files[0].name}`, files[0])
         if (!errorUpload) {
           const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${data[0].id}/${files[0].name}`)
-          await supabase.from("releases").update({ cover: publicURL.data.publicUrl }).eq("id", data[0].id)
+          await supabase.from("releases_duplicate").update({ cover: publicURL.data.publicUrl }).eq("id", data[0].id)
         }
         setIsUploading(false)
       }
