@@ -46,7 +46,7 @@ const TopContributor = () => {
 
     return (
         <div>
-            <h1 className="has-text-centered">Top contributor</h1>
+            <h1 className="has-text-centered">Top contributors</h1>
             <table className="table is-bordered">
                 <Headers headersArray={headersArray} />
                 <Content data={data} />
