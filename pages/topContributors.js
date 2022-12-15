@@ -36,7 +36,7 @@ const Content = ({ data }) => {
 const TopContributor = () => {
 
     const { data, count, isValidating, mutate, error } = useQuery(
-        supabase.from("top_contributors_duplicate").select("*")
+        supabase.from("top_contributors").select("*")
     )
 
     const headersArray = [

@@ -54,7 +54,7 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
     console.log("rel ",rel)
 
 
-    const { error, data } = await supabase.from("releases_duplicate").insert(rel).select('*')
+    const { error, data } = await supabase.from("releases").insert(rel).select('*')
   
     if (data) {
       if (coverSource === "local" && files.length > 0) {
@@ -62,7 +62,7 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
         const { error: errorUpload } = await supabase.storage.from('album-covers').upload(`public/${data[0].id}/${files[0].name}`, files[0])
         if (!errorUpload) {
           const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${data[0].id}/${files[0].name}`)
-          await supabase.from("releases_duplicate").update({ cover: publicURL.data.publicUrl }).eq("id", data[0].id)
+          await supabase.from("releases").update({ cover: publicURL.data.publicUrl }).eq("id", data[0].id)
         }
         setIsUploading(false)
       }
