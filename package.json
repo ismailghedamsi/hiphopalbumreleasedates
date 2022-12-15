@@ -20,6 +20,7 @@
     "@mui/lab": "^5.0.0-alpha.30",
     "@mui/material": "^5.10.14",
     "@mui/x-date-pickers": "^5.0.8",
+    "@supabase-cache-helpers/postgrest-swr": "^0.4.13",
     "@supabase/supabase-js": "^2.0.5",
     "@tabler/icons": "^1.111.0",
     "@zeit/next-sass": "^0.0.6",

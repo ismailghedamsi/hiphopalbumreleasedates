@@ -1,17 +1,18 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { supabase } from "../supabaseClient";
 import { DatePicker } from "@mantine/dates";
-import { addMonths, getMonth, getYear } from "date-fns";
+import { getYear } from "date-fns";
 import dayjs from "dayjs";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "../styles/AddRelease.module.css"
 import { Group, Image, SimpleGrid, Tabs, Text, TextInput, useMantineTheme } from "@mantine/core";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import { IconPhoto, IconUpload, IconX, IconHourglass } from "@tabler/icons";
+import { IconPhoto, IconUpload, IconX } from "@tabler/icons";
+import AppContext from "./AppContext";
 
 const schema = yup.object({
   releaseDate: yup.string().required("You need to select a release date"),
@@ -19,10 +20,11 @@ const schema = yup.object({
   artist: yup.string().required("You need to select the artist name").min(2),
 })
 
-export default function AddRelease({ setStartDate, setDefaultValueYearSelect, setYear, setMonth,month, setOpened, setInsertedData, setSelectedIndex, setSelectedYear }) {
+export default function AddRelease({ setStartDate, setDefaultValueYearSelect, setYear, setMonth,month, setInsertedData, setSelectedIndex, setSelectedYear }) {
   const [isUploading, setIsUploading] = useState(false)
   const [coverSource, setCoverSource] = useState("local")
   const [files, setFiles] = useState([]);
+  const { loggedUser } = useContext(AppContext)
 
   const theme = useMantineTheme();
 
@@ -47,8 +49,9 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
     if(!rel.cover){
       rel.cover = ""
     }
-
+    rel.addedBy = loggedUser.id
     rel.releaseDate = dayjs(rel.releaseDate).format('YYYY-MM-DD')
+    console.log("rel ",rel)
 
 
     const { error, data } = await supabase.from("releases").insert(rel).select('*')

@@ -1,0 +1,25 @@
+.is-active {
+    position: relative;
+    text-decoration: none;
+  }
+  
+  .is-active:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transition: transform 250ms ease-in-out;
+  }
+  
+  .is-active:hover:after {
+    transform: scaleX(1);
+  }
+
+  .hoveredLink:hover{
+    text-decoration: underline;
+    background-color: aqua;
+  }

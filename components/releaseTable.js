@@ -25,8 +25,6 @@ const Headers = ({ headersArray }) => {
     )
 }
 
-
-
 const Content = ({ setReleaseId, setOpened, loggedUser, dates, data, setSearchedDay, setSearchedArtistName, setSearchedAlbumName }) => {
 
     let sorted = dates.sort(function (a, b) {
@@ -66,7 +64,7 @@ const Content = ({ setReleaseId, setOpened, loggedUser, dates, data, setSearched
             {data.map((d, index) => {
                 return <Tr key={index}>
                     <Td>{d.releaseDate.toString()}</Td>
-                    <Td><img onClick={() => {d.cover === "" && setOpened(true); setReleaseId(d.id) }} alt={"album cover"} width={200} src={getCover(d.cover)} /></Td>
+                    <Td><img onClick={() => {d.cover === "" && setOpened(true); setReleaseId(d.id) }} alt={"album cover"} width={120} src={getCover(d.cover)} /></Td>
                     <Td>{d.artist}</Td>
                     <Td>{d.album}</Td>
                 </Tr>

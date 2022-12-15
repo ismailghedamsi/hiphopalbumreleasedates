@@ -176,7 +176,6 @@ const Home = ({ users }) => {
 
 
             <CollapsibleTable loggedUser={loggedUser} dates={dates} setSearchedDay={setSearchedDay} searchedArtistName={searchedArtistName} setSearchedAlbumName={setSearchedAlbumName} setSearchedArtistName={setSearchedArtistName} data={releases} setData={setReleases} />
-            {/* <CSVLink data={releases}>Download me</CSVLink>; */}
           </Box>
         </Box>
       </div>
