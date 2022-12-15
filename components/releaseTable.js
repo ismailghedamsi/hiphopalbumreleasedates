@@ -25,8 +25,6 @@ const Headers = ({ headersArray }) => {
     )
 }
 
-
-
 const Content = ({ setReleaseId, setOpened, loggedUser, dates, data, setSearchedDay, setSearchedArtistName, setSearchedAlbumName }) => {
 
     let sorted = dates.sort(function (a, b) {
@@ -66,7 +64,7 @@ const Content = ({ setReleaseId, setOpened, loggedUser, dates, data, setSearched
             {data.map((d, index) => {
                 return <Tr key={index}>
                     <Td>{d.releaseDate.toString()}</Td>
-                    <Td><img onClick={() => {d.cover === "" && setOpened(true); setReleaseId(d.id) }} alt={"album cover"} width={200} src={getCover(d.cover)} /></Td>
+                    <Td><img onClick={() => {d.cover === "" && setOpened(true); setReleaseId(d.id) }} alt={"album cover"} width={120} src={getCover(d.cover)} /></Td>
                     <Td>{d.artist}</Td>
                     <Td>{d.album}</Td>
                 </Tr>
@@ -122,7 +120,7 @@ export default function CollapsibleTable({ setData, loggedUser, dates, data, set
                             const { error } = await supabase.storage.from('album-covers').upload(`public/${releaseId}/${files[0].name}`, files[0])
                             if (!error) {
                                 const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${releaseId}/${files[0].name}`)
-                                await supabase.from("releases").update({ cover : publicURL.data.publicUrl }).eq("id", releaseId)
+                                await supabase.from("releases_duplicate").update({ cover : publicURL.data.publicUrl }).eq("id", releaseId)
                                 let copy = [...data]
                                 let objIndex = copy.findIndex((obj => obj.id == releaseId));
                                 copy[objIndex].cover = publicURL.data.publicUrl 
