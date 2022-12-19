@@ -36,6 +36,7 @@ const Navbar = () => {
 
 
                 <StyledLink label={"Home"} href={"/"}/>
+                <StyledLink label={"Releases"} href={"releases"}/>
                 <StyledLink href="/topContributors" label={"Top contributors"}/>
                 {!loggedUser ? <StyledLink label={"Register"} href="/register"/> : ""}
                 {!loggedUser ? <StyledLink href="/signIn" label={"Login"}/> :

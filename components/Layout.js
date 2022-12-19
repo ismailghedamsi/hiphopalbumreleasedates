@@ -13,11 +13,11 @@ const Layout = ({children}) => {
    return (
     <StyledEngineProvider injectFirst>
     <AppContext.Provider value={{ loggedUser, setLoggedUser, appContext, setAppContext, anyValue}}>
-        <div className="content">
+        {/* <div className="content"> */}
             <Navbar/>
                 {children}
             <Footer/>
-        </div>
+        {/* </div> */}
     </AppContext.Provider>
     </StyledEngineProvider>
    )
