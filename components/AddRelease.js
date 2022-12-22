@@ -13,6 +13,9 @@ import { Group, Image, SimpleGrid, Tabs, Text, TextInput, useMantineTheme } from
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { IconPhoto, IconUpload, IconX } from "@tabler/icons";
 import AppContext from "./AppContext";
+import Release from "../pages/releases";
+import DateHelpers from "../helper/dateUtilities";
+import { v4 as uuidv4 } from 'uuid';
 
 const schema = yup.object({
   releaseDate: yup.string().required("You need to select a release date"),
@@ -20,11 +23,11 @@ const schema = yup.object({
   artist: yup.string().required("You need to select the artist name").min(2),
 })
 
-export default function AddRelease({ setStartDate, setDefaultValueYearSelect, setYear, setMonth,month, setInsertedData, setSelectedIndex, setSelectedYear }) {
+export default function AddRelease({ setAdditionId, setInsertedData}) {
   const [isUploading, setIsUploading] = useState(false)
   const [coverSource, setCoverSource] = useState("local")
   const [files, setFiles] = useState([]);
-  const { loggedUser } = useContext(AppContext)
+  const { loggedUser, year,month, setYear, setMonth } = useContext(AppContext)
 
   const theme = useMantineTheme();
 
@@ -51,10 +54,8 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
     }
     rel.addedBy = loggedUser.id
     rel.releaseDate = dayjs(rel.releaseDate).format('YYYY-MM-DD')
-    console.log("rel ",rel)
 
-
-    const { error, data } = await supabase.from("releases").insert(rel).select('*')
+    const { error, data } = await supabase.from("releases_duplicate").insert(rel).select('*')
   
     if (data) {
       if (coverSource === "local" && files.length > 0) {
@@ -62,22 +63,26 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
         const { error: errorUpload } = await supabase.storage.from('album-covers').upload(`public/${data[0].id}/${files[0].name}`, files[0])
         if (!errorUpload) {
           const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${data[0].id}/${files[0].name}`)
-          await supabase.from("releases").update({ cover: publicURL.data.publicUrl }).eq("id", data[0].id)
+          await supabase.from("releases_duplicate").update({ cover: publicURL.data.publicUrl }).eq("id", data[0].id)
         }
         setIsUploading(false)
       }
       setInsertedData(data)
-      if (data && !isNaN(new Date(data[0].releaseDate).getMonth() + 1)) {
+
+      if (data) {
         var releaseDate = new Date(data[0].releaseDate)
         var releaseDate = new Date(releaseDate.setHours(releaseDate.getHours()+24));
-        console.log("releaseDate", releaseDate)
-        console.log("insertRelease month ",month)
-        setSelectedIndex(new Date(data[0].releaseDate).getMonth()+1)
-        setMonth(releaseDate.getMonth()+1)
-        setYear(new Date(data[0].releaseDate).getFullYear())
-        setStartDate(new Date(data[0].releaseDate))
-        setSelectedYear(getYear(data[0].releaseDate))
-        setDefaultValueYearSelect(getYear(data[0].releaseDate))
+        const m = DateHelpers.getMonth(releaseDate)
+        setMonth(m)
+        setYear(releaseDate.getFullYear())
+        setAdditionId(uuidv4())
+
+        // setSelectedIndex(new Date(data[0].releaseDate).getMonth()+1)
+        // setMonth(releaseDate.getMonth()+1)
+        // setYear(new Date(data[0].releaseDate).getFullYear())
+        // setStartDate(new Date(data[0].releaseDate))
+        // setSelectedYear(getYear(data[0].releaseDate))
+        // setDefaultValueYearSelect(getYear(data[0].releaseDate))
 
       }
       reset({ releaseDate: data[0].releaseDate, album: "", artist: "" })

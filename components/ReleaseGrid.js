@@ -1,10 +1,15 @@
 import ReleaseCard from "./ReleaseCard";
 import styled from "@emotion/styled";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import { format } from "date-fns";
 import dayjs from "dayjs";
-
+import DateHelpers from '../helper/dateUtilities'
+import { Group, Modal, Text, useMantineTheme } from "@mantine/core";
+import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import AppContext from "./AppContext";
+import { IconPhoto, IconUpload, IconX } from "@tabler/icons";
+import AddRelease from "./AddRelease";
 
 const Grid = styled.div`
 display: flex;
@@ -14,26 +19,44 @@ justify-content: center;
 `;
 
 
-const ReleaseGrid = ({ month, setMonth, year, setYear, selectedIndex, setSelectedIndex, setSelectedYear, selectedYear }) => {
+const ReleaseGrid = ({ additionId, setAdditionId ,selectedIndex, setSelectedIndex, setSelectedYear, selectedYear }) => {
 
     const [releases, setReleases] = useState([])
+    const [files, setFiles] = useState([]);
+    const [uploadModalOpened, setUploadModalOpened] = useState(false)
+    const [addReleaseModalOpened, setAddReleaseModalOpened] = useState(false)
+    const [isUploading, setIsUploading] = useState(false)
+    const [startDate, setStartDate] = useState(new Date());
+    const [defaultValueYearSelect, setDefaultValueYearSelect] = useState(new Date().getFullYear())
+    const { loggedUser, year, month } = useContext(AppContext)
+    const [insertedData, setInsertedData] = useState([])
 
-    function getDaysInMonth(year, month) {
-        return new Date(year, month, 0).getDate();
-    }
+    const theme = useMantineTheme();
 
-    const appendZero = (month) => {
-        if (month < 10) {
-            return "0" + month
-        }
-        return month
-    }
+    // function getDaysInMonth(year, month) {
+    //     return new Date(year, month, 0).getDate();
+    // }
+
+    // const appendZero = (month) => {
+    //     if (month < 10) {
+    //         return "0" + month
+    //     }
+    //     return month
+    // }
+
+    const coverUploadFailed = () => toast.error("Cover can't be uploaded", {
+        position: toast.POSITION.BOTTOM_CENTER
+    });
+
+    const coverUploadSucceed = () => toast.success("The release was added", {
+        position: toast.POSITION.BOTTOM_CENTER
+    });
 
 
     const getReleases = async () => {
 
-        let query = supabase.from('releases').select()
-        query = query.gte("releaseDate", `${year}-${appendZero(month) + 1}-01`).lte("releaseDate", `${year}-${appendZero(month + 1)}-${getDaysInMonth(selectedYear, selectedIndex)}`)
+        let query = supabase.from('releases_duplicate').select()
+        query = query.gte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-01`).lte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-${DateHelpers.getDaysInMonth(year, month)}`)
             .order('releaseDate', { ascending: true })
         const { data, error } = await query
         if (!error) {
@@ -42,8 +65,9 @@ const ReleaseGrid = ({ month, setMonth, year, setYear, selectedIndex, setSelecte
     }
 
     useEffect(() => {
+        console.log('ca rentre')
         getReleases()
-    }, [year, month])
+    }, [year, month,additionId])
 
     // Group your items
     let grouped = releases.reduce((acc, el) => {
@@ -51,11 +75,6 @@ const ReleaseGrid = ({ month, setMonth, year, setYear, selectedIndex, setSelecte
         acc[dayjs(el.releaseDate).format('YYYY-MM-DD')].push(el);
         return acc;
     }, {});
-
-    function getSortedKeys(obj) {
-        var keys = Object.keys(obj);
-        return keys.sort(function (a, b) { return obj[b] - obj[a] });
-    }
 
 
     const sorted = Object.entries(grouped).sort((d1, d2) => {
@@ -67,30 +86,39 @@ const ReleaseGrid = ({ month, setMonth, year, setYear, selectedIndex, setSelecte
         return parseDate(d1[0]) - parseDate(d2[0]);
     })
 
-    console.log("sorted ",sorted)
-
     return (
-        <div>
+        <>
+            {loggedUser && <Modal
+                opened={addReleaseModalOpened}
+                centere
+                onClose={() => setAddReleaseModalOpened(false)}
+                transition="fade"
+                transitionDuration={600}
+                transitionTimingFunction="ease"
+                title="Add a release"
+            >
 
+                <AddRelease setAdditionId={setAdditionId} setDefaultValueYearSelect={setDefaultValueYearSelect} setOpened={setAddReleaseModalOpened} setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
+            </Modal>
+
+            }
+            <div className="has-text-centered">
+                {loggedUser ? <button style={{ marginBottom: "20px" }} onClick={() => setAddReleaseModalOpened(true)}>Add a release</button> : <button onClick={() => router.push("/signIn")}>Login to add a release</button>}
+            </div>
             {sorted.map(([date, options]) => {
                 return (
                     <>
                         <h1 className="has-text-centered">{dayjs(date).format('MMMM D YYYY')}</h1>
                         <Grid>
-                            {options.map((el) => {
-                                return (<ReleaseCard release={el} />)
+                            {options.map((el,index) => {
+                                return (<ReleaseCard key={index} setReleases={setReleases} releases={releases} setUploadModalOpened={setUploadModalOpened} release={el} />)
 
                             })}
                         </Grid>
-
-
                     </>
                 );
             })}
-
-
-
-        </div>
+        </>
     );
 };
 

@@ -78,7 +78,7 @@ const Home = ({ users }) => {
   }
 
   const getReleases = async () => {
-    let query = supabase.from('releases').select()
+    let query = supabase.from('releases_duplicate').select()
     query = query.gte("releaseDate", `${year}-${appendZero(month)}-01`).lte("releaseDate", `${year}-${appendZero(month)}-${getDaysInMonth(selectedYear, selectedIndex)}`)
 
 
@@ -104,7 +104,7 @@ const Home = ({ users }) => {
   }
 
   const getUniqueDays = async () => {
-    const { data, error } = await supabase.from('distinct_dates').select("releaseDate").gte("releaseDate", `${year}-${appendZero(month)}-01`).lte("releaseDate", `${year}-${appendZero(month)}-${getDaysInMonth(year, month)}`)
+    const { data, error } = await supabase.from('distinct_dates_duplicate').select("releaseDate").gte("releaseDate", `${year}-${appendZero(month)}-01`).lte("releaseDate", `${year}-${appendZero(month)}-${getDaysInMonth(year, month)}`)
     if (!error) {
       setDates(data)
     }
@@ -124,7 +124,7 @@ const Home = ({ users }) => {
   getDefaultMonth()
 
   const generateYearsList = async () => {
-    const { data, error } = await supabase.from('distinct_years').select("*")
+    const { data, error } = await supabase.from('distinct_years_duplicate').select("*")
 
     if (!error) {
       const newList = data.map(({ label, ...rest }) => ({
