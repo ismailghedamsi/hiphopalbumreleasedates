@@ -1,13 +1,9 @@
-import { useEffect, useState } from "react";
-import { appendErrors, Controller, useForm } from "react-hook-form";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { supabase } from "../supabaseClient";
-import { DatePicker } from "@mantine/dates";
-import { format, getMonth, getYear } from "date-fns";
-import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import { red } from "@mui/material/colors";
 import ErrorMessage from "../components/ ErrorMessage";
 
 const schema = yup.object({
@@ -18,17 +14,19 @@ const schema = yup.object({
 })
 
 export default function Register() {
+
   const [registerError, setRegisterError] = useState("")
 
   const router = useRouter()
+
   const { register, control, handleSubmit,reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   });
-  const [data, setData] = useState("");
+
 
   const handleRegistration = async (data) => {
 
-    const {user, session, error} = await supabase.auth.signUp({
+    const {error} = await supabase.auth.signUp({
         email : data.email,
         password : data.password,
         options: {

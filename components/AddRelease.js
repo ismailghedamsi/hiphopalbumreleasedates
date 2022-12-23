@@ -4,7 +4,6 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { supabase } from "../supabaseClient";
 import { DatePicker } from "@mantine/dates";
-import { getYear } from "date-fns";
 import dayjs from "dayjs";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,7 +12,6 @@ import { Group, Image, SimpleGrid, Tabs, Text, TextInput, useMantineTheme } from
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { IconPhoto, IconUpload, IconX } from "@tabler/icons";
 import AppContext from "./AppContext";
-import Release from "../pages/releases";
 import DateHelpers from "../helper/dateUtilities";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -76,14 +74,6 @@ export default function AddRelease({ setAdditionId, setInsertedData}) {
         setMonth(m)
         setYear(releaseDate.getFullYear())
         setAdditionId(uuidv4())
-
-        // setSelectedIndex(new Date(data[0].releaseDate).getMonth()+1)
-        // setMonth(releaseDate.getMonth()+1)
-        // setYear(new Date(data[0].releaseDate).getFullYear())
-        // setStartDate(new Date(data[0].releaseDate))
-        // setSelectedYear(getYear(data[0].releaseDate))
-        // setDefaultValueYearSelect(getYear(data[0].releaseDate))
-
       }
       reset({ releaseDate: data[0].releaseDate, album: "", artist: "" })
       success()

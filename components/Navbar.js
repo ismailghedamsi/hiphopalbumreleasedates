@@ -7,7 +7,6 @@ import "../styles/Navbar.module.css"
 import Link from "next/link"
 import StyledLink from "./StyledLink"
 
-
 const Navbar = () => {
     const { loggedUser, setLoggedUser } = useContext(AppContext)
 
@@ -17,10 +16,8 @@ const Navbar = () => {
 
     }
     useEffect(() => {
-
         getLoggedUser()
     }, [])
-
 
     return (
         <nav>
@@ -33,7 +30,6 @@ const Navbar = () => {
                 wrap="wrap"
             >
                 <Image alt="hip hop logo" priority src="/logo_no_background.png" width={160} height={160} />
-
 
                 <StyledLink label={"Home"} href={"/"}/>
                 <StyledLink href="/topContributors" label={"Top contributors"}/>

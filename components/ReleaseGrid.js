@@ -2,13 +2,10 @@ import ReleaseCard from "./ReleaseCard";
 import styled from "@emotion/styled";
 import { useContext, useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
-import { format } from "date-fns";
 import dayjs from "dayjs";
 import DateHelpers from '../helper/dateUtilities'
-import { Group, Modal, Text, useMantineTheme } from "@mantine/core";
-import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import {  Modal, useMantineTheme } from "@mantine/core";
 import AppContext from "./AppContext";
-import { IconPhoto, IconUpload, IconX } from "@tabler/icons";
 import AddRelease from "./AddRelease";
 
 const Grid = styled.div`
@@ -19,39 +16,16 @@ justify-content: center;
 `;
 
 
-const ReleaseGrid = ({ additionId, setAdditionId ,selectedIndex, setSelectedIndex, setSelectedYear, selectedYear }) => {
+const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedYear }) => {
 
     const [releases, setReleases] = useState([])
-    const [files, setFiles] = useState([]);
     const [uploadModalOpened, setUploadModalOpened] = useState(false)
     const [addReleaseModalOpened, setAddReleaseModalOpened] = useState(false)
-    const [isUploading, setIsUploading] = useState(false)
-    const [startDate, setStartDate] = useState(new Date());
     const [defaultValueYearSelect, setDefaultValueYearSelect] = useState(new Date().getFullYear())
     const { loggedUser, year, month } = useContext(AppContext)
     const [insertedData, setInsertedData] = useState([])
 
     const theme = useMantineTheme();
-
-    // function getDaysInMonth(year, month) {
-    //     return new Date(year, month, 0).getDate();
-    // }
-
-    // const appendZero = (month) => {
-    //     if (month < 10) {
-    //         return "0" + month
-    //     }
-    //     return month
-    // }
-
-    const coverUploadFailed = () => toast.error("Cover can't be uploaded", {
-        position: toast.POSITION.BOTTOM_CENTER
-    });
-
-    const coverUploadSucceed = () => toast.success("The release was added", {
-        position: toast.POSITION.BOTTOM_CENTER
-    });
-
 
     const getReleases = async () => {
 
@@ -97,14 +71,13 @@ const ReleaseGrid = ({ additionId, setAdditionId ,selectedIndex, setSelectedInde
                 transitionTimingFunction="ease"
                 title="Add a release"
             >
-
                 <AddRelease setAdditionId={setAdditionId} setDefaultValueYearSelect={setDefaultValueYearSelect} setOpened={setAddReleaseModalOpened} setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
             </Modal>
-
             }
             <div className="has-text-centered">
                 {loggedUser ? <button style={{ marginBottom: "20px" }} onClick={() => setAddReleaseModalOpened(true)}>Add a release</button> : <button onClick={() => router.push("/signIn")}>Login to add a release</button>}
             </div>
+            
             {sorted.map(([date, options]) => {
                 return (
                     <>

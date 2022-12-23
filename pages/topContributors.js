@@ -1,7 +1,6 @@
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr"
 import { supabase } from "../supabaseClient"
 
-
 const Headers = ({ headersArray }) => {
 
     return (
@@ -35,7 +34,7 @@ const Content = ({ data }) => {
 
 const TopContributor = () => {
 
-    const { data, count, isValidating, mutate, error } = useQuery(
+    const { data} = useQuery(
         supabase.from("top_contributors_duplicate").select("*")
     )
 
