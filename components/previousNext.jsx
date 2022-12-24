@@ -1,3 +1,4 @@
+import styled from "@emotion/styled";
 import { Button, Group } from "@mantine/core";
 import moment from "moment";
 import { useContext, useEffect } from "react";
@@ -11,11 +12,21 @@ const PreviousNext = ({additionId }) => {
      moment( new Date(year,month-1,1)).format("MMMM")
    },[month,year,additionId])
 
+   const MonthChangeButton = styled.button`
+    border-radius: 20px;
+    height : 5vh;
+    background-color : #00A881;
+    width: 20vh;
+    box-shadow : 
+    border-style: solid;
+    
+   `
+
     return (
-        <Group position="apart" spacing="xl">
-            <Button onClick={handlePreviousMonth()} variant="outline">Previous month</Button>
+        <Group position="center" spacing="sm">
+            <MonthChangeButton onClick={handlePreviousMonth()} variant="outline">Previous</MonthChangeButton>
             <div>{moment( new Date(year,month-1,1)).format("MMMM")}</div>
-            <Button variant="outline" onClick={handleNextMonth()}>Next month</Button>
+            <MonthChangeButton variant="outline" onClick={handleNextMonth()}>Next</MonthChangeButton>
         </Group>
     )
 

@@ -5,6 +5,8 @@ import * as yup from "yup"
 import { supabase } from "../supabaseClient";
 import { useRouter } from "next/router";
 import ErrorMessage from "../components/ ErrorMessage";
+import styled from "@emotion/styled";
+import StyledForm from "../styled/StyledForm";
 
 const schema = yup.object({
   email: yup.string().required().min(2),
@@ -13,7 +15,9 @@ const schema = yup.object({
   rPassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match')
 })
 
+
 export default function Register() {
+
 
   const [registerError, setRegisterError] = useState("")
 
@@ -44,7 +48,8 @@ export default function Register() {
   }
 
   return (
-    <form style={{ marginLeft : "5px", paddingLeft: "10px"}} onSubmit={handleSubmit((data) => handleRegistration(data))}>
+    <StyledForm>
+    <form style={{ width: "500px",marginLeft : "5px", paddingLeft: "10px"}} onSubmit={handleSubmit((data) => handleRegistration(data))}>
 
       <div className="field">
         <label className="label">Email</label>
@@ -89,5 +94,6 @@ export default function Register() {
         </div>
       </div>
     </form>
+    </StyledForm>
   );
 }

@@ -7,6 +7,7 @@ import DateHelpers from '../helper/dateUtilities'
 import {  Modal, useMantineTheme } from "@mantine/core";
 import AppContext from "./AppContext";
 import AddRelease from "./AddRelease";
+import { useRouter } from "next/router";
 
 const Grid = styled.div`
 display: flex;
@@ -15,6 +16,25 @@ padding: 5px;
 justify-content: center;
 `;
 
+const AddButton = styled.button`
+     border-radius: 20px;
+     background-color: #FFD700;
+     margin-bottom: 4vh;
+     margin-top : 4vh;
+     border-style: solid;
+     height : 5vh;
+     width: 20vh;
+`
+
+const LoginToUploadButton = styled.button`
+     border-radius: 20px;
+     background-color: #FFD700;
+     margin-bottom: 4vh;
+     margin-top : 4vh;
+     border-style: solid;
+     height : 5vh;
+     width: 20vh;
+`
 
 const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedYear }) => {
 
@@ -26,6 +46,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     const [insertedData, setInsertedData] = useState([])
 
     const theme = useMantineTheme();
+    const router = useRouter()
 
     const getReleases = async () => {
 
@@ -75,7 +96,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
             </Modal>
             }
             <div className="has-text-centered">
-                {loggedUser ? <button style={{ marginBottom: "20px" }} onClick={() => setAddReleaseModalOpened(true)}>Add a release</button> : <button onClick={() => router.push("/signIn")}>Login to add a release</button>}
+                {loggedUser ? <AddButton  onClick={() => setAddReleaseModalOpened(true)}>Add a release</AddButton> : <LoginToUploadButton onClick={() => router.push("/signIn")}>Login to add a release</LoginToUploadButton>}
             </div>
             
             {sorted.map(([date, options]) => {

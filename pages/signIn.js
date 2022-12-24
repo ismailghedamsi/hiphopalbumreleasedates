@@ -6,6 +6,7 @@ import { supabase } from "../supabaseClient";
 import { useRouter } from "next/router";
 import AppContext from "../components/AppContext";
 import ErrorMessage from "../components/ ErrorMessage";
+import StyledForm from "../styled/StyledForm";
 
 const schema = yup.object({
   email: yup.string().required().min(2),
@@ -41,7 +42,7 @@ export default function SignIn() {
   }
 
   return (
-    <form style={{ marginLeft : "5px", paddingLeft: "10px"}} onSubmit={handleSubmit((data) => login(data))}>
+    <StyledForm onSubmit={handleSubmit((data) => login(data))}>
 
       <div className="field">
         <label className="label">Email</label>
@@ -68,6 +69,6 @@ export default function SignIn() {
           <button className="button is-link is-light">Cancel</button>
         </div>
       </div>
-    </form>
+    </StyledForm>
   );
 }

@@ -1,3 +1,4 @@
+import { Center } from "@mantine/core"
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr"
 import { supabase } from "../supabaseClient"
 
@@ -44,13 +45,17 @@ const TopContributor = () => {
     ]
 
     return (
-        <div>
-            <h1 className="has-text-centered">Top contributors</h1>
-            <table className="table is-bordered">
-                <Headers headersArray={headersArray} />
-                <Content data={data} />
-            </table>
-        </div>
+        <>
+            <Center sx={{marginBottom: "4vh"}}>
+                <h1 className="has-text-centered">Top contributors</h1>
+            </Center>
+            <Center>
+                <table className="table is-bordered">
+                    <Headers headersArray={headersArray} />
+                    <Content data={data} />
+                </table>
+            </Center>
+        </>
     )
 }
 
