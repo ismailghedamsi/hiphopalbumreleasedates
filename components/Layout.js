@@ -5,8 +5,6 @@ import AppContext from "./AppContext"
 import Footer from "./Footer"
 import Navbar from "./Navbar"
 
-
-
 const Layout = ({children}) => {
     const [appContext, setAppContext] = useState("default")
     const [loggedUser, setLoggedUser] = useState()
@@ -16,11 +14,9 @@ const Layout = ({children}) => {
    return (
     <StyledEngineProvider injectFirst>
     <AppContext.Provider value={{ year, month,setMonth, setYear, loggedUser, setLoggedUser, appContext, setAppContext, anyValue}}>
-        {/* <div className="content"> */}
             <Navbar/>
                 {children}
             <Footer/>
-        {/* </div> */}
     </AppContext.Provider>
     </StyledEngineProvider>
    )
