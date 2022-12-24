@@ -23,7 +23,7 @@ const PreviousNext = ({additionId }) => {
    `
 
     return (
-        <Group position="center" spacing="sm">
+        <Group position="center" spacing="xl">
             <MonthChangeButton onClick={handlePreviousMonth()} variant="outline">Previous</MonthChangeButton>
             <div>{moment( new Date(year,month-1,1)).format("MMMM")}</div>
             <MonthChangeButton variant="outline" onClick={handleNextMonth()}>Next</MonthChangeButton>

@@ -14,6 +14,7 @@ import { IconPhoto, IconUpload, IconX } from "@tabler/icons";
 import AppContext from "./AppContext";
 import DateHelpers from "../helper/dateUtilities";
 import { v4 as uuidv4 } from 'uuid';
+import { trim } from "lodash";
 
 const schema = yup.object({
   releaseDate: yup.string().required("You need to select a release date"),
@@ -51,6 +52,8 @@ export default function AddRelease({ setAdditionId, setInsertedData}) {
       rel.cover = ""
     }
     rel.addedBy = loggedUser.id
+    rel.artist = trim(rel.artist)
+    rel.album = trim(rel.album)
     rel.releaseDate = dayjs(rel.releaseDate).format('YYYY-MM-DD')
 
     const { error, data } = await supabase.from("releases_duplicate").insert(rel).select('*')
