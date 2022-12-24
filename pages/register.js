@@ -1,14 +1,12 @@
-import { useEffect, useState } from "react";
-import { appendErrors, Controller, useForm } from "react-hook-form";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { supabase } from "../supabaseClient";
-import { DatePicker } from "@mantine/dates";
-import { format, getMonth, getYear } from "date-fns";
-import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import { red } from "@mui/material/colors";
 import ErrorMessage from "../components/ ErrorMessage";
+import styled from "@emotion/styled";
+import StyledForm from "../styled/StyledForm";
 
 const schema = yup.object({
   email: yup.string().required().min(2),
@@ -17,18 +15,22 @@ const schema = yup.object({
   rPassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match')
 })
 
+
 export default function Register() {
+
+
   const [registerError, setRegisterError] = useState("")
 
   const router = useRouter()
+
   const { register, control, handleSubmit,reset, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   });
-  const [data, setData] = useState("");
+
 
   const handleRegistration = async (data) => {
 
-    const {user, session, error} = await supabase.auth.signUp({
+    const {error} = await supabase.auth.signUp({
         email : data.email,
         password : data.password,
         options: {
@@ -46,7 +48,8 @@ export default function Register() {
   }
 
   return (
-    <form style={{ marginLeft : "5px", paddingLeft: "10px"}} onSubmit={handleSubmit((data) => handleRegistration(data))}>
+    <StyledForm>
+    <form style={{ width: "500px",marginLeft : "5px", paddingLeft: "10px"}} onSubmit={handleSubmit((data) => handleRegistration(data))}>
 
       <div className="field">
         <label className="label">Email</label>
@@ -91,5 +94,6 @@ export default function Register() {
         </div>
       </div>
     </form>
+    </StyledForm>
   );
 }

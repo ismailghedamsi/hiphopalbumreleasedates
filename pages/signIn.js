@@ -1,12 +1,12 @@
 import { useContext, useState } from "react";
-import { appendErrors, Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { supabase } from "../supabaseClient";
-import { Router, useRouter } from "next/router";
+import { useRouter } from "next/router";
 import AppContext from "../components/AppContext";
 import ErrorMessage from "../components/ ErrorMessage";
-
+import StyledForm from "../styled/StyledForm";
 
 const schema = yup.object({
   email: yup.string().required().min(2),
@@ -17,9 +17,9 @@ export default function SignIn() {
     const router = useRouter()
     const [loginError, setLoginError] = useState("")
     const [isLoading, setIsLoading] = useState(false)
-    const {loggedUser, setLoggedUser} = useContext(AppContext)
+    const {setLoggedUser} = useContext(AppContext)
 
-  const { register, control, handleSubmit,reset, formState: { errors } } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   });
 
@@ -42,7 +42,7 @@ export default function SignIn() {
   }
 
   return (
-    <form style={{ marginLeft : "5px", paddingLeft: "10px"}} onSubmit={handleSubmit((data) => login(data))}>
+    <StyledForm onSubmit={handleSubmit((data) => login(data))}>
 
       <div className="field">
         <label className="label">Email</label>
@@ -69,6 +69,6 @@ export default function SignIn() {
           <button className="button is-link is-light">Cancel</button>
         </div>
       </div>
-    </form>
+    </StyledForm>
   );
 }

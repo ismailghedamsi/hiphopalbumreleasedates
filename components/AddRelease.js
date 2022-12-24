@@ -4,7 +4,6 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 import { supabase } from "../supabaseClient";
 import { DatePicker } from "@mantine/dates";
-import { getYear } from "date-fns";
 import dayjs from "dayjs";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,6 +12,9 @@ import { Group, Image, SimpleGrid, Tabs, Text, TextInput, useMantineTheme } from
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { IconPhoto, IconUpload, IconX } from "@tabler/icons";
 import AppContext from "./AppContext";
+import DateHelpers from "../helper/dateUtilities";
+import { v4 as uuidv4 } from 'uuid';
+import { trim } from "lodash";
 
 const schema = yup.object({
   releaseDate: yup.string().required("You need to select a release date"),
@@ -20,11 +22,11 @@ const schema = yup.object({
   artist: yup.string().required("You need to select the artist name").min(2),
 })
 
-export default function AddRelease({ setStartDate, setDefaultValueYearSelect, setYear, setMonth,month, setInsertedData, setSelectedIndex, setSelectedYear }) {
+export default function AddRelease({ setAdditionId, setInsertedData}) {
   const [isUploading, setIsUploading] = useState(false)
   const [coverSource, setCoverSource] = useState("local")
   const [files, setFiles] = useState([]);
-  const { loggedUser } = useContext(AppContext)
+  const { loggedUser, year,month, setYear, setMonth } = useContext(AppContext)
 
   const theme = useMantineTheme();
 
@@ -50,9 +52,9 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
       rel.cover = ""
     }
     rel.addedBy = loggedUser.id
+    rel.artist = trim(rel.artist)
+    rel.album = trim(rel.album)
     rel.releaseDate = dayjs(rel.releaseDate).format('YYYY-MM-DD')
-    console.log("rel ",rel)
-
 
     const { error, data } = await supabase.from("releases").insert(rel).select('*')
   
@@ -67,18 +69,14 @@ export default function AddRelease({ setStartDate, setDefaultValueYearSelect, se
         setIsUploading(false)
       }
       setInsertedData(data)
-      if (data && !isNaN(new Date(data[0].releaseDate).getMonth() + 1)) {
+
+      if (data) {
         var releaseDate = new Date(data[0].releaseDate)
         var releaseDate = new Date(releaseDate.setHours(releaseDate.getHours()+24));
-        console.log("releaseDate", releaseDate)
-        console.log("insertRelease month ",month)
-        setSelectedIndex(new Date(data[0].releaseDate).getMonth()+1)
-        setMonth(releaseDate.getMonth()+1)
-        setYear(new Date(data[0].releaseDate).getFullYear())
-        setStartDate(new Date(data[0].releaseDate))
-        setSelectedYear(getYear(data[0].releaseDate))
-        setDefaultValueYearSelect(getYear(data[0].releaseDate))
-
+        const m = DateHelpers.getMonth(releaseDate)
+        setMonth(m)
+        setYear(releaseDate.getFullYear())
+        setAdditionId(uuidv4())
       }
       reset({ releaseDate: data[0].releaseDate, album: "", artist: "" })
       success()

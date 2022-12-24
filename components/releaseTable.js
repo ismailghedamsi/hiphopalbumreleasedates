@@ -1,12 +1,13 @@
-import { Group, Image, Modal, Select, SimpleGrid, Text, Textarea, TextInput, useMantineTheme } from '@mantine/core';
-import { IconAt, IconEraser, IconPhoto, IconSearch, IconUpload, IconX } from '@tabler/icons';
+/**
+ * legacy code
+ */
+import { Group, Modal, Select, Text, TextInput, useMantineTheme } from '@mantine/core';
+import { IconPhoto, IconSearch, IconUpload, IconX } from '@tabler/icons';
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css';
-import { sortBy, uniq } from 'lodash';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useContext, useState } from 'react';
-import AppContext from './AppContext';
+import { useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 
@@ -26,12 +27,6 @@ const Headers = ({ headersArray }) => {
 }
 
 const Content = ({ setReleaseId, setOpened, loggedUser, dates, data, setSearchedDay, setSearchedArtistName, setSearchedAlbumName }) => {
-
-    let sorted = dates.sort(function (a, b) {
-        a = a.releaseDate.split('-').reverse().join('');
-        b = b.releaseDate.split('-').reverse().join('');
-        return a > b ? 1 : a < b ? -1 : 0;
-    });
 
     const getCover = (coverPath) => {
         if (coverPath === "" && loggedUser) {
@@ -74,11 +69,8 @@ const Content = ({ setReleaseId, setOpened, loggedUser, dates, data, setSearched
     )
 }
 
-
-
 export default function CollapsibleTable({ setData, loggedUser, dates, data, setSearchedDay, setSearchedArtistName, setSearchedAlbumName }) {
     const [opened, setOpened] = useState(false)
-    const [selectCover, setSlectedCover] = useState()
     const theme = useMantineTheme();
     const [files, setFiles] = useState([]);
     const [isUploading, setIsUploading] = useState(false)
