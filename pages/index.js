@@ -1,6 +1,5 @@
 import Release from './releases';
 import { FaArrowUp } from "react-icons/fa";
-import Head from 'next/head';
 
 const Home = () => {
 

@@ -45,7 +45,6 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     const { loggedUser, year, month } = useContext(AppContext)
     const [insertedData, setInsertedData] = useState([])
 
-    const theme = useMantineTheme();
     const router = useRouter()
 
     const getReleases = async () => {
@@ -60,7 +59,6 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     }
 
     useEffect(() => {
-        console.log('ca rentre')
         getReleases()
     }, [year, month,additionId])
 

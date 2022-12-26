@@ -3,7 +3,8 @@ import { supabase } from "../supabaseClient"
 import AppContext from "./AppContext"
 import "../styles/Navbar.module.css"
 
-import {NavbarContainer, LeftContainer, NavbarExtendedContainer, NavbarInnerContainer, NavbarLink, NavbarLinkContainer, NavbarLinkExtended, OpenLinksButton, RightContainer}  from "./styled/Navbar.style"
+import {NavbarContainer, LeftContainer, NavbarExtendedContainer, NavbarInnerContainer, NavbarLink, NavbarLinkContainer, NavbarLinkExtended, OpenLinksButton}  from "./styled/Navbar.style"
+import { IconMenu, IconX } from "@tabler/icons"
 
 const Navbar = () => {
     const { loggedUser, setLoggedUser } = useContext(AppContext)
@@ -40,7 +41,7 @@ const Navbar = () => {
                 setExtendNavbar((curr) => !curr);
               }}
             >
-              {extendNavbar ? <>&#10005;</> : <> &#8801;</>}
+              {extendNavbar ? <IconX/> : <IconMenu/>}
             </OpenLinksButton>
           </NavbarLinkContainer>
         </LeftContainer>

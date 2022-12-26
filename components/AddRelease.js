@@ -26,7 +26,7 @@ export default function AddRelease({ setAdditionId, setInsertedData}) {
   const [isUploading, setIsUploading] = useState(false)
   const [coverSource, setCoverSource] = useState("local")
   const [files, setFiles] = useState([]);
-  const { loggedUser, year,month, setYear, setMonth } = useContext(AppContext)
+  const { loggedUser, setYear, setMonth } = useContext(AppContext)
 
   const theme = useMantineTheme();
 
