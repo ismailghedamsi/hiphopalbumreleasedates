@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import dayjs from "dayjs";
 import DateHelpers from '../helper/dateUtilities'
-import {  Modal, useMantineTheme } from "@mantine/core";
+import {  Center, Modal, useMantineTheme } from "@mantine/core";
 import AppContext from "./AppContext";
 import AddRelease from "./AddRelease";
 import { useRouter } from "next/router";
@@ -99,7 +99,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
                 {loggedUser ? <AddButton  onClick={() => setAddReleaseModalOpened(true)}>Add a release</AddButton> : <LoginToUploadButton onClick={() => router.push("/signIn")}>Login to add a release</LoginToUploadButton>}
             </div>
             
-            {sorted.map(([date, options]) => {
+            {sorted.length > 0 ? sorted.map(([date, options]) => {
                 return (
                     <>
                         <h1 className="has-text-centered">{dayjs(date).format('MMMM D YYYY')}</h1>
@@ -111,7 +111,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
                         </Grid>
                     </>
                 );
-            })}
+            }): <Center><h1>No release date was announced for this month</h1></Center>}
         </>
     );
 };
