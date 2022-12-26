@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import AppContext from "../components/AppContext";
 import ErrorMessage from "../components/ ErrorMessage";
 import StyledForm from "../components/styled/StyledForm.style";
+import PageTitle from "../components/PageTitle";
 
 const schema = yup.object({
   email: yup.string().required().min(2),
@@ -41,33 +42,36 @@ export default function SignIn() {
   }
 
   return (
-    <StyledForm onSubmit={handleSubmit((data) => login(data))}>
+    <>
+        <PageTitle title={"Login"} />
+      <StyledForm onSubmit={handleSubmit((data) => login(data))}>
 
-      <div className="field">
-        <label className="label">Email</label>
-        <div className="control">
-          <input {...register("email")} className="input" type="text" placeholder="Your email" />
-          <ErrorMessage message={loginError.message}/>
-          <ErrorMessage message={errors.email?.message}/>
+        <div className="field">
+          <label className="label">Email</label>
+          <div className="control">
+            <input {...register("email")} className="input" type="text" placeholder="Your email" />
+            <ErrorMessage message={loginError.message}/>
+            <ErrorMessage message={errors.email?.message}/>
+          </div>
         </div>
-      </div>
 
-      <div className="field">
-        <label className="label">Password</label>
-        <div className="control">
-          <input type="password" {...register("password")} className="input"  placeholder="Your password" />
-          <ErrorMessage message={errors.password?.message}/>
+        <div className="field">
+          <label className="label">Password</label>
+          <div className="control">
+            <input type="password" {...register("password")} className="input"  placeholder="Your password" />
+            <ErrorMessage message={errors.password?.message}/>
+          </div>
         </div>
-      </div>
 
-      <div className="field is-grouped">
-        <div className="control">
-          <button disabled={isLoading} className="button is-link">Login</button>
+        <div className="field is-grouped">
+          <div className="control">
+            <button disabled={isLoading} className="button is-link">Login</button>
+          </div>
+          <div className="control">
+            <button className="button is-link is-light">Cancel</button>
+          </div>
         </div>
-        <div className="control">
-          <button className="button is-link is-light">Cancel</button>
-        </div>
-      </div>
-    </StyledForm>
+      </StyledForm>
+    </>
   );
 }
