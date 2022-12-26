@@ -3,6 +3,7 @@ import { useState } from "react"
 import DateHelpers from "../helper/dateUtilities"
 import AppContext from "./AppContext"
 import Footer from "./Footer"
+import NavbarComponent from "./Navbar"
 import Navbar from "./Navbar"
 
 const Layout = ({children}) => {
@@ -14,7 +15,7 @@ const Layout = ({children}) => {
    return (
     <StyledEngineProvider injectFirst>
     <AppContext.Provider value={{ year, month,setMonth, setYear, loggedUser, setLoggedUser, appContext, setAppContext, anyValue}}>
-            <Navbar/>
+            <NavbarComponent/>
                 {children}
             <Footer/>
     </AppContext.Provider>

@@ -6,7 +6,7 @@ import { supabase } from "../supabaseClient";
 import { useRouter } from "next/router";
 import AppContext from "../components/AppContext";
 import ErrorMessage from "../components/ ErrorMessage";
-import StyledForm from "../styled/StyledForm";
+import StyledForm from "../components/styled/StyledForm.style";
 
 const schema = yup.object({
   email: yup.string().required().min(2),
@@ -31,7 +31,6 @@ export default function SignIn() {
     })
     setIsLoading(false)
 
-   
     if(!error && user){
       setLoggedUser(user.user)
       router.push("/")

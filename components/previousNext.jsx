@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { Button, Group } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import moment from "moment";
 import { useContext, useEffect } from "react";
 import AppContext from "./AppContext";
@@ -7,6 +8,7 @@ import AppContext from "./AppContext";
 
 const PreviousNext = ({additionId }) => {
     const { year,setMonth, month, setYear} = useContext(AppContext)
+    const matches = useMediaQuery('(min-width: 500px)');
 
    useEffect(() => {
      moment( new Date(year,month-1,1)).format("MMMM")
@@ -17,15 +19,13 @@ const PreviousNext = ({additionId }) => {
     height : 5vh;
     background-color : #00A881;
     width: 20vh;
-    box-shadow : 
     border-style: solid;
-    
    `
 
     return (
-        <Group position="center" spacing="xl">
+        <Group position="center" spacing="sm">
             <MonthChangeButton onClick={handlePreviousMonth()} variant="outline">Previous</MonthChangeButton>
-            <div>{moment( new Date(year,month-1,1)).format("MMMM")}</div>
+            <div>{moment( new Date(year,month-1,1)).format(matches ? "MMMM" : "MMM")}</div>
             <MonthChangeButton variant="outline" onClick={handleNextMonth()}>Next</MonthChangeButton>
         </Group>
     )

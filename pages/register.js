@@ -6,7 +6,7 @@ import { supabase } from "../supabaseClient";
 import { useRouter } from "next/router";
 import ErrorMessage from "../components/ ErrorMessage";
 import styled from "@emotion/styled";
-import StyledForm from "../styled/StyledForm";
+import StyledForm from "../components/styled/StyledForm.style";
 
 const schema = yup.object({
   email: yup.string().required().min(2),
