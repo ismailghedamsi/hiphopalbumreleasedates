@@ -1,5 +1,6 @@
 import { Center } from "@mantine/core"
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr"
+import PageTitle from "../components/PageTitle"
 import { supabase } from "../supabaseClient"
 
 const Headers = ({ headersArray }) => {
@@ -35,7 +36,7 @@ const Content = ({ data }) => {
 
 const TopContributor = () => {
 
-    const { data} = useQuery(
+    const { data } = useQuery(
         supabase.from("top_contributors").select("*")
     )
 
@@ -46,7 +47,8 @@ const TopContributor = () => {
 
     return (
         <>
-            <Center sx={{marginBottom: "4vh"}}>
+            <PageTitle title={"Top Contributors"}/>
+            <Center sx={{ marginBottom: "4vh" }}>
                 <h1 className="has-text-centered">Top contributors</h1>
             </Center>
             <Center>
