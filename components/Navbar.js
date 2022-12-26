@@ -1,12 +1,9 @@
-import { Flex } from "@mantine/core"
-import Image from "next/image"
 import { useContext, useEffect, useState } from "react"
 import { supabase } from "../supabaseClient"
 import AppContext from "./AppContext"
 import "../styles/Navbar.module.css"
-import Link from "next/link"
-import StyledLink from "./StyledLink"
-import {NavbarContainer, LeftContainer, Logo, NavbarExtendedContainer, NavbarInnerContainer, NavbarLink, NavbarLinkContainer, NavbarLinkExtended, OpenLinksButton, RightContainer}  from "./styled/Navbar.style"
+
+import {NavbarContainer, LeftContainer, NavbarExtendedContainer, NavbarInnerContainer, NavbarLink, NavbarLinkContainer, NavbarLinkExtended, OpenLinksButton, RightContainer}  from "./styled/Navbar.style"
 
 const Navbar = () => {
     const { loggedUser, setLoggedUser } = useContext(AppContext)
