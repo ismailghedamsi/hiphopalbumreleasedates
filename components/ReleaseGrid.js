@@ -49,7 +49,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
 
     const getReleases = async () => {
 
-        let query = supabase.from('releases').select()
+        let query = supabase.from('releases_duplicate').select()
         query = query.gte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-01`).lte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-${DateHelpers.getDaysInMonth(year, month)}`)
             .order('releaseDate', { ascending: true })
         const { data, error } = await query
