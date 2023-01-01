@@ -20,6 +20,9 @@ const PreviousNext = ({additionId }) => {
     background-color : #00A881;
     width: 20vh;
     border-style: solid;
+    :hover {
+        background-image: linear-gradient(rgb(0 0 0/30%) 0 0);
+     }
    `
 
     return (
