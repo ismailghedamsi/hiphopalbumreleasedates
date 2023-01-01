@@ -1,12 +1,11 @@
-import styled from "@emotion/styled"
 import { Group, Modal, Text, useMantineTheme } from "@mantine/core";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { IconPhoto, IconUpload, IconX } from "@tabler/icons";
-import Image from "next/image";
 import { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import { supabase } from "../supabaseClient";
 import AppContext from "./AppContext";
+import { Card, CardContent, CardHeader, CardImage, CardLink, CardSecondaryText } from "./styled/Cards/Card.style";
 
 const ReleaseCard = ({ release, releases, setReleases }) => {
 
@@ -25,47 +24,6 @@ const ReleaseCard = ({ release, releases, setReleases }) => {
     });
 
     const theme = useMantineTheme();
-
-    const Card = styled.article`
-      background: white;
-     width: 250px;
-     margin: 20px;
-      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-      @media (max-width: 500px) {
-        width: 140px;
-        margin: 5px;
-      }
-   `;
-
-    const CardContent = styled.div`
-      padding: 1.4em;
-   `
-
-    const CardHeader = styled.h2`
-    margin-top: 0;
-	margin-bottom: .5em;
-	font-weight: bold;
-`
-
-    const CardSecondaryText = styled.h3`
-    margin-top: 0;
-    margin-bottom: .5em;
-`
-
-    const CardImage = styled(Image)`
-    display: block;
-	border: 0;
-	width: 100%;
-   `
-
-    const CardLink = styled.a`
-      color: black;
-	   text-decoration: none;
-      
-      &:hover {
-         box-shadow: 3px 3px 8px hsl(0, 0%, 80%);
-       }
-   `
 
     const getCover = (coverPath) => {
         if (coverPath === "" && loggedUser) {
