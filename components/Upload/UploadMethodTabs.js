@@ -1,12 +1,21 @@
 import { Tabs, TextInput } from "@mantine/core"
 import { Controller, FormProvider, useForm } from "react-hook-form"
+import { toast } from "react-toastify"
+import SharedUploadZone from "./UploadZone"
 import UploadPreview from "./UploadPreview"
-import UploadZone from "./UploadZone"
 
 const UploadMethodTabs = ({errors, control, isUploading, setCoverSource,files, setFiles}) => {
  
     const methods = useForm();
     console.log("control ",control)
+
+    const fileRejectedToast = () => toast.success("Your cover was rejected", {
+        position: toast.POSITION.BOTTOM_CENTER
+      });
+
+      const handleUpload = (files) => {
+        setFiles(files)
+      }
 
     return (
       <>
@@ -70,7 +79,7 @@ const UploadMethodTabs = ({errors, control, isUploading, setCoverSource,files, s
         </Tabs.List>
 
         <Tabs.Panel value="local" pt="xs" style={{ paddingBottom: "20px" }}>
-          <UploadZone setFiles={setFiles} isUploading={isUploading}/>
+          <SharedUploadZone onDrop={handleUpload} onReject={fileRejectedToast} uploading={isUploading} maxSize={5 * 1024 ** 2} maxFiles={1} multiple={false}/>
           <h1>Preview</h1>
           <UploadPreview files={files} />
         </Tabs.Panel>

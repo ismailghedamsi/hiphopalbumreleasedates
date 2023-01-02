@@ -3,9 +3,12 @@ import { styled } from "styled-components";
 
 export const Card = styled.article`
     background: white;
+    :hover {
+        box-shadow: 10px 10px 11px rgba(33,33,33,.2); 
+    }
     width: 250px;
     margin: 20px;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    box-shadow: rgba(100, 100, 111, 0.2) 3px 7px 29px 0px;
     @media (max-width: 500px) {
     width: 140px;
     margin: 5px;

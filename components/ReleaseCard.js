@@ -1,11 +1,10 @@
-import { Group, Modal, Text, useMantineTheme } from "@mantine/core";
-import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import { IconPhoto, IconUpload, IconX } from "@tabler/icons";
+import { Modal, useMantineTheme } from "@mantine/core";
 import { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import { supabase } from "../supabaseClient";
 import AppContext from "./AppContext";
 import { Card, CardContent, CardHeader, CardImage, CardLink, CardSecondaryText } from "./styled/Cards/Card.style";
+import SharedUploadZone from "./Upload/UploadZone";
 
 const ReleaseCard = ({ release, releases, setReleases }) => {
 
@@ -33,6 +32,31 @@ const ReleaseCard = ({ release, releases, setReleases }) => {
         }
         return coverPath
     }
+
+    const handleUpload = async (files) => {
+        setFiles(files)
+        if (files.length > 0) {
+            setIsUploading(true)
+            const { error } = await supabase.storage.from('album-covers').upload(`public/${releaseId}/${files[0].name}`, files[0])
+            if (!error) {
+                const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${releaseId}/${files[0].name}`)
+                await supabase.from("releases").update({ cover: publicURL.data.publicUrl }).eq("id", releaseId)
+                let copy = [...releases]
+                let objIndex = copy.findIndex((obj => obj.id == releaseId));
+                copy[objIndex].cover = publicURL.data.publicUrl
+                setReleases(copy)
+                coverUploadSucceed()
+                setUploadModalOpened(false)
+            } else {
+                coverUploadFailed()
+            }
+            setIsUploading(false)
+        }
+    }
+
+    const handleRejectedFile = () => {
+        console.log('rejected files', files)
+    }
     return (
         <>
             <Modal
@@ -44,63 +68,7 @@ const ReleaseCard = ({ release, releases, setReleases }) => {
                 transitionTimingFunction="ease"
                 title="Add a release"
             >
-                <Dropzone
-                    onDrop={async (files) => {
-                        setFiles(files)
-                        if (files.length > 0) {
-                            setIsUploading(true)
-                            const { error } = await supabase.storage.from('album-covers').upload(`public/${releaseId}/${files[0].name}`, files[0])
-                            if (!error) {
-                                const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${releaseId}/${files[0].name}`)
-                                await supabase.from("releases").update({ cover: publicURL.data.publicUrl }).eq("id", releaseId)
-                                let copy = [...releases]
-                                let objIndex = copy.findIndex((obj => obj.id == releaseId));
-                                copy[objIndex].cover = publicURL.data.publicUrl
-                                setReleases(copy)
-                                coverUploadSucceed()
-                                setUploadModalOpened(false)
-                            } else {
-                                coverUploadFailed()
-                            }
-                            setIsUploading(false)
-                        }
-                    }}
-                    onReject={(files) => console.log('rejected files', files)}
-                    maxSize={3 * 1024 ** 2}
-                    multiple={false}
-                    accept={IMAGE_MIME_TYPE}
-                    maxFiles={1}
-                    loading={isUploading}
-                >
-                    <Group position="center" spacing="xl" style={{ minHeight: 220, pointerEvents: 'none' }}>
-                        <Dropzone.Accept>
-                            <IconUpload
-                                size={50}
-                                stroke={1.5}
-                                color={theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]}
-                            />
-                        </Dropzone.Accept>
-                        <Dropzone.Reject>
-                            <IconX
-                                size={50}
-                                stroke={1.5}
-                                color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
-                            />
-                        </Dropzone.Reject>
-                        <Dropzone.Idle>
-                            <IconPhoto size={50} stroke={1.5} />
-                        </Dropzone.Idle>
-
-                        <div>
-                            <Text size="xl" inline>
-                                Drag images here or click to select files
-                            </Text>
-                            <Text size="sm" color="dimmed" inline mt={7}>
-                                Attach as many files as you like, each file should not exceed 5mb
-                            </Text>
-                        </div>
-                    </Group>
-                </Dropzone>
+                <SharedUploadZone onDrop={handleUpload} onReject={handleRejectedFile} uploading={isUploading} maxSize={5 * 1024 ** 2} maxFiles={1} multiple={false}/>
             </Modal>
             <Card className="animate__animated animate__backInLeft">
                 <CardLink href="#">

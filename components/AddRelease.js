@@ -7,7 +7,6 @@ import dayjs from "dayjs";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "../styles/AddRelease.module.css"
-import { useMantineTheme } from "@mantine/core";
 import AppContext from "./AppContext";
 import DateHelpers from "../helper/dateUtilities";
 import { v4 as uuidv4 } from 'uuid';
