@@ -102,7 +102,7 @@ export default function CollapsibleTable({ setData, loggedUser, dates, data, set
                 transition="fade"
                 transitionDuration={600}
                 transitionTimingFunction="ease"
-                title="Add a release"
+                title="Add release"
             >
                 <Dropzone
                     onDrop={async (files) => {

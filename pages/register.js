@@ -5,7 +5,6 @@ import * as yup from "yup"
 import { supabase } from "../supabaseClient";
 import { useRouter } from "next/router";
 import ErrorMessage from "../components/ ErrorMessage";
-import styled from "@emotion/styled";
 import StyledForm from "../components/styled/StyledForm.style";
 import PageTitle from "../components/PageTitle";
 
@@ -19,12 +18,10 @@ const schema = yup.object({
 
 export default function Register() {
 
-
   const [registerError, setRegisterError] = useState("")
-
   const router = useRouter()
 
-  const { register, control, handleSubmit,reset, formState: { errors } } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   });
 

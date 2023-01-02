@@ -4,16 +4,16 @@ import { useContext, useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import dayjs from "dayjs";
 import DateHelpers from '../helper/dateUtilities'
-import {  Modal, useMantineTheme } from "@mantine/core";
+import { Center, Modal, useMantineTheme } from "@mantine/core";
 import AppContext from "./AppContext";
 import AddRelease from "./AddRelease";
 import { useRouter } from "next/router";
 
 const Grid = styled.div`
-display: flex;
-flex-wrap: wrap;
-padding: 5px;
-justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 5px;
+    justify-content: center;
 `;
 
 const AddButton = styled.button`
@@ -24,6 +24,9 @@ const AddButton = styled.button`
      border-style: solid;
      height : 5vh;
      width: 20vh;
+     :hover {
+        background-image: linear-gradient(rgb(0 0 0/30%) 0 0);
+     }
 `
 
 const LoginToUploadButton = styled.button`
@@ -34,6 +37,9 @@ const LoginToUploadButton = styled.button`
      border-style: solid;
      height : 5vh;
      width: 20vh;
+     :hover {
+         background-image: linear-gradient(rgb(0 0 0/40%) 0 0);
+     }
 `
 
 const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedYear }) => {
@@ -45,7 +51,6 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     const { loggedUser, year, month } = useContext(AppContext)
     const [insertedData, setInsertedData] = useState([])
 
-    const theme = useMantineTheme();
     const router = useRouter()
 
     const getReleases = async () => {
@@ -60,9 +65,8 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     }
 
     useEffect(() => {
-        console.log('ca rentre')
         getReleases()
-    }, [year, month,additionId])
+    }, [year, month, additionId])
 
     // Group your items
     let grouped = releases.reduce((acc, el) => {
@@ -90,28 +94,28 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
                 transition="fade"
                 transitionDuration={600}
                 transitionTimingFunction="ease"
-                title="Add a release"
+                title="Add release"
             >
                 <AddRelease setAdditionId={setAdditionId} setDefaultValueYearSelect={setDefaultValueYearSelect} setOpened={setAddReleaseModalOpened} setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
             </Modal>
             }
             <div className="has-text-centered">
-                {loggedUser ? <AddButton  onClick={() => setAddReleaseModalOpened(true)}>Add a release</AddButton> : <LoginToUploadButton onClick={() => router.push("/signIn")}>Login to add a release</LoginToUploadButton>}
+                {loggedUser ? <AddButton onClick={() => setAddReleaseModalOpened(true)}>Add  release</AddButton> : <LoginToUploadButton onClick={() => router.push("/signIn")}>Login to add a release</LoginToUploadButton>}
             </div>
-            
-            {sorted.map(([date, options]) => {
+
+            {sorted.length > 0 ? sorted.map(([date, options]) => {
                 return (
                     <>
                         <h1 className="has-text-centered">{dayjs(date).format('MMMM D YYYY')}</h1>
                         <Grid>
-                            {options.map((el,index) => {
+                            {options.map((el, index) => {
                                 return (<ReleaseCard key={index} setReleases={setReleases} releases={releases} setUploadModalOpened={setUploadModalOpened} release={el} />)
 
                             })}
                         </Grid>
                     </>
                 );
-            })}
+            }) : <Center><h1>No release date was announced for this month</h1></Center>}
         </>
     );
 };
