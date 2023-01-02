@@ -94,13 +94,13 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
                 transition="fade"
                 transitionDuration={600}
                 transitionTimingFunction="ease"
-                title="Add a release"
+                title="Add release"
             >
                 <AddRelease setAdditionId={setAdditionId} setDefaultValueYearSelect={setDefaultValueYearSelect} setOpened={setAddReleaseModalOpened} setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
             </Modal>
             }
             <div className="has-text-centered">
-                {loggedUser ? <AddButton onClick={() => setAddReleaseModalOpened(true)}>Add a release</AddButton> : <LoginToUploadButton onClick={() => router.push("/signIn")}>Login to add a release</LoginToUploadButton>}
+                {loggedUser ? <AddButton onClick={() => setAddReleaseModalOpened(true)}>Add  release</AddButton> : <LoginToUploadButton onClick={() => router.push("/signIn")}>Login to add a release</LoginToUploadButton>}
             </div>
 
             {sorted.length > 0 ? sorted.map(([date, options]) => {
