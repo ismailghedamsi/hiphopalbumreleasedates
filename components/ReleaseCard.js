@@ -70,7 +70,7 @@ const ReleaseCard = ({ release, releases, setReleases }) => {
             >
                 <SharedUploadZone onDrop={handleUpload} onReject={handleRejectedFile} uploading={isUploading} maxSize={5 * 1024 ** 2} maxFiles={1} multiple={false}/>
             </Modal>
-            <Card className="animate__animated animate__backInLeft">
+            <Card>
                 <CardLink href="#">
                     <picture className="thumbnail">
                         <CardImage height={250} width={250} onClick={() => { release.cover === "" && setUploadModalOpened(true); setReleaseId(release.id) }} src={getCover(release.cover)} alt="album cover" />
