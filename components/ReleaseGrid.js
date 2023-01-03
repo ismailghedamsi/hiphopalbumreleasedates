@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import LocalSearch from "./LocalSearch";
 import { IconX } from "@tabler/icons";
 import styles from '../styles/ReleaseGrid.module.css'
+import { useMediaQuery } from "@mantine/hooks";
 
 
 const Grid = styled.div`
@@ -57,6 +58,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     const { loggedUser, year, month } = useContext(AppContext)
     const [insertedData, setInsertedData] = useState([])
     const [searchTerm, setSearchTerm] = useState('');
+    const matches = useMediaQuery('(max-width: 900px)');
 
     const router = useRouter()
 
@@ -121,7 +123,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
                 {loggedUser ? <AddButton onClick={() => setAddReleaseModalOpened(true)}>Add  release</AddButton> : <LoginToUploadButton onClick={() => router.push("/signIn")}>Login to add a release</LoginToUploadButton>}
             </div>
 
-            <Center><TextInput value={searchTerm} rightSection={searchTerm != "" && <IconX onClick={() => setSearchTerm('')} size="xs" />} onChange={handleChange} type="search" placeholder="Search..." /></Center> 
+            <Center><TextInput sx={{width : matches ? "25vh" : "50vh"}} value={searchTerm} rightSection={searchTerm != "" && <IconX onClick={() => setSearchTerm('')} size="xs" />} onChange={handleChange} type="search" placeholder="Search..." /></Center> 
 
             {sorted.length > 0 ? sorted.map(([date, options]) => {
                 return (
