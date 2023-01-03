@@ -4,10 +4,14 @@ import { useContext, useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import dayjs from "dayjs";
 import DateHelpers from '../helper/dateUtilities'
-import { Center, Modal, useMantineTheme } from "@mantine/core";
+import { Center, Modal, TextInput, useMantineTheme } from "@mantine/core";
 import AppContext from "./AppContext";
 import AddRelease from "./AddRelease";
 import { useRouter } from "next/router";
+import LocalSearch from "./LocalSearch";
+import { IconX } from "@tabler/icons";
+import styles from '../styles/ReleaseGrid.module.css'
+
 
 const Grid = styled.div`
     display: flex;
@@ -42,6 +46,8 @@ const LoginToUploadButton = styled.button`
      }
 `
 
+
+
 const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedYear }) => {
 
     const [releases, setReleases] = useState([])
@@ -50,14 +56,21 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     const [defaultValueYearSelect, setDefaultValueYearSelect] = useState(new Date().getFullYear())
     const { loggedUser, year, month } = useContext(AppContext)
     const [insertedData, setInsertedData] = useState([])
+    const [searchTerm, setSearchTerm] = useState('');
 
     const router = useRouter()
 
     const getReleases = async () => {
 
         let query = supabase.from('releases').select()
-        query = query.gte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-01`).lte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-${DateHelpers.getDaysInMonth(year, month)}`)
+        query = query.gte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-01`)
+        .lte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-${DateHelpers.getDaysInMonth(year, month)}`)
             .order('releaseDate', { ascending: true })
+
+        if( searchTerm != "" ){
+            console.log("earchterm ", searchTerm)
+            query = query.or(`artist.ilike.*${searchTerm}*,album.ilike.*${searchTerm}*`)
+        }
         const { data, error } = await query
         if (!error) {
             setReleases(data)
@@ -66,7 +79,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
 
     useEffect(() => {
         getReleases()
-    }, [year, month, additionId])
+    }, [year, month, additionId, searchTerm])
 
     // Group your items
     let grouped = releases.reduce((acc, el) => {
@@ -85,6 +98,10 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
         return parseDate(d1[0]) - parseDate(d2[0]);
     })
 
+    const handleChange = event => {
+        setSearchTerm(event.target.value);
+      };
+
     return (
         <>
             {loggedUser && <Modal
@@ -99,14 +116,17 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
                 <AddRelease setAdditionId={setAdditionId} setDefaultValueYearSelect={setDefaultValueYearSelect} setOpened={setAddReleaseModalOpened} setInsertedData={setInsertedData} setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} />
             </Modal>
             }
+
             <div className="has-text-centered">
                 {loggedUser ? <AddButton onClick={() => setAddReleaseModalOpened(true)}>Add  release</AddButton> : <LoginToUploadButton onClick={() => router.push("/signIn")}>Login to add a release</LoginToUploadButton>}
             </div>
 
+            <Center><TextInput value={searchTerm} rightSection={searchTerm != "" && <IconX onClick={() => setSearchTerm('')} size="xs" />} onChange={handleChange} type="search" placeholder="Search..." /></Center> 
+
             {sorted.length > 0 ? sorted.map(([date, options]) => {
                 return (
                     <>
-                        <h1 className="has-text-centered">{dayjs(date).format('MMMM D YYYY')}</h1>
+                        <h1 className="has-text-centered mt-3"><span className={styles.date}>{dayjs(date).format('MMMM D YYYY')}</span></h1>
                         <Grid>
                             {options.map((el, index) => {
                                 return (<ReleaseCard key={index} setReleases={setReleases} releases={releases} setUploadModalOpened={setUploadModalOpened} release={el} />)
