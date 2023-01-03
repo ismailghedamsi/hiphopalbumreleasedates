@@ -4,6 +4,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import moment from "moment";
 import { useContext, useEffect } from "react";
 import AppContext from "./AppContext";
+import styles from '../styles/previousNext.module.css'
 
 
 const PreviousNext = ({additionId }) => {
@@ -26,9 +27,9 @@ const PreviousNext = ({additionId }) => {
    `
 
     return (
-        <Group position="center" spacing="sm">
+        <Group className="mt-5" position="center" spacing="sm">
             <MonthChangeButton onClick={handlePreviousMonth()} variant="outline">Previous</MonthChangeButton>
-            <div>{moment( new Date(year,month-1,1)).format(matches ? "MMMM" : "MMM")}</div>
+            <div className={styles.month_label}>{moment( new Date(year,month-1,1)).format(matches ? "MMMM" : "MMM")}</div>
             <MonthChangeButton variant="outline" onClick={handleNextMonth()}>Next</MonthChangeButton>
         </Group>
     )
