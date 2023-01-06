@@ -3,12 +3,14 @@ import Layout from '../components/Layout'
 import '../styles/globals.css'
 import 'animate.css';
 import '../node_modules/bulma-fab-button/src/bulma-fab-button.sass';
+import { Analytics } from '@vercel/analytics/react';
 
 function MyApp({ Component, pageProps }) {
   return (
     <MantineProvider withGlobalStyles withNormalizeCSS>
     <Layout>
       <Component {...pageProps} />
+      <Analytics />
     </Layout>
     </MantineProvider>
   )

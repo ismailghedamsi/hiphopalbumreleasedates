@@ -33,7 +33,7 @@ border: 0;
 width: 100%;
 `
 
-export const CardLink = styled.a`
+export const CardLink = styled.div`
 color: black;
  text-decoration: none;
 

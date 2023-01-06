@@ -23,6 +23,7 @@
     "@supabase-cache-helpers/postgrest-swr": "^0.4.13",
     "@supabase/supabase-js": "^2.0.5",
     "@tabler/icons": "^1.111.0",
+    "@vercel/analytics": "^0.1.6",
     "@zeit/next-sass": "^0.0.6",
     "animate.css": "^4.1.1",
     "axios": "^1.1.3",

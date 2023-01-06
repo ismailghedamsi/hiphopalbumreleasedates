@@ -43,12 +43,21 @@ export default function AddRelease({ setAdditionId, setInsertedData}) {
     if(!rel.cover){
       rel.cover = ""
     }
+    rel.links = {
+      spotify : rel.spotify,
+      bandcamp : rel.bandcamp,
+      apple_music : rel.apple_music
+    }
+    delete rel.spotify;
+    delete rel.bandcamp
+    delete rel.apple_music
     rel.addedBy = loggedUser.id
     rel.artist = trim(rel.artist)
     rel.album = trim(rel.album)
     rel.releaseDate = dayjs(rel.releaseDate).format('YYYY-MM-DD')
+    console.log("rel ",rel)
 
-    const { error, data } = await supabase.from("releases").insert(rel).select('*')
+    const { error, data } = await supabase.from("releases_duplicate").insert(rel).select('*')
   
     if (data) {
       if (coverSource === "local" && files.length > 0) {
@@ -56,7 +65,7 @@ export default function AddRelease({ setAdditionId, setInsertedData}) {
         const { error: errorUpload } = await supabase.storage.from('album-covers').upload(`public/${data[0].id}/${files[0].name}`, files[0])
         if (!errorUpload) {
           const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${data[0].id}/${files[0].name}`)
-          await supabase.from("releases").update({ cover: publicURL.data.publicUrl }).eq("id", data[0].id)
+          await supabase.from("releases_duplicate").update({ cover: publicURL.data.publicUrl }).eq("id", data[0].id)
         }
         setIsUploading(false)
       }
@@ -87,7 +96,11 @@ export default function AddRelease({ setAdditionId, setInsertedData}) {
 
         <TextField control={control} label={"Artist"} placeholder={"Type an artist name"} name={"artist"} error={errors.artist?.message} />
     
-        <TextField control={control} label={"Album"} placeholder={"Type an album name"} name={"album"} error={errors.album?.message} />
+        <TextField control={control} label={"Album"} placeholder={"Type an album name"} name={"album"} error={errors.album?.message} /> 
+        <TextField control={control} label={"Spotify"} placeholder={"Type spotify link"} name={"spotify"} error={errors.spotify?.message} />
+        <TextField control={control} label={"Bnadcamp"} placeholder={"Type bandcamp link "} name={"bandcamp"} error={errors.bandcamp?.message} />
+        <TextField control={control} label={"Apple Music"} placeholder={"Type apple music link "} name={"apple_music"} error={errors.apple_music?.message} />
+
 
         <UploadMethodTabs errors={errors} control={control} files={files} isUploading={isUploading} setFiles={setFiles} setCoverSource={setCoverSource}/>
 

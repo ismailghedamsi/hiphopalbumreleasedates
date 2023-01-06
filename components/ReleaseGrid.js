@@ -64,7 +64,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
 
     const getReleases = async () => {
 
-        let query = supabase.from('releases').select()
+        let query = supabase.from('releases_duplicate').select()
         query = query.gte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-01`)
         .lte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-${DateHelpers.getDaysInMonth(year, month)}`)
             .order('releaseDate', { ascending: true })
@@ -128,10 +128,10 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
             {sorted.length > 0 ? sorted.map(([date, options]) => {
                 return (
                     <>
-                        <h1 className="has-text-centered mt-3"><span className={styles.date}>{dayjs(date).format('MMMM D YYYY')}</span></h1>
+                        <h1 key={date} className="has-text-centered mt-3"><span className={styles.date}>{dayjs(date).format('MMMM D YYYY')}</span></h1>
                         <Grid>
                             {options.map((el, index) => {
-                                return (<ReleaseCard key={index} setReleases={setReleases} releases={releases} setUploadModalOpened={setUploadModalOpened} release={el} />)
+                                return (<ReleaseCard index={index} key={index} setReleases={setReleases} releases={releases} setUploadModalOpened={setUploadModalOpened} release={el} />)
 
                             })}
                         </Grid>
