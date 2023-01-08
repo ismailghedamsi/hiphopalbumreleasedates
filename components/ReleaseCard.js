@@ -102,7 +102,7 @@ const ReleaseCard = ({ index, release, releases, setReleases }) => {
                 transitionTimingFunction="ease"
                 title={releaseTitle}
             >
-                <Linktree setRelease={setRelease} release={release} />
+                <Linktree  release={release} />
             </LinksModal>
 
             <Card ref={index === 3 ? inputRef : null}>
