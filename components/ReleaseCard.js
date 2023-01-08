@@ -5,25 +5,12 @@ import { styled } from "styled-components";
 import { ref } from "yup";
 import { supabase } from "../supabaseClient";
 import AppContext from "./AppContext";
+import UpdateLinkForm from "./Form/UpdateLinkForm";
 import Linktree from "./Linktree";
 import { Card, CardContent, CardHeader, CardImage, CardLink, CardSecondaryText } from "./styled/Cards/Card.style";
+import styles from '../styles/ReleaseCard.module.css'
 import SharedUploadZone from "./Upload/UploadZone";
-
-const LinkButton = styled.a`
-  display: inline-block;
-  border-radius: 3px;
-  padding: 0.5rem 0.5rem;
-  margin: 0.5rem 1rem;
-  width: 11rem;
-  background: blue;
-  color: white;
-  border: 2px solid white;
-
-  &:hover {
-    background-color: lightblue;
-    color: black;
-  }
-`;
+import { IconEdit } from '@tabler/icons';
 
 const LinksModal = styled(Modal)`
    & .mantine-Modal-modal {
@@ -41,8 +28,10 @@ const ReleaseCard = ({ index, release, releases, setReleases }) => {
     const [files, setFiles] = useState([]);
     const [uploadModalOpened, setUploadModalOpened] = useState(false)
     const [linksModalOpened, setLinksModalOpened] = useState(false)
+    const [updateLinksModdal, setUpdateLinksModdal] = useState(true)
     const [releaseTitle, setReleaseTitle] = useState("")
     const [isUploading, setIsUploading] = useState(false)
+
     let inputRef = useRef()
 
     const coverUploadFailed = () => toast.error("Cover can't be uploaded", {
@@ -113,29 +102,30 @@ const ReleaseCard = ({ index, release, releases, setReleases }) => {
                 transitionTimingFunction="ease"
                 title={releaseTitle}
             >
-                <Linktree links={release.links} />
+                <Linktree setRelease={setRelease} release={release} />
             </LinksModal>
-
 
             <Card ref={index === 3 ? inputRef : null}>
                 <CardLink href="#">
                     <picture className="thumbnail">
                         <CardImage height={250} width={250} onClick={() => { release.cover === "" && setUploadModalOpened(true); setReleaseId(release.id) }} src={getCover(release.cover)} alt="album cover" />
                     </picture>
+                    <i className="fas fa-pen fa-pen-indicateur" title="Modifier"></i>
                     <CardContent>
 
-                        <CardHeader>{`${release.artist}`}</CardHeader>
-                        <CardSecondaryText>{`${release.album}`}</CardSecondaryText>
+                        <CardHeader><span className={styles.labels}>Artist : </span>{`${release.artist}`}</CardHeader>
+                  
+                        <CardSecondaryText><span  className={styles.labels}>Album : </span> {`${release.album}`}</CardSecondaryText>
                         <Center>
-                        {  Object.keys(release.links).length > 0 && release.links.constructor === Object ?  <Button variant="gradient" gradient={{ from: 'orange', to: 'red' }} onClick={() => {
+                            {<Button variant="gradient" gradient={{ from: 'orange', to: 'red' }} onClick={() => {
                                 setLinksModalOpened(true)
-                                setReleaseTitle(release.artist + " " + release.album)
+                                setReleaseTitle(release.artist + " - " + release.album)
                             }
 
                             }>
                                 Links
-                            </Button> : <h3>No links</h3>
-                        }
+                            </Button>
+                            }
                         </Center>
                         {/* <CardParagraph>TUX re-inventing the wheel, and move the needle. Feature creep dogpile that but diversify kpis but market-facing.</CardParagraph> */}
                     </CardContent>
