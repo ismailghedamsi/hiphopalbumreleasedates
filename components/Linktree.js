@@ -1,5 +1,16 @@
-import { BackgroundImage, Center } from "@mantine/core"
+import { BackgroundImage, Button, Center } from "@mantine/core"
+import Head from "next/head";
 import { styled } from "styled-components"
+import { Accordion } from '@mantine/core';
+import { useForm } from "react-hook-form";
+import * as yup from "yup"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { linkClasses } from "@mui/material";
+import { useState } from "react";
+import { supabase } from "../supabaseClient";
+import { identity } from "lodash";
+import { v4 as uuidv4 } from 'uuid';
+
 
 const Container = styled.div`
   width: 100%;
@@ -15,6 +26,9 @@ const LinkContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  a:last-of-type {
+    margin-bottom: 2rem;
+  }
 `
 
 const LinkButton = styled.a`
@@ -37,25 +51,118 @@ const LinkButton = styled.a`
   }
 `;
 
+const StyledControl = styled(Accordion.Control)`
+  background-image: url("./white1.png");
+  width: 20rem;
 
-const Linktree = ({links}) => {
-  
-    return( 
-  //     <BackgroundImage
-  //     src="./gradient.png"
-  //     radius="sm"
-  // >
+`
+
+const StyledPanel = styled(Accordion.Panel)`
+  background-image: url("./white1.png");
+  width: 20rem;
+
+`
+
+const Item = styled(Accordion.Item)`
+  background-image: none;
+
+`
+
+function InputField({ label, name, register, error }) {
+  return (
+    <>
+      <label htmlFor={name}>{label}:</label>
+      <br />
+      <input type="text" name={name} id={name} {...register(name)} />
+      {error && <span>{label} URL is required</span>}
+      <br />
+    </>
+  );
+}
+
+
+const Linktree = ({ release, setRelease }) => {
+  let { links, id } = release;
+  const [urls, setUrls] = useState(links)
+  let temp = { ...urls }
+  const [updateUuid, setUpdateUuid]  = useState('')
+
+
+  const { register, handleSubmit, errors } = useForm(
+    //   {
+    //   resolver: yupResolver(musicFormSchema)
+    // }
+  );
+  const onSubmit = async data =>  {
+    // Send the form data to your backend server or perform some other action
+    console.log("beofre mod ", links);
+
+    Object.entries(data).map(([key, value]) => {
+      temp[key] = value
+    })
+
+   
+    const { error } = await supabase
+      .from('releases_duplicate')
+      .update({ links: temp })
+      .eq('id', id)
+
+      console.log("after mod ", links);
+
+      setUrls({...temp})
+
+      setUpdateUuid(uuidv4())
+
+  };
+
+
+  return (
     <Container>
+      <Head>
+        <meta name="description" content="This is the page for showing links to stream the release on various platforms." />
+      </Head>
       <Center>
-    <LinkContainer>
-      {links.spotify && <LinkButton href={links.spotify} className="w3-button" target="_blank">Spotify</LinkButton>}
-      {links.bandcamp && <LinkButton href={links.bandcamp} className="w3-button" target="_blank">Bandcamp</LinkButton>}
-      {links.apple_music &&  <LinkButton href="#" className="w3-button w3-round-xlarge w3-theme-l1 w3-border link" target="_blank">Apple Music</LinkButton>}
-    </LinkContainer>
-    </Center>
+        <LinkContainer>
+          {urls.spotify &&  urls.spotify != "" && <LinkButton href={urls.spotify} className="w3-button" target="_blank">Spotify</LinkButton>}
+          {urls.bandcamp && <LinkButton href={urls.bandcamp} className="w3-button" target="_blank">Bandcamp</LinkButton>}
+          {urls.apple_music && <LinkButton href={urls.apple_music} className="w3-button w3-round-xlarge w3-theme-l1 w3-border link" target="_blank">Apple Music</LinkButton>}
+          <Accordion defaultValue="customization">
+          {  <Item value="customization">
+              <StyledControl>Add links</StyledControl>
+              <StyledPanel>
+                <form onSubmit={handleSubmit((data) => onSubmit(data))}>
+                  {urls.spotify === "" && <InputField
+                    label="Spotify"
+                    name="spotify"
+                    register={register}
+                    error={errors?.spotify.message}
+                  />
+                  }
+                  {urls.bandcamp === "" && <InputField
+                    label="Bandcamp"
+                    name="bandcamp"
+                    register={register}
+                    error={errors?.bandcamp.message}
+                  />
+                  }
+                  { urls.apple_music === "" && <InputField
+                    label="Apple Music"
+                    name="apple_music"
+                    register={register}
+                    error={errors?.apple_music.message}
+                  />
+                  }
+                  <input type="submit" value="Submit" />
+                </form>
+              </StyledPanel>
+            </Item>
+          }
+          </Accordion>
+        </LinkContainer>
 
-  </Container>
-  //  </BackgroundImage>
+      </Center>
+
+    </Container>
   )
 }
 
