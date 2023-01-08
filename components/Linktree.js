@@ -81,9 +81,10 @@ function InputField({ label, name, register, error }) {
 }
 
 
-const Linktree = ({ release, setRelease }) => {
+const Linktree = ({ release }) => {
   let { links, id } = release;
   const [urls, setUrls] = useState(links)
+  // const [emptyStringCount, setEmptyStringCount] = useState(Object.entries(links).filter(([key, value]) => value === '').length)
   let temp = { ...urls }
   const [updateUuid, setUpdateUuid]  = useState('')
 
@@ -115,7 +116,9 @@ const Linktree = ({ release, setRelease }) => {
 
   };
 
-
+  const emptyStringCount = Object.entries(urls).filter(([key, value]) => value === '').length;
+  console.log("emptyStringCount ",emptyStringCount)
+  console.log("Object.entries(links).length", Object.entries(urls).length)
   return (
     <Container>
       <Head>
@@ -127,7 +130,7 @@ const Linktree = ({ release, setRelease }) => {
           {urls.bandcamp && <LinkButton href={urls.bandcamp} className="w3-button" target="_blank">Bandcamp</LinkButton>}
           {urls.apple_music && <LinkButton href={urls.apple_music} className="w3-button w3-round-xlarge w3-theme-l1 w3-border link" target="_blank">Apple Music</LinkButton>}
           <Accordion defaultValue="customization">
-          {  <Item value="customization">
+          { emptyStringCount != ''  && <Item value="customization">
               <StyledControl>Add links</StyledControl>
               <StyledPanel>
                 <form onSubmit={handleSubmit((data) => onSubmit(data))}>
@@ -152,7 +155,7 @@ const Linktree = ({ release, setRelease }) => {
                     error={errors?.apple_music.message}
                   />
                   }
-                  <input type="submit" value="Submit" />
+                  <input disabled={emptyStringCount === 0} type="submit" value="Submit" />
                 </form>
               </StyledPanel>
             </Item>
