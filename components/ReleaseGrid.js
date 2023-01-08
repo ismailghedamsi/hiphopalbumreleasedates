@@ -12,6 +12,7 @@ import LocalSearch from "./LocalSearch";
 import { IconX } from "@tabler/icons";
 import styles from '../styles/ReleaseGrid.module.css'
 import { useMediaQuery } from "@mantine/hooks";
+import css from "styled-jsx/css";
 
 
 const Grid = styled.div`
@@ -19,6 +20,22 @@ const Grid = styled.div`
     flex-wrap: wrap;
     padding: 5px;
     justify-content: center;
+`;
+
+const ButtonAnimation = css`
+        animation: pulse 2s 5;
+
+        @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(2);
+        }
+        100% {
+            transform: scale(1);
+        }
+}
 `;
 
 const AddButton = styled.button`
@@ -32,7 +49,21 @@ const AddButton = styled.button`
      :hover {
         background-image: linear-gradient(rgb(0 0 0/30%) 0 0);
      }
-`
+     animation: pulse 2s 5;
+
+        @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(2);
+        }
+        100% {
+            transform: scale(1);
+        }
+        }
+
+`;
 
 const LoginToUploadButton = styled.button`
      border-radius: 20px;
@@ -45,7 +76,21 @@ const LoginToUploadButton = styled.button`
      :hover {
          background-image: linear-gradient(rgb(0 0 0/40%) 0 0);
      }
-`
+
+     animation: pulse 2s 5;
+
+    @keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(2);
+    }
+    100% {
+        transform: scale(1);
+    }
+    }
+`;
 
 
 
@@ -66,10 +111,10 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
 
         let query = supabase.from('releases_duplicate').select()
         query = query.gte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-01`)
-        .lte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-${DateHelpers.getDaysInMonth(year, month)}`)
+            .lte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-${DateHelpers.getDaysInMonth(year, month)}`)
             .order('releaseDate', { ascending: true })
 
-        if( searchTerm != "" ){
+        if (searchTerm != "") {
             console.log("earchterm ", searchTerm)
             query = query.or(`artist.ilike.*${searchTerm}*,album.ilike.*${searchTerm}*`)
         }
@@ -102,7 +147,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
 
     const handleChange = event => {
         setSearchTerm(event.target.value);
-      };
+    };
 
     return (
         <>
@@ -123,7 +168,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
                 {loggedUser ? <AddButton onClick={() => setAddReleaseModalOpened(true)}>Add  release</AddButton> : <LoginToUploadButton onClick={() => router.push("/signIn")}>Login to add a release</LoginToUploadButton>}
             </div>
 
-            <Center><TextInput sx={{width : matches ? "25vh" : "50vh"}} value={searchTerm} rightSection={searchTerm != "" && <IconX onClick={() => setSearchTerm('')} size="xs" />} onChange={handleChange} type="search" placeholder="Search..." /></Center> 
+            <Center><TextInput sx={{ width: matches ? "25vh" : "50vh" }} value={searchTerm} rightSection={searchTerm != "" && <IconX onClick={() => setSearchTerm('')} size="xs" />} onChange={handleChange} type="search" placeholder="Search..." /></Center>
 
             {sorted.length > 0 ? sorted.map(([date, options]) => {
                 return (
