@@ -104,7 +104,7 @@ const Linktree = ({ release }) => {
 
    
     const { error } = await supabase
-      .from('releases_duplicate')
+      .from('releases')
       .update({ links: temp })
       .eq('id', id)
 
@@ -133,6 +133,7 @@ const Linktree = ({ release }) => {
           { emptyStringCount != ''  && <Item value="customization">
               <StyledControl>Add links</StyledControl>
               <StyledPanel>
+              <Center sx={{marginTop : "20px"}}>
                 <form onSubmit={handleSubmit((data) => onSubmit(data))}>
                   {urls.spotify === "" && <InputField
                     label="Spotify"
@@ -155,8 +156,11 @@ const Linktree = ({ release }) => {
                     error={errors?.apple_music.message}
                   />
                   }
-                  <input disabled={emptyStringCount === 0} type="submit" value="Submit" />
+                  <Center>
+                    <input className="mt-5 " disabled={emptyStringCount === 0} type="submit" value="Add links" />
+                    </Center>
                 </form>
+                  </Center>
               </StyledPanel>
             </Item>
           }

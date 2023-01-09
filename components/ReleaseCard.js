@@ -61,7 +61,7 @@ const ReleaseCard = ({ index, release, releases, setReleases }) => {
             const { error } = await supabase.storage.from('album-covers').upload(`public/${releaseId}/${files[0].name}`, files[0])
             if (!error) {
                 const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${releaseId}/${files[0].name}`)
-                await supabase.from("releases_duplicate").update({ cover: publicURL.data.publicUrl }).eq("id", releaseId)
+                await supabase.from("releases").update({ cover: publicURL.data.publicUrl }).eq("id", releaseId)
                 let copy = [...releases]
                 let objIndex = copy.findIndex((obj => obj.id == releaseId));
                 copy[objIndex].cover = publicURL.data.publicUrl
