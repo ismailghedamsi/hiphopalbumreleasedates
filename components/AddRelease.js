@@ -43,10 +43,19 @@ export default function AddRelease({ setAdditionId, setInsertedData}) {
     if(!rel.cover){
       rel.cover = ""
     }
+    rel.links = {
+      spotify : rel.spotify ? rel.spotify : "" ,
+      bandcamp : rel.bandcamp ? rel.bandcamp : "",
+      apple_music : rel.apple_music ? rel.apple_music : ""
+    }
+    delete rel.spotify;
+    delete rel.bandcamp
+    delete rel.apple_music
     rel.addedBy = loggedUser.id
     rel.artist = trim(rel.artist)
     rel.album = trim(rel.album)
     rel.releaseDate = dayjs(rel.releaseDate).format('YYYY-MM-DD')
+    console.log("rel ",rel)
 
     const { error, data } = await supabase.from("releases").insert(rel).select('*')
   
@@ -87,7 +96,11 @@ export default function AddRelease({ setAdditionId, setInsertedData}) {
 
         <TextField control={control} label={"Artist"} placeholder={"Type an artist name"} name={"artist"} error={errors.artist?.message} />
     
-        <TextField control={control} label={"Album"} placeholder={"Type an album name"} name={"album"} error={errors.album?.message} />
+        <TextField control={control} label={"Album"} placeholder={"Type an album name"} name={"album"} error={errors.album?.message} /> 
+        <TextField control={control} label={"Spotify"} placeholder={"Type spotify link"} name={"spotify"} error={errors.spotify?.message} />
+        <TextField control={control} label={"Bnadcamp"} placeholder={"Type bandcamp link "} name={"bandcamp"} error={errors.bandcamp?.message} />
+        <TextField control={control} label={"Apple Music"} placeholder={"Type apple music link "} name={"apple_music"} error={errors.apple_music?.message} />
+
 
         <UploadMethodTabs errors={errors} control={control} files={files} isUploading={isUploading} setFiles={setFiles} setCoverSource={setCoverSource}/>
 

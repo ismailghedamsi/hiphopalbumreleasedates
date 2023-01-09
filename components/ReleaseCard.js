@@ -1,18 +1,38 @@
-import { Modal, useMantineTheme } from "@mantine/core";
-import { useContext, useState } from "react";
+import { BackgroundImage, Button, Center, Modal, useMantineTheme } from "@mantine/core";
+import { useContext, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import { styled } from "styled-components";
+import { ref } from "yup";
 import { supabase } from "../supabaseClient";
 import AppContext from "./AppContext";
+import UpdateLinkForm from "./Form/UpdateLinkForm";
+import Linktree from "./Linktree";
 import { Card, CardContent, CardHeader, CardImage, CardLink, CardSecondaryText } from "./styled/Cards/Card.style";
+import styles from '../styles/ReleaseCard.module.css'
 import SharedUploadZone from "./Upload/UploadZone";
+import { IconEdit } from '@tabler/icons';
 
-const ReleaseCard = ({ release, releases, setReleases }) => {
+const LinksModal = styled(Modal)`
+   & .mantine-Modal-modal {
+    background: radial-gradient(circle at center, #fd4335 , yellow)
+    }
+
+`
+
+const ReleaseCard = ({ index, release, releases, setReleases }) => {
+
+    console.log("release ", release)
 
     const { loggedUser } = useContext(AppContext)
     const [releaseId, setReleaseId] = useState()
     const [files, setFiles] = useState([]);
     const [uploadModalOpened, setUploadModalOpened] = useState(false)
+    const [linksModalOpened, setLinksModalOpened] = useState(false)
+    const [updateLinksModdal, setUpdateLinksModdal] = useState(true)
+    const [releaseTitle, setReleaseTitle] = useState("")
     const [isUploading, setIsUploading] = useState(false)
+
+    let inputRef = useRef()
 
     const coverUploadFailed = () => toast.error("Cover can't be uploaded", {
         position: toast.POSITION.BOTTOM_CENTER
@@ -32,6 +52,7 @@ const ReleaseCard = ({ release, releases, setReleases }) => {
         }
         return coverPath
     }
+
 
     const handleUpload = async (files) => {
         setFiles(files)
@@ -68,17 +89,44 @@ const ReleaseCard = ({ release, releases, setReleases }) => {
                 transitionTimingFunction="ease"
                 title="Add release"
             >
-                <SharedUploadZone onDrop={handleUpload} onReject={handleRejectedFile} uploading={isUploading} maxSize={5 * 1024 ** 2} maxFiles={1} multiple={false}/>
+                <SharedUploadZone onDrop={handleUpload} onReject={handleRejectedFile} uploading={isUploading} maxSize={5 * 1024 ** 2} maxFiles={1} multiple={false} />
             </Modal>
-            <Card>
+
+            <LinksModal
+                opened={linksModalOpened}
+                centered
+                onClose={() => setLinksModalOpened(false)}
+                transition="fade"
+                transitionDuration={600}
+
+                transitionTimingFunction="ease"
+                title={releaseTitle}
+            >
+                <Linktree  release={release} />
+            </LinksModal>
+
+            <Card ref={index === 3 ? inputRef : null}>
                 <CardLink href="#">
                     <picture className="thumbnail">
                         <CardImage height={250} width={250} onClick={() => { release.cover === "" && setUploadModalOpened(true); setReleaseId(release.id) }} src={getCover(release.cover)} alt="album cover" />
                     </picture>
+                    <i className="fas fa-pen fa-pen-indicateur" title="Modifier"></i>
                     <CardContent>
 
-                        <CardHeader>{`${release.artist}`}</CardHeader>
-                        <CardSecondaryText>{`${release.album}`}</CardSecondaryText>
+                        <CardHeader><span className={styles.labels}>Artist : </span>{`${release.artist}`}</CardHeader>
+                  
+                        <CardSecondaryText><span  className={styles.labels}>Album : </span> {`${release.album}`}</CardSecondaryText>
+                        <Center>
+                            {<Button variant="gradient" gradient={{ from: 'orange', to: 'red' }} onClick={() => {
+                                setLinksModalOpened(true)
+                                setReleaseTitle(release.artist + " - " + release.album)
+                            }
+
+                            }>
+                                Links
+                            </Button>
+                            }
+                        </Center>
                         {/* <CardParagraph>TUX re-inventing the wheel, and move the needle. Feature creep dogpile that but diversify kpis but market-facing.</CardParagraph> */}
                     </CardContent>
                 </CardLink>
