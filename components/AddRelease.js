@@ -45,8 +45,8 @@ export default function AddRelease({ setAdditionId, setInsertedData}) {
     }
     rel.links = {
       spotify : rel.spotify,
-      bandcamp : rel.bandcamp,
-      apple_music : rel.apple_music
+      bandcamp : rel.bandcamp ? rel.bandcamp : "",
+      apple_music : rel.apple_music ? rel.apple_music : ""
     }
     delete rel.spotify;
     delete rel.bandcamp
