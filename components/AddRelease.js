@@ -44,7 +44,7 @@ export default function AddRelease({ setAdditionId, setInsertedData}) {
       rel.cover = ""
     }
     rel.links = {
-      spotify : rel.spotify,
+      spotify : rel.spotify ? rel.spotify : "" ,
       bandcamp : rel.bandcamp ? rel.bandcamp : "",
       apple_music : rel.apple_music ? rel.apple_music : ""
     }
