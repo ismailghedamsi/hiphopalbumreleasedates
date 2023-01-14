@@ -3,97 +3,76 @@ import { supabase } from "../supabaseClient"
 import AppContext from "./AppContext"
 import "../styles/Navbar.module.css"
 
-import {NavbarContainer, LeftContainer, NavbarExtendedContainer, NavbarInnerContainer, NavbarLink, NavbarLinkContainer, NavbarLinkExtended, OpenLinksButton}  from "./styled/Navbar.style"
+import {NavbarContainer, LeftContainer, NavbarExtendedContainer, NavbarInnerContainer, NavbarLink, NavbarLinkContainer, NavbarLinkExtended, OpenLinksButton} from "./styled/Navbar.style"
 import { IconMenu, IconX } from "@tabler/icons"
+import { color } from "@mui/system"
+import { useRouter } from "next/router"
 
 const Navbar = () => {
-    const { loggedUser, setLoggedUser } = useContext(AppContext)
-    const [extendNavbar, setExtendNavbar] = useState(false);
-    const getLoggedUser = async () => {
-        const res = await supabase.auth.getUser()
-        setLoggedUser(res.data.user)
+  const router = useRouter()
+const { loggedUser, setLoggedUser } = useContext(AppContext)
+const [extendNavbar, setExtendNavbar] = useState(false);
+const [activeLink, setActiveLink] = useState(router.pathname);
+const getLoggedUser = async () => {
+const res = await supabase.auth.getUser()
+setLoggedUser(res.data.user)
 
-    }
-    useEffect(() => {
-        getLoggedUser()
-    }, [])
 
-    return (
-        <NavbarContainer extendNavbar={extendNavbar}>
-      <NavbarInnerContainer>
-        <LeftContainer>
-          <NavbarLinkContainer>
-          <NavbarLink href="/"> Releases</NavbarLink>
-          <NavbarLink href="/topContributors"> Top Contributors</NavbarLink>
-          {!loggedUser && <NavbarLink href="/register"> Register</NavbarLink>}
-          {!loggedUser ? <NavbarLink href="/signIn">Login</NavbarLink> 
-            : <NavbarLink href="#"
-            onClick={async () => {
-                await supabase.auth.signOut()
-                 setLoggedUser(null)
-             }}
-              type="button"
-           > <span >Sign out</span></NavbarLink> 
-          }
-          
-            <OpenLinksButton
-              onClick={() => {
-                setExtendNavbar((curr) => !curr);
-              }}
-            >
-              {extendNavbar ? <IconX/> : <IconMenu/>}
-            </OpenLinksButton>
-          </NavbarLinkContainer>
-        </LeftContainer>
-      </NavbarInnerContainer>
-      {extendNavbar && (
-        <NavbarExtendedContainer>
-          <NavbarLinkExtended href="/"> Releases</NavbarLinkExtended>
-          <NavbarLinkExtended href="/topContributors"> Top Contributors</NavbarLinkExtended>
-          {!loggedUser && <NavbarLinkExtended href="/register"> Register</NavbarLinkExtended>}
-          {!loggedUser ? <NavbarLinkExtended href="/signIn">Log In</NavbarLinkExtended> 
+}
+useEffect(() => {
+    getLoggedUser()
+}, [])
+
+const  handleActiveLink = (active) => {
+  return activeLink === `${active}` ? { "color" : "aliceblue",  paddingBottom: "10px", textDecoration : "none", borderBottom : "1px solid ", lineHeight: "48px"} : {}
+}
+
+return (
+    <NavbarContainer extendNavbar={extendNavbar}>
+  <NavbarInnerContainer>
+    <LeftContainer>
+      <NavbarLinkContainer>
+      <NavbarLink href="/" style={handleActiveLink("/")} onClick={()=>setActiveLink('/')}> Releases</NavbarLink>
+      <NavbarLink style={handleActiveLink("/topContributors")} href="/topContributors"  onClick={()=>setActiveLink('/topContributors')}> Top Contributors</NavbarLink>
+      {!loggedUser && <NavbarLink style={handleActiveLink("/register")} href="/register"  onClick={()=>setActiveLink('/register')}> Register</NavbarLink>}
+      {!loggedUser ? <NavbarLink style={handleActiveLink("/signIn")} href="/signIn"  onClick={()=>setActiveLink('/signIn')}>Login</NavbarLink> 
+        : <NavbarLink href="#"
+        onClick={async () => {
+            await supabase.auth.signOut()
+             setLoggedUser(null)
+         }}
+          type="button"
+       > <span >Sign out</span></NavbarLink> 
+      }
+      
+        <OpenLinksButton
+          onClick={() => {
+            setExtendNavbar((curr) => !curr);
+          }}
+        >
+          {extendNavbar ? <IconX/> : <IconMenu/>}
+        </OpenLinksButton>
+      </NavbarLinkContainer>
+    </LeftContainer>
+  </NavbarInnerContainer>
+  {extendNavbar && (
+    <NavbarExtendedContainer>
+      <NavbarLinkExtended href="/" className={activeLink === '/' ? 'active' : ''} onClick={()=>setActiveLink('/')}> Releases</NavbarLinkExtended>
+      <NavbarLinkExtended href="/topContributors" className={activeLink === '/topContributors' ? 'active' : ''} onClick={()=>setActiveLink('/topContributors')}> Top Contributors
+      </NavbarLinkExtended>
+          {!loggedUser && <NavbarLinkExtended href="/register" className={activeLink === '/register' ? 'active' : ''} onClick={()=>setActiveLink('/register')}> Register</NavbarLinkExtended>}
+          {!loggedUser ? <NavbarLinkExtended href="/signIn" className={activeLink === '/signIn' ? 'active' : ''} onClick={()=>setActiveLink('/signIn')}>Log In</NavbarLinkExtended> 
             :  <NavbarLinkExtended href="#"
-                          onClick={async () => {
+             onClick={async () => {
                               await supabase.auth.signOut()
                                setLoggedUser(null)
                            }}
                             type="button"
                          > <span >Sign out</span></NavbarLinkExtended>
           }
-          
-          
         </NavbarExtendedContainer>
       )}
     </NavbarContainer>
-        // <nav>
-        //     <Flex
-        //         mih={20}
-        //         gap="md"
-        //         justify="center"
-        //         align="center"
-        //         direction="row"
-        //         wrap="wrap"
-        //     >
-        //         <Image alt="hip hop logo" priority src="/logo_no_background.png" width={160} height={160} />
-
-        //         <StyledLink label={"Home"} href={"/"}/>
-        //         <StyledLink href="/topContributors" label={"Top contributors"}/>
-        //         {!loggedUser ? <StyledLink label={"Register"} href="/register"/> : ""}
-        //         {!loggedUser ? <StyledLink href="/signIn" label={"Login"}/> :
-        //             <Link href="#"
-        //                 onClick={async () => {
-        //                     await supabase.auth.signOut()
-        //                     setLoggedUser(null)
-        //                 }}
-        //                 type="button"
-        //             > <span >Sign out</span></Link>}
-        //         <Link target={"_blank"} href="https://www.buymeacoffee.com/ismailghedp">
-        //             Donate
-        //         </Link>
-
-        //     </Flex>
-        // </nav>
     )
 }
-
 export default Navbar
