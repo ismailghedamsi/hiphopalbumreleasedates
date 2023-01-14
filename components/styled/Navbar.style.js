@@ -43,6 +43,11 @@ export const NavbarLink = styled(Link)`
   font-family: Arial, Helvetica, sans-serif;
   text-decoration: none;
   margin: 10px;
+
+  &.active {
+    color: "red";
+  }
+  
   @media (max-width: 700px) {
     display: none;
   }
