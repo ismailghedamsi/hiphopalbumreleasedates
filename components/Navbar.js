@@ -13,6 +13,7 @@ const Navbar = () => {
   const { loggedUser, setLoggedUser } = useContext(AppContext)
   const [extendNavbar, setExtendNavbar] = useState(false);
   const [activeLink, setActiveLink] = useState(router.pathname);
+  const [activeLinkMobile, setActiveLinkMobile] = useState(router.pathname);
   const getLoggedUser = async () => {
     const res = await supabase.auth.getUser()
     setLoggedUser(res.data.user)
@@ -25,6 +26,10 @@ const Navbar = () => {
 
   const handleActiveLink = (active) => {
     return activeLink === `${active}` ? { "color": "aliceblue", paddingBottom: "10px", textDecoration: "none", borderBottom: "1px solid ", lineHeight: "48px" } : {}
+  }
+
+  const handleActiveLinkMobile = (active) => {
+    return activeLinkMobile === `${active}` ? { "color": "aliceblue", paddingBottom: "10px", textDecoration: "none", borderBottom: "1px solid ", lineHeight: "48px" } : {}
   }
 
   return (
@@ -57,11 +62,11 @@ const Navbar = () => {
       </NavbarInnerContainer>
       {extendNavbar && (
         <NavbarExtendedContainer>
-          <NavbarLinkExtended href="/" className={activeLink === '/' ? 'active' : ''} onClick={() => setActiveLink('/')}> Releases</NavbarLinkExtended>
-          <NavbarLinkExtended href="/topContributors" className={activeLink === '/topContributors' ? 'active' : ''} onClick={() => setActiveLink('/topContributors')}> Top Contributors
+          <NavbarLinkExtended style={handleActiveLinkMobile("/topContributors")} href="/"  onClick={() => setActiveLinkMobile('/')}> Releases</NavbarLinkExtended>
+          <NavbarLinkExtended href="/topContributors" style={handleActiveLinkMobile("/topContributors")} onClick={() => setActiveLinkMobile('/topContributors')}> Top Contributors
           </NavbarLinkExtended>
-          {!loggedUser && <NavbarLinkExtended href="/register" className={activeLink === '/register' ? 'active' : ''} onClick={() => setActiveLink('/register')}> Register</NavbarLinkExtended>}
-          {!loggedUser ? <NavbarLinkExtended href="/signIn" className={activeLink === '/signIn' ? 'active' : ''} onClick={() => setActiveLink('/signIn')}>Log In</NavbarLinkExtended>
+          {!loggedUser && <NavbarLinkExtended href="/register" style={handleActiveLinkMobile("/topContributors")} onClick={() => setActiveLinkMobile('/register')}> Register</NavbarLinkExtended>}
+          {!loggedUser ? <NavbarLinkExtended href="/signIn" style={handleActiveLinkMobile("/topContributors")} onClick={() => setActiveLinkMobile('/signIn')}>Log In</NavbarLinkExtended>
             : <NavbarLinkExtended href="#"
               onClick={async () => {
                 await supabase.auth.signOut()
