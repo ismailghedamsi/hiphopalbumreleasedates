@@ -21,8 +21,6 @@ const LinksModal = styled(Modal)`
 
 const ReleaseCard = ({ index, release, releases, setReleases }) => {
 
-    console.log("release ", release)
-
     const { loggedUser } = useContext(AppContext)
     const [releaseId, setReleaseId] = useState()
     const [files, setFiles] = useState([]);
