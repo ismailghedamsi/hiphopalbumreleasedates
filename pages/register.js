@@ -48,8 +48,8 @@ export default function Register() {
   return (
     <>
       <PageTitle title={"Register"} />
-      <StyledForm>
-      <form style={{ width: "500px",marginLeft : "5px", paddingLeft: "10px"}} onSubmit={handleSubmit((data) => handleRegistration(data))}>
+      <StyledForm onSubmit={handleSubmit((data) => handleRegistration(data))}>
+      <form onSubmit={handleSubmit((data) => handleRegistration(data))}>
 
         <div className="field">
           <label className="label">Email</label>
