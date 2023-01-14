@@ -1,8 +1,8 @@
 import ReleaseCard from "./ReleaseCard";
 import styled from "@emotion/styled";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { supabase } from "../supabaseClient";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import DateHelpers from '../helper/dateUtilities'
 import { Center, Modal, TextInput, useMantineTheme } from "@mantine/core";
 import AppContext from "./AppContext";
@@ -105,7 +105,16 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     const [searchTerm, setSearchTerm] = useState('');
     const matches = useMediaQuery('(max-width: 900px)');
 
+    const dateLabelRef = useRef(null);
+
     const router = useRouter()
+
+    useEffect(() => {
+        dateLabelRef?.current?.scrollIntoView({
+          behavior: "instant", // or 'instant'
+          block: "center"
+        });
+      },[dateLabelRef?.current])
 
     const getReleases = async () => {
 
@@ -115,7 +124,6 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
             .order('releaseDate', { ascending: true })
 
         if (searchTerm != "") {
-            console.log("earchterm ", searchTerm)
             query = query.or(`artist.ilike.*${searchTerm}*,album.ilike.*${searchTerm}*`)
         }
         const { data, error } = await query
@@ -171,9 +179,10 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
             <Center><TextInput sx={{ width: matches ? "25vh" : "50vh" }} value={searchTerm} rightSection={searchTerm != "" && <IconX onClick={() => setSearchTerm('')} size="xs" />} onChange={handleChange} type="search" placeholder="Search..." /></Center>
 
             {sorted.length > 0 ? sorted.map(([date, options]) => {
+
                 return (
                     <>
-                        <h1 key={date} className="has-text-centered mt-3"><span className={styles.date}>{dayjs(date).format('MMMM D YYYY')}</span></h1>
+                        <h1 key={date} ref={dayjs(new Date()).format("MMMM D YYYY")  === dayjs(date).format("MMMM D YYYY") ? dateLabelRef : null} className="has-text-centered mt-3"><span className={styles.date}>{dayjs(date).format('MMMM D YYYY')}</span></h1>
                         <Grid>
                             {options.map((el, index) => {
                                 return (<ReleaseCard index={index} key={index} setReleases={setReleases} releases={releases} setUploadModalOpened={setUploadModalOpened} release={el} />)
