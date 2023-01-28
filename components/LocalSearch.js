@@ -16,6 +16,7 @@ const LocalSearch = styled(TextInput)`
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  position: fixed;
 
   &:focus {
     color: #495057;
