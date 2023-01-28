@@ -6,6 +6,7 @@ import AppContext from './AppContext';
 
 const Title = styled.h1`
   margin-right : 3vw;
+  font-size: medium;
 ` 
 
 const ListContainer = styled.ul`
@@ -19,7 +20,7 @@ const ListContainer = styled.ul`
   position: sticky; /* make the container sticky */
   top: 0; /* set the container to stick to the top of the viewport */
   height: 500px; /* set a fixed height for the container */
-  overflow: hidden; /* hide overflow */
+
   margin-top: 50vh;
   min-width: 50px;
 `;
