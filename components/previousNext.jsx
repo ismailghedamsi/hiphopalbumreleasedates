@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Group } from "@mantine/core";
+import { Flex, Group } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import moment from "moment";
 import { useContext, useEffect } from "react";
@@ -26,12 +26,21 @@ const PreviousNext = ({additionId }) => {
      }
    `
 
+   
+
     return (
-        <Group className="mt-5" position="center" spacing="sm">
+        <Flex
+      mih={50}
+      gap="md"
+      justify="center"
+      align="center"
+      direction={matches ? "row" : "column"}
+      wrap="nowrap"
+    >
             <MonthChangeButton onClick={handlePreviousMonth()} variant="outline">Previous</MonthChangeButton>
             <div className={styles.month_label}>{moment( new Date(year,month-1,1)).format(matches ? "MMMM" : "MMM")}</div>
             <MonthChangeButton variant="outline" onClick={handleNextMonth()}>Next</MonthChangeButton>
-        </Group>
+        </Flex>
     )
 
     function handleNextMonth() {
