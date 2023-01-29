@@ -7,10 +7,6 @@ export const Card = styled.article`
     margin: 20px;
     box-shadow: rgba(100, 100, 111, 0.2) 3px 7px 29px 0px;
     position: relative;
-    @media (max-width: 500px) {
-    width: 140px;
-    margin: 5px;
-    }
 `; 
 
 export const CardContent = styled.div`
