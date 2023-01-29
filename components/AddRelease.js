@@ -55,7 +55,6 @@ export default function AddRelease({ setAdditionId, setInsertedData}) {
     rel.artist = trim(rel.artist)
     rel.album = trim(rel.album)
     rel.releaseDate = dayjs(rel.releaseDate).format('YYYY-MM-DD')
-    console.log("rel ",rel)
 
     const { error, data } = await supabase.from("releases").insert(rel).select('*')
   

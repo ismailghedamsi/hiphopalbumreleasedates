@@ -19,8 +19,7 @@ const ListContainer = styled.ul`
   flex-wrap: wrap;
   position: sticky; /* make the container sticky */
   top: 0; /* set the container to stick to the top of the viewport */
-  height: 500px; /* set a fixed height for the container */
-
+  height: 800px;
   margin-top: 50vh;
   min-width: 50px;
 `;
@@ -50,18 +49,9 @@ display: block; /* display the link as a block */;
 `
 
 const DaysList = () => {
-  const [titleWidth, setTitleWidth] = useState(-1)
   const textRef = useRef(null);
-  const daysInCurrentMonth = dayjs().endOf('month').date();
-  const {selectedDayNumber,setSelectedDayNumber, uniqueDays} = useContext(AppContext)
+  const {setSelectedDayNumber, uniqueDays} = useContext(AppContext)
  
-
-  useEffect(() => {
-    console.log("uniquedats ", uniqueDays)
-    if(textRef && textRef.current){
-      console.log(textRef.current.getBoundingClientRect().width)
-    }
-  },[textRef])
   return (
     <ListContainer>
           <Title ref={textRef}>day</Title>

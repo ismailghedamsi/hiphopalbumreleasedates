@@ -26,7 +26,6 @@ const ReleaseCard = ({ index, release, releases, setReleases }) => {
     const [files, setFiles] = useState([]);
     const [uploadModalOpened, setUploadModalOpened] = useState(false)
     const [linksModalOpened, setLinksModalOpened] = useState(false)
-    const [updateLinksModdal, setUpdateLinksModdal] = useState(true)
     const [releaseTitle, setReleaseTitle] = useState("")
     const [isUploading, setIsUploading] = useState(false)
 
@@ -74,7 +73,7 @@ const ReleaseCard = ({ index, release, releases, setReleases }) => {
     }
 
     const handleRejectedFile = () => {
-        console.log('rejected files', files)
+        console.error('rejected files', files)
     }
     return (
         <>

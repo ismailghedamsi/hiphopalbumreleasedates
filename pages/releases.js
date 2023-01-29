@@ -1,6 +1,4 @@
 
-import { Header } from "@mantine/core"
-import Head from "next/head"
 import { useState } from "react"
 import PreviousNext from "../components/previousNext"
 import ReleaseGrid from "../components/ReleaseGrid"
@@ -13,9 +11,6 @@ const Release = () => {
 
     return (
         <div>
-            <Head>
-
-            </Head>
             <PreviousNext additionId={additionId} setAdditionId={setAdditionId}  selectedIndex={selectedIndex} 
             setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} selectedYear={selectedYear}
              />

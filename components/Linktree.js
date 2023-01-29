@@ -84,31 +84,25 @@ function InputField({ label, name, register, error }) {
 const Linktree = ({ release }) => {
   let { links, id } = release;
   const [urls, setUrls] = useState(links)
-  // const [emptyStringCount, setEmptyStringCount] = useState(Object.entries(links).filter(([key, value]) => value === '').length)
+
   let temp = { ...urls }
   const [updateUuid, setUpdateUuid]  = useState('')
 
 
   const { register, handleSubmit, errors } = useForm(
-    //   {
-    //   resolver: yupResolver(musicFormSchema)
-    // }
+
   );
   const onSubmit = async data =>  {
-    // Send the form data to your backend server or perform some other action
-    console.log("beofre mod ", links);
-
+ 
     Object.entries(data).map(([key, value]) => {
       temp[key] = value
     })
 
    
-    const { error } = await supabase
+     await supabase
       .from('releases')
       .update({ links: temp })
       .eq('id', id)
-
-      console.log("after mod ", links);
 
       setUrls({...temp})
 
@@ -117,8 +111,7 @@ const Linktree = ({ release }) => {
   };
 
   const emptyStringCount = Object.entries(urls).filter(([key, value]) => value === '').length;
-  console.log("emptyStringCount ",emptyStringCount)
-  console.log("Object.entries(links).length", Object.entries(urls).length)
+  
   return (
     <Container>
       <Head>

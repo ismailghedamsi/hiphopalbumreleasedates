@@ -18,7 +18,6 @@ const Layout = ({ children }) => {
     const [selectedDayNumber, setSelectedDayNumber] = useState(dayjs().format('D'))
     const router = useRouter()
     const [uniqueDays, setUniqueDays] = useState()
-    console.log("month ", month)
     const anyValue = 5
     return (
         <StyledEngineProvider injectFirst>

@@ -125,7 +125,7 @@ export default function CollapsibleTable({ setData, loggedUser, dates, data, set
                             setIsUploading(false)
                         }
                     }}
-                    onReject={(files) => console.log('rejected files', files)}
+                    onReject={(files) => console.error('rejected files', files)}
                     maxSize={3 * 1024 ** 2}
                     multiple={false}
                     accept={IMAGE_MIME_TYPE}

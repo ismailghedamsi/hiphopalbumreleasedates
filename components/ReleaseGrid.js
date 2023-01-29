@@ -94,7 +94,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     const router = useRouter()
 
     useEffect(() => {
-        console.log( "dateLabelRef ", dateLabelRef?.current)
+     
         dateLabelRef?.current?.scrollIntoView({
           behavior: "instant", // or 'instant'
           block: "center"
@@ -170,9 +170,6 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
 
             {sorted.length > 0 ? sorted.map(([date, options]) => {
                     const selectedMonthName =  dayjs().month(month-1).format('MMMM')
-                    console.log("aaa ",`${selectedMonthName} ${selectedDayNumber} ${year}`)
-                    console.log("bbb ",dayjs(date).format('MMMM D YYYY'))
-                    // console.log("equality test ", `${selectedMonthName} ${selectedDayNumber} ${year}` === dayjs(date).format('MMMM D YYYY') )
                 return (
                     <>
                         <h1 key={date} ref={`${selectedMonthName} ${selectedDayNumber} ${year}` === dayjs(date).format('MMMM D YYYY')  ? dateLabelRef : null} className="has-text-centered mt-3"><span className={styles.date}>{dayjs(date).format('MMMM D YYYY')}</span></h1>

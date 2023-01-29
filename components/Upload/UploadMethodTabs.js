@@ -7,7 +7,6 @@ import UploadPreview from "./UploadPreview"
 const UploadMethodTabs = ({errors, control, isUploading, setCoverSource,files, setFiles}) => {
  
     const methods = useForm();
-    console.log("control ",control)
 
     const fileRejectedToast = () => toast.success("Your cover was rejected", {
         position: toast.POSITION.BOTTOM_CENTER
