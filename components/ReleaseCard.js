@@ -1,22 +1,29 @@
-import { BackgroundImage, Button, Center, Modal, useMantineTheme } from "@mantine/core";
-import { useContext, useEffect, useRef, useState } from "react";
+import { Button, Center } from "@mantine/core";
+import { useContext, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { styled } from "styled-components";
-import { ref } from "yup";
 import { supabase } from "../supabaseClient";
 import AppContext from "./AppContext";
-import UpdateLinkForm from "./Form/UpdateLinkForm";
-import Linktree from "./Linktree";
-import { Card, CardContent, CardHeader, CardImage, CardLink, CardSecondaryText } from "./styled/Cards/Card.style";
+import { Card, CardContent, CardHeader, CardImage, CardContainer, CardSecondaryText } from "./styled/Cards/Card.style";
 import styles from '../styles/ReleaseCard.module.css'
 import SharedUploadZone from "./Upload/UploadZone";
-import { IconEdit } from '@tabler/icons';
+import dynamic from "next/dynamic";
+
+const Modal = dynamic(() => import('@mantine/core').then(mod => mod.Modal), {
+    ssr: false,
+    loading: () => <p>Loading modal...</p>
+});
+
+const Linktree = dynamic(() => import('./Linktree'), {
+    ssr: false,
+    loading: () => <p>Loading the links of the album...</p>
+});
+
 
 const LinksModal = styled(Modal)`
    & .mantine-Modal-modal {
     background: radial-gradient(circle at center, #fd4335 , yellow)
     }
-
 `
 
 const ReleaseCard = ({ index, release, releases, setReleases }) => {
@@ -38,8 +45,6 @@ const ReleaseCard = ({ index, release, releases, setReleases }) => {
     const coverUploadSucceed = () => toast.success("The release was added", {
         position: toast.POSITION.BOTTOM_CENTER
     });
-
-    const theme = useMantineTheme();
 
     const getCover = (coverPath) => {
         if (coverPath === "" && loggedUser) {
@@ -99,34 +104,35 @@ const ReleaseCard = ({ index, release, releases, setReleases }) => {
                 transitionTimingFunction="ease"
                 title={releaseTitle}
             >
-                <Linktree  release={release} />
+                <Linktree release={release} />
             </LinksModal>
 
             <Card ref={index === 3 ? inputRef : null}>
-                <CardLink href="#">
+                <CardContainer>
                     <picture className="thumbnail">
-                        <CardImage height={250} width={250} onClick={() => { release.cover === "" && setUploadModalOpened(true); setReleaseId(release.id) }} src={getCover(release.cover)} alt="album cover" />
+                        <CardImage height={250} width={250}
+                            onClick={() => { release.cover === "" && setUploadModalOpened(true); setReleaseId(release.id) }}
+                            src={getCover(release.cover)}
+                            alt={`Album cover of ${release.album} album by ${release.artist} `} />
                     </picture>
                     <i className="fas fa-pen fa-pen-indicateur" title="Modifier"></i>
                     <CardContent>
 
                         <CardHeader><span className={styles.labels}>Artist : </span>{`${release.artist}`}</CardHeader>
-                  
-                        <CardSecondaryText><span  className={styles.labels}>Album : </span> {`${release.album}`}</CardSecondaryText>
+
+                        <CardSecondaryText><span className={styles.labels}>Album : </span> {`${release.album}`}</CardSecondaryText>
                         <Center>
                             {<Button variant="gradient" gradient={{ from: 'orange', to: 'red' }} onClick={() => {
                                 setLinksModalOpened(true)
                                 setReleaseTitle(release.artist + " - " + release.album)
                             }
-
                             }>
                                 Links
                             </Button>
                             }
                         </Center>
-                        {/* <CardParagraph>TUX re-inventing the wheel, and move the needle. Feature creep dogpile that but diversify kpis but market-facing.</CardParagraph> */}
                     </CardContent>
-                </CardLink>
+                </CardContainer>
             </Card>
         </>
     )

@@ -1,87 +1,34 @@
 import ReleaseCard from "./ReleaseCard";
-import styled from "@emotion/styled";
 import { useContext, useEffect, useRef, useState } from "react";
 import { supabase } from "../supabaseClient";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import DateHelpers from '../helper/dateUtilities'
-import { Center, Modal, TextInput } from "@mantine/core";
+import { Center, TextInput } from "@mantine/core";
 import AppContext from "./AppContext";
-import AddRelease from "./AddRelease";
 import { useRouter } from "next/router";
 import { IconX } from "@tabler/icons";
 import styles from '../styles/ReleaseGrid.module.css'
 import { useMediaQuery } from "@mantine/hooks";
-import css from "styled-jsx/css";
+import Grid from "./styled/ReleaseGrid/Grid";
+import { AddReleaseButton, LoginToUploadButton } from "./styled/ReleaseGrid/Buttons";
+import dynamic from 'next/dynamic';
 
 
-const Grid = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    padding: 5px;
-    justify-content: center;
-`;
+const Modal = dynamic(() => import('@mantine/core').then(mod => mod.Modal), {
+    ssr: false,
+    loading: () => <p>Loading modal...</p>
+  });
 
-
-const AddButton = styled.button`
-     border-radius: 20px;
-     background-color: #FFD700;
-     margin-bottom: 4vh;
-     margin-top : 4vh;
-     border-style: solid;
-     height : 5vh;
-     width: 20vh;
-     :hover {
-        background-image: linear-gradient(rgb(0 0 0/30%) 0 0);
-     }
-     animation: pulse 2s 5;
-
-        @keyframes pulse {
-        0% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(2);
-        }
-        100% {
-            transform: scale(1);
-        }
-        }
-
-`;
-
-const LoginToUploadButton = styled.button`
-     border-radius: 20px;
-     background-color: #FFD700;
-     margin-bottom: 4vh;
-     margin-top : 4vh;
-     border-style: solid;
-     height : 5vh;
-     width: 20vh;
-     :hover {
-         background-image: linear-gradient(rgb(0 0 0/40%) 0 0);
-     }
-
-     animation: pulse 2s 5;
-
-    @keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(2);
-    }
-    100% {
-        transform: scale(1);
-    }
-    }
-`;
-
-
-
+  const AddRelease = dynamic(() => import('./AddRelease'), {
+    ssr: false,
+    loading: () => <p>Loading form...</p>
+  });
+  
+  
 const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedYear }) => {
 
     const [releases, setReleases] = useState([])
-    const [uploadModalOpened, setUploadModalOpened] = useState(false)
+    const [_, setUploadModalOpened] = useState(false)
     const [addReleaseModalOpened, setAddReleaseModalOpened] = useState(false)
     const [defaultValueYearSelect, setDefaultValueYearSelect] = useState(new Date().getFullYear())
     const { loggedUser, year, month, selectedDayNumber,setSelectedDayNumber, setUniqueDays  } = useContext(AppContext)
@@ -94,7 +41,6 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     const router = useRouter()
 
     useEffect(() => {
-     
         dateLabelRef?.current?.scrollIntoView({
           behavior: "instant", // or 'instant'
           block: "center"
@@ -102,7 +48,6 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
       },[dateLabelRef?.current, selectedDayNumber])
 
     const getReleases = async () => {
-
         let query = supabase.from('releases').select()
         query = query.gte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-01`)
             .lte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-${DateHelpers.getDaysInMonth(year, month)}`)
@@ -163,7 +108,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
             }
 
             <div className="has-text-centered">
-                {loggedUser ? <AddButton onClick={() => setAddReleaseModalOpened(true)}>Add  release</AddButton> : <LoginToUploadButton onClick={() => router.push("/signIn")}>Login to add a release</LoginToUploadButton>}
+                {loggedUser ? <AddReleaseButton onClick={() => setAddReleaseModalOpened(true)}>Add  release</AddReleaseButton> : <LoginToUploadButton onClick={() => router.push("/signIn")}>Login to add a release</LoginToUploadButton>}
             </div>
 
             <Center><TextInput sx={{ width: matches ? "25vh" : "50vh" }} value={searchTerm} rightSection={searchTerm != "" && <IconX onClick={() => setSearchTerm('')} size="xs" />} onChange={handleChange} type="search" placeholder="Search..." /></Center>

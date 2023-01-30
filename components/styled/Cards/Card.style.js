@@ -32,7 +32,7 @@ border: 0;
 width: 100%;
 `
 
-export const CardLink = styled.div`
+export const CardContainer = styled.div`
 color: black;
  text-decoration: none;
 

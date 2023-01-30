@@ -2,7 +2,7 @@ import { Group, Text, useMantineTheme } from "@mantine/core"
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone"
 import { IconPhoto, IconUpload, IconX } from "@tabler/icons"
 
-const UploadZone = ({onDrop, onReject, loading, maxSize, maxFiles, multiple}) => {
+const UploadZone = ({onDrop, onReject, loading}) => {
     const theme = useMantineTheme()
 
     return( <Dropzone

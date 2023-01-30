@@ -92,15 +92,11 @@ export default function AddRelease({ setAdditionId, setInsertedData}) {
       <form style={{ marginLeft: "5px", paddingLeft: "10px" }} onSubmit={handleSubmit((data) => insertRelease(data))}>
 
         <DatePicker control={control} label={"Pick a release date"} placeholder={"Type an artist name"} name={"releaseDate"} error={errors.releaseDate?.message}  />
-
         <TextField control={control} label={"Artist"} placeholder={"Type an artist name"} name={"artist"} error={errors.artist?.message} />
-    
         <TextField control={control} label={"Album"} placeholder={"Type an album name"} name={"album"} error={errors.album?.message} /> 
         <TextField control={control} label={"Spotify"} placeholder={"Type spotify link"} name={"spotify"} error={errors.spotify?.message} />
         <TextField control={control} label={"Bnadcamp"} placeholder={"Type bandcamp link "} name={"bandcamp"} error={errors.bandcamp?.message} />
         <TextField control={control} label={"Apple Music"} placeholder={"Type apple music link "} name={"apple_music"} error={errors.apple_music?.message} />
-
-
         <UploadMethodTabs errors={errors} control={control} files={files} isUploading={isUploading} setFiles={setFiles} setCoverSource={setCoverSource}/>
 
         <div className="field is-grouped">

@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /topcontributors
+Disallow: /register
+Disallow: /signin
+Sitemap: https://upcomingrapcalendar.com/sitemap.xml

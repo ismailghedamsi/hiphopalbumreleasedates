@@ -1,7 +1,6 @@
 import { Center } from "@mantine/core"
 import { useQuery } from "@supabase-cache-helpers/postgrest-swr"
 import Head from "next/head"
-import PageTitle from "../components/PageTitle"
 import { supabase } from "../supabaseClient"
 
 const Headers = ({ headersArray }) => {
@@ -54,6 +53,7 @@ const TopContributor = () => {
                 <meta name="keywords" content="top contributors" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <meta name="language" content="en" />
+                <meta name="robots" content="noindex,nofollow" />
                 <link rel="icon" href="/small_logo.png" />
             </Head>
             <Center sx={{ marginBottom: "4vh" }}>

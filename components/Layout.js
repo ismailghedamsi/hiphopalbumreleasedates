@@ -1,14 +1,23 @@
 import { Grid } from "@mantine/core"
 import { StyledEngineProvider } from "@mui/material"
 import dayjs from "dayjs"
+import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import DateHelpers from "../helper/dateUtilities"
 import AppContext from "./AppContext"
-import DaysList from "./DaysList"
 import Footer from "./Footer"
-import NavbarComponent from "./Navbar"
-import Navbar from "./Navbar"
+
+
+const DaysList = dynamic(() => import('./DaysList'), {
+    ssr: false,
+    loading: () => <p>Loading day selector</p>
+  });
+
+
+const NavbarComponent = dynamic(() => import('./Navbar'), {
+    ssr: false,
+  });
 
 const Layout = ({ children }) => {
     const [appContext, setAppContext] = useState("default")

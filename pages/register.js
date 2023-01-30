@@ -6,7 +6,6 @@ import { supabase } from "../supabaseClient";
 import { useRouter } from "next/router";
 import ErrorMessage from "../components/ ErrorMessage";
 import StyledForm from "../components/styled/StyledForm.style";
-import PageTitle from "../components/PageTitle";
 import Head from "next/head";
 
 const schema = yup.object({
@@ -54,6 +53,7 @@ export default function Register() {
         <meta name="keywords" content="register" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="language" content="en" />
+        <meta name="robots" content="noindex,nofollow" />
         <link rel="icon" href="/small_logo.png" />
       </Head>
       <StyledForm onSubmit={handleSubmit((data) => handleRegistration(data))}>

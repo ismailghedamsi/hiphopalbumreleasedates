@@ -1,5 +1,4 @@
-import dayjs from 'dayjs';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useRef } from 'react';
 import styled from 'styled-components';
 import { Scrollbars } from 'react-custom-scrollbars';
 import AppContext from './AppContext';

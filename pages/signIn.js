@@ -7,7 +7,6 @@ import { useRouter } from "next/router";
 import AppContext from "../components/AppContext";
 import ErrorMessage from "../components/ ErrorMessage";
 import StyledForm from "../components/styled/StyledForm.style";
-import PageTitle from "../components/PageTitle";
 import Head from "next/head";
 
 const schema = yup.object({
@@ -51,6 +50,7 @@ export default function SignIn() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="language" content="en" />
         <link rel="icon" href="/small_logo.png" />
+        <meta name="robots" content="noindex,nofollow" />
       </Head>
       <StyledForm onSubmit={handleSubmit((data) => login(data))}>
 
