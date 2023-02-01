@@ -1,4 +1,4 @@
-import {  Center } from "@mantine/core"
+import { Center } from "@mantine/core"
 import Head from "next/head";
 import { Accordion } from '@mantine/core';
 import { useForm } from "react-hook-form";
@@ -29,32 +29,32 @@ const Linktree = ({ release }) => {
   const [urls, setUrls] = useState(links)
 
   let temp = { ...urls }
-  const [updateUuid, setUpdateUuid]  = useState('')
+  const [updateUuid, setUpdateUuid] = useState('')
 
 
   const { register, handleSubmit, errors } = useForm(
 
   );
-  const onSubmit = async data =>  {
- 
+  const onSubmit = async data => {
+
     Object.entries(data).map(([key, value]) => {
       temp[key] = value
     })
 
-   
-     await supabase
+
+    await supabase
       .from('releases')
       .update({ links: temp })
       .eq('id', id)
 
-      setUrls({...temp})
+    setUrls({ ...temp })
 
-      setUpdateUuid(uuidv4())
+    setUpdateUuid(uuidv4())
 
   };
 
   const emptyStringCount = Object.entries(urls).filter(([key, value]) => value === '').length;
-  
+
   return (
     <Container>
       <Head>
@@ -62,44 +62,44 @@ const Linktree = ({ release }) => {
       </Head>
       <Center>
         <LinkContainer>
-          {urls.spotify &&  urls.spotify != "" && <LinkButton type="text/html" rel="external" hreflang="en-us" title="Spotify streaming link" href={urls.spotify} className="w3-button" target="_blank">Spotify</LinkButton>}
+          {urls.spotify && urls.spotify != "" && <LinkButton type="text/html" rel="external" hreflang="en-us" title="Spotify streaming link" href={urls.spotify} className="w3-button" target="_blank">Spotify</LinkButton>}
           {urls.bandcamp && <LinkButton rel="external" type="text/html" hreflang="en-us" href={urls.bandcamp} title="Bandcamp streaming link" className="w3-button" target="_blank">Bandcamp</LinkButton>}
           {urls.apple_music && <LinkButton rel="external" type="text/html" hreflang="en-us" href={urls.apple_music} title="Apple music streaming link" className="w3-button w3-round-xlarge w3-theme-l1 w3-border link" target="_blank">Apple Music</LinkButton>}
           <Accordion defaultValue="customization">
-          { emptyStringCount != ''  && <Item value="customization">
+            {emptyStringCount != '' && <Item value="customization">
               <StyledControl>Add links</StyledControl>
               <StyledPanel>
-              <Center sx={{marginTop : "20px"}}>
-                <form onSubmit={handleSubmit((data) => onSubmit(data))}>
-                  {urls.spotify === "" && <InputField
-                    label="Spotify"
-                    name="spotify"
-                    register={register}
-                    error={errors?.spotify.message}
-                  />
-                  }
-                  {urls.bandcamp === "" && <InputField
-                    label="Bandcamp"
-                    name="bandcamp"
-                    register={register}
-                    error={errors?.bandcamp.message}
-                  />
-                  }
-                  { urls.apple_music === "" && <InputField
-                    label="Apple Music"
-                    name="apple_music"
-                    register={register}
-                    error={errors?.apple_music.message}
-                  />
-                  }
-                  <Center>
-                    <input className="mt-5 " disabled={emptyStringCount === 0} type="submit" value="Add links" />
+                <Center sx={{ marginTop: "20px" }}>
+                  <form onSubmit={handleSubmit((data) => onSubmit(data))}>
+                    {urls.spotify === "" && <InputField
+                      label="Spotify"
+                      name="spotify"
+                      register={register}
+                      error={errors?.spotify.message}
+                    />
+                    }
+                    {urls.bandcamp === "" && <InputField
+                      label="Bandcamp"
+                      name="bandcamp"
+                      register={register}
+                      error={errors?.bandcamp.message}
+                    />
+                    }
+                    {urls.apple_music === "" && <InputField
+                      label="Apple Music"
+                      name="apple_music"
+                      register={register}
+                      error={errors?.apple_music.message}
+                    />
+                    }
+                    <Center>
+                      <input className="mt-5 " disabled={emptyStringCount === 0} type="submit" value="Add links" />
                     </Center>
-                </form>
-                  </Center>
+                  </form>
+                </Center>
               </StyledPanel>
             </Item>
-          }
+            }
           </Accordion>
         </LinkContainer>
       </Center>
