@@ -1,4 +1,4 @@
-import { Button, Center } from "@mantine/core";
+import { Button, Center, Skeleton } from "@mantine/core";
 import { useContext, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { styled } from "styled-components";
@@ -26,7 +26,7 @@ const LinksModal = styled(Modal)`
     }
 `
 
-const ReleaseCard = ({ index, release, releases, setReleases }) => {
+const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
 
     const { loggedUser } = useContext(AppContext)
     const [releaseId, setReleaseId] = useState()
@@ -109,13 +109,16 @@ const ReleaseCard = ({ index, release, releases, setReleases }) => {
 
             <Card ref={index === 3 ? inputRef : null}>
                 <CardContainer>
-                    <picture className="thumbnail">
-                        <CardImage height={250} width={250}
-                            onClick={() => { release.cover === "" && setUploadModalOpened(true); setReleaseId(release.id) }}
-                            src={getCover(release.cover)}
-                            alt={`Album cover of ${release.album} album by ${release.artist} `} />
-                    </picture>
-                    <i className="fas fa-pen fa-pen-indicateur" title="Modifier"></i>
+                    <Skeleton visible={fetching}>
+                        <picture className="thumbnail">
+                            <CardImage height={250} width={250}
+                                loading="eager"
+                                onClick={() => { release.cover === "" && setUploadModalOpened(true); setReleaseId(release.id) }}
+                                src={getCover(release.cover)}
+                                alt={`Album cover of ${release.album} album by ${release.artist} `} />
+                        </picture>
+                    </Skeleton>
+                    {/* <i className="fas fa-pen fa-pen-indicateur" title="Modifier"></i> */}
                     <CardContent>
 
                         <CardHeader><span className={styles.labels}>Artist : </span>{`${release.artist}`}</CardHeader>

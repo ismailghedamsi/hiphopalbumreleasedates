@@ -10,8 +10,8 @@ import { IconX } from "@tabler/icons";
 import styles from '../styles/ReleaseGrid.module.css'
 import { useMediaQuery } from "@mantine/hooks";
 import Grid from "./styled/ReleaseGrid/Grid";
-import { AddReleaseButton, LoginToUploadButton } from "./styled/ReleaseGrid/Buttons";
 import dynamic from 'next/dynamic';
+import { styled } from "styled-components";
 
 
 const Modal = dynamic(() => import('@mantine/core').then(mod => mod.Modal), {
@@ -24,6 +24,46 @@ const Modal = dynamic(() => import('@mantine/core').then(mod => mod.Modal), {
     loading: () => <p>Loading form...</p>
   });
   
+
+  const AddReleaseButton = styled.button`
+     border-radius: 20px;
+     background-color: #FFD700;
+     margin-bottom: 4vh;
+     margin-top : 4vh;
+     border-style: solid;
+     height : 5vh;
+     width: 20vh;
+     :hover {
+        background-image: linear-gradient(rgb(0 0 0/30%) 0 0);
+     }
+`;
+
+const LoginToUploadButton = styled.button`
+     border-radius: 20px;
+     background-color: #FFD700;
+     margin-bottom: 4vh;
+     margin-top : 4vh;
+     border-style: solid;
+     height : 5vh;
+     width: 20vh;
+     :hover {
+         background-image: linear-gradient(rgb(0 0 0/40%) 0 0);
+     }
+
+     animation: pulse 2s 5;
+
+    @keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(2);
+    }
+    100% {
+        transform: scale(1);
+    }
+    }
+`;
   
 const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedYear }) => {
 
@@ -34,6 +74,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     const { loggedUser, year, month, selectedDayNumber,setSelectedDayNumber, setUniqueDays  } = useContext(AppContext)
     const [insertedData, setInsertedData] = useState([])
     const [searchTerm, setSearchTerm] = useState('');
+    const [fetching, setFetching] = useState()
     const matches = useMediaQuery('(max-width: 900px)');
 
     const dateLabelRef = useRef(null);
@@ -48,6 +89,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
       },[dateLabelRef?.current, selectedDayNumber])
 
     const getReleases = async () => {
+        setFetching(true)
         let query = supabase.from('releases').select()
         query = query.gte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-01`)
             .lte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-${DateHelpers.getDaysInMonth(year, month)}`)
@@ -60,6 +102,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
         if (!error) {
             setReleases(data)
         }
+        setFetching(false)
         const releasesDates = data.map(el => el.releaseDate) 
         let days = releasesDates.map(date => date.split("-")[2]).map(day => day.replace(/^0+/, ''));
         let unique = days.filter((day, index) => days.indexOf(day) === index);
@@ -120,7 +163,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
                         <h1 key={date} ref={`${selectedMonthName} ${selectedDayNumber} ${year}` === dayjs(date).format('MMMM D YYYY')  ? dateLabelRef : null} className="has-text-centered mt-3"><span className={styles.date}>{dayjs(date).format('MMMM D YYYY')}</span></h1>
                         <Grid>
                             {options.map((el, index) => {
-                                return (<ReleaseCard index={index} key={index} setReleases={setReleases} releases={releases} setUploadModalOpened={setUploadModalOpened} release={el} />)
+                                return (<ReleaseCard fetching={fetching} index={index} key={index} setReleases={setReleases} releases={releases} setUploadModalOpened={setUploadModalOpened} release={el} />)
 
                             })}
                         </Grid>

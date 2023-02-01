@@ -62,9 +62,9 @@ const Linktree = ({ release }) => {
       </Head>
       <Center>
         <LinkContainer>
-          {urls.spotify &&  urls.spotify != "" && <LinkButton href={urls.spotify} className="w3-button" target="_blank">Spotify</LinkButton>}
-          {urls.bandcamp && <LinkButton href={urls.bandcamp} className="w3-button" target="_blank">Bandcamp</LinkButton>}
-          {urls.apple_music && <LinkButton href={urls.apple_music} className="w3-button w3-round-xlarge w3-theme-l1 w3-border link" target="_blank">Apple Music</LinkButton>}
+          {urls.spotify &&  urls.spotify != "" && <LinkButton type="text/html" rel="external" hreflang="en-us" title="Spotify streaming link" href={urls.spotify} className="w3-button" target="_blank">Spotify</LinkButton>}
+          {urls.bandcamp && <LinkButton rel="external" type="text/html" hreflang="en-us" href={urls.bandcamp} title="Bandcamp streaming link" className="w3-button" target="_blank">Bandcamp</LinkButton>}
+          {urls.apple_music && <LinkButton rel="external" type="text/html" hreflang="en-us" href={urls.apple_music} title="Apple music streaming link" className="w3-button w3-round-xlarge w3-theme-l1 w3-border link" target="_blank">Apple Music</LinkButton>}
           <Accordion defaultValue="customization">
           { emptyStringCount != ''  && <Item value="customization">
               <StyledControl>Add links</StyledControl>
