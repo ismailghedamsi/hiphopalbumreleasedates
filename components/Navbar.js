@@ -2,10 +2,8 @@ import { useContext, useEffect, useState } from "react"
 import { supabase } from "../supabaseClient"
 import AppContext from "./AppContext"
 import "../styles/Navbar.module.css"
-
 import { NavbarContainer, LeftContainer, NavbarExtendedContainer, NavbarInnerContainer, NavbarLink, NavbarLinkContainer, NavbarLinkExtended, OpenLinksButton } from "./styled/Navbar.style"
 import { IconMenu, IconX } from "@tabler/icons"
-import { color } from "@mui/system"
 import { useRouter } from "next/router"
 
 const Navbar = () => {
@@ -17,9 +15,8 @@ const Navbar = () => {
   const getLoggedUser = async () => {
     const res = await supabase.auth.getUser()
     setLoggedUser(res.data.user)
-
-
   }
+
   useEffect(() => {
     getLoggedUser()
   }, [])
@@ -33,12 +30,14 @@ const Navbar = () => {
   }
 
   return (
+
     <NavbarContainer extendNavbar={extendNavbar}>
       <NavbarInnerContainer>
         <LeftContainer>
           <NavbarLinkContainer>
             <NavbarLink href="/" style={handleActiveLink("/")} onClick={() => setActiveLink('/')}> Releases</NavbarLink>
             <NavbarLink style={handleActiveLink("/topContributors")} href="/topContributors" onClick={() => setActiveLink('/topContributors')}> Top Contributors</NavbarLink>
+            
             {!loggedUser && <NavbarLink style={handleActiveLink("/register")} href="/register" onClick={() => setActiveLink('/register')}> Register</NavbarLink>}
             {!loggedUser ? <NavbarLink style={handleActiveLink("/signIn")} href="/signIn" onClick={() => setActiveLink('/signIn')}>Login</NavbarLink>
               : <NavbarLink href="#"
@@ -60,6 +59,7 @@ const Navbar = () => {
           </NavbarLinkContainer>
         </LeftContainer>
       </NavbarInnerContainer>
+
       {extendNavbar && (
         <NavbarExtendedContainer>
           <NavbarLinkExtended style={handleActiveLinkMobile("/")} href="/"  onClick={() => setActiveLinkMobile('/')}> Releases</NavbarLinkExtended>

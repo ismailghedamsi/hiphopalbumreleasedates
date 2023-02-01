@@ -3,7 +3,7 @@ import { Controller, FormProvider, useForm } from "react-hook-form"
 import { DatePicker as MantineDatePicker } from "@mantine/dates";
 
 export function TextField({ control, error, label, name, placeholder }) {
-    console.log("label ", label)
+  
     const methods = useForm();
 
     return (
