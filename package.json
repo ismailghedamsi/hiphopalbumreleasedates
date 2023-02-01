@@ -19,7 +19,7 @@
     "@mui/icons-material": "^5.10.14",
     "@mui/lab": "^5.0.0-alpha.30",
     "@mui/material": "^5.10.14",
-    "@supabase-cache-helpers/postgrest-swr": "^0.4.13",
+    "@supabase-cache-helpers/postgrest-swr": "^0.4.17",
     "@supabase/supabase-js": "^2.0.5",
     "@tabler/icons": "^1.111.0",
     "@vercel/analytics": "^0.1.6",
