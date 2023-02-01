@@ -73,7 +73,7 @@ export default function SignIn() {
 
         <div className="field is-grouped">
           <div className="control">
-            <button disabled={isLoading} aria-disabled={isLoading} aria-pressed={isSubmitting} aria-label="Login" className="button is-link">Login</button>
+            <button disabled={isLoading} aria-disabled={isLoading} aria-label="Login" className="button is-link">Login</button>
           </div>
           <div className="control">
             <button aria-label="Cancel Login" className="button is-link is-light">Cancel</button>
