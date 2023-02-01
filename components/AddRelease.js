@@ -20,13 +20,13 @@ const schema = yup.object({
   artist: yup.string().required("You need to select the artist name").min(2),
 })
 
-export default function AddRelease({ setAdditionId, setInsertedData}) {
+export default function AddRelease({ setAdditionId, setInsertedData }) {
   const [isUploading, setIsUploading] = useState(false)
   const [coverSource, setCoverSource] = useState("local")
   const [files, setFiles] = useState([]);
   const { loggedUser, setYear, setMonth } = useContext(AppContext)
 
-  const { control, handleSubmit, reset, formState: { errors,isSubmitting } } = useForm({
+  const { control, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
     resolver: yupResolver(schema)
   });
 
@@ -40,13 +40,13 @@ export default function AddRelease({ setAdditionId, setInsertedData}) {
 
 
   const insertRelease = async (rel) => {
-    if(!rel.cover){
+    if (!rel.cover) {
       rel.cover = ""
     }
     rel.links = {
-      spotify : rel.spotify ? rel.spotify : "" ,
-      bandcamp : rel.bandcamp ? rel.bandcamp : "",
-      apple_music : rel.apple_music ? rel.apple_music : ""
+      spotify: rel.spotify ? rel.spotify : "",
+      bandcamp: rel.bandcamp ? rel.bandcamp : "",
+      apple_music: rel.apple_music ? rel.apple_music : ""
     }
     delete rel.spotify;
     delete rel.bandcamp
@@ -57,7 +57,7 @@ export default function AddRelease({ setAdditionId, setInsertedData}) {
     rel.releaseDate = dayjs(rel.releaseDate).format('YYYY-MM-DD')
 
     const { error, data } = await supabase.from("releases").insert(rel).select('*')
-  
+
     if (data) {
       if (coverSource === "local" && files.length > 0) {
         setIsUploading(true)
@@ -72,7 +72,7 @@ export default function AddRelease({ setAdditionId, setInsertedData}) {
 
       if (data) {
         var releaseDate = new Date(data[0].releaseDate)
-        var releaseDate = new Date(releaseDate.setHours(releaseDate.getHours()+24));
+        var releaseDate = new Date(releaseDate.setHours(releaseDate.getHours() + 24));
         const m = DateHelpers.getMonth(releaseDate)
         setMonth(m)
         setYear(releaseDate.getFullYear())
@@ -91,13 +91,13 @@ export default function AddRelease({ setAdditionId, setInsertedData}) {
     <div>
       <form style={{ marginLeft: "5px", paddingLeft: "10px" }} onSubmit={handleSubmit((data) => insertRelease(data))}>
 
-        <DatePicker control={control} label={"Pick a release date"} placeholder={"Type an artist name"} name={"releaseDate"} error={errors.releaseDate?.message}  />
+        <DatePicker control={control} label={"Pick a release date"} placeholder={"Type an artist name"} name={"releaseDate"} error={errors.releaseDate?.message} />
         <TextField control={control} label={"Artist"} placeholder={"Type an artist name"} name={"artist"} error={errors.artist?.message} />
-        <TextField control={control} label={"Album"} placeholder={"Type an album name"} name={"album"} error={errors.album?.message} /> 
+        <TextField control={control} label={"Album"} placeholder={"Type an album name"} name={"album"} error={errors.album?.message} />
         <TextField control={control} label={"Spotify"} placeholder={"Type spotify link"} name={"spotify"} error={errors.spotify?.message} />
         <TextField control={control} label={"Bnadcamp"} placeholder={"Type bandcamp link "} name={"bandcamp"} error={errors.bandcamp?.message} />
         <TextField control={control} label={"Apple Music"} placeholder={"Type apple music link "} name={"apple_music"} error={errors.apple_music?.message} />
-        <UploadMethodTabs errors={errors} control={control} files={files} isUploading={isUploading} setFiles={setFiles} setCoverSource={setCoverSource}/>
+        <UploadMethodTabs errors={errors} control={control} files={files} isUploading={isUploading} setFiles={setFiles} setCoverSource={setCoverSource} />
 
         <div className="field is-grouped">
           <div className="control">
