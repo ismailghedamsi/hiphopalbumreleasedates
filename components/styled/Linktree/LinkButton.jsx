@@ -1,3 +1,5 @@
+import { styled } from "styled-components";
+
 const LinkButton = styled.a`
   display: inline-block;
   border-radius: 3px;

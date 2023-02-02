@@ -1,3 +1,6 @@
+import { Accordion } from "@mantine/core"
+import { styled } from "styled-components"
+
 const StyledControl = styled(Accordion.Control)`
   background-image: url("./white1.png");
   width: 20rem;

@@ -8,15 +8,11 @@ import { Card, CardContent, CardHeader, CardImage, CardContainer, CardSecondaryT
 import styles from '../styles/ReleaseCard.module.css'
 import SharedUploadZone from "./Upload/UploadZone";
 import dynamic from "next/dynamic";
+import Linktree from "./Linktree";
 
 const Modal = dynamic(() => import('@mantine/core').then(mod => mod.Modal), {
     ssr: false,
     loading: () => <p>Loading modal...</p>
-});
-
-const Linktree = dynamic(() => import('./Linktree'), {
-    ssr: false,
-    loading: () => <p>Loading the links of the album...</p>
 });
 
 
