@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Container from "./styled/Linktree/Container";
 import LinkContainer from "./styled/Linktree/LinkContainer";
 import LinkButton from "./styled/Linktree/LinkButton";
-import { StyledControl, StyledPanel } from "./styled/Linktree/LinkAccordion";
+import { Item, StyledControl, StyledPanel } from "./styled/Linktree/LinkAccordion";
 
 
 function InputField({ label, name, register, error }) {
