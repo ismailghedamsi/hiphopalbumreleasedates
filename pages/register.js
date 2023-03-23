@@ -57,8 +57,6 @@ export default function Register() {
         <link rel="icon" href="/small_logo.png" />
       </Head>
       <StyledForm onSubmit={handleSubmit((data) => handleRegistration(data))}>
-        <form onSubmit={handleSubmit((data) => handleRegistration(data))}>
-
           <div className="field">
             <label className="label">Email</label>
             <div className="control">
@@ -100,7 +98,6 @@ export default function Register() {
               <button className="button is-link is-light">Cancel</button>
             </div>
           </div>
-        </form>
       </StyledForm>
     </>
   );
