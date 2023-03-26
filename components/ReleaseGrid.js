@@ -12,6 +12,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import Grid from "./styled/ReleaseGrid/Grid";
 import dynamic from 'next/dynamic';
 import { styled } from "styled-components";
+import Carousel from "./carousel/Carousel";
 
 
 const Modal = dynamic(() => import('@mantine/core').then(mod => mod.Modal), {
@@ -76,6 +77,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     const [searchTerm, setSearchTerm] = useState('');
     const [fetching, setFetching] = useState()
     const matches = useMediaQuery('(max-width: 900px)');
+    const isMobileView = useMediaQuery('(max-width: 767px)')
 
     const dateLabelRef = useRef(null);
 
@@ -155,18 +157,24 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
             </div>
 
             <Center><TextInput sx={{ width: matches ? "25vh" : "50vh" }} value={searchTerm} rightSection={searchTerm != "" && <IconX onClick={() => setSearchTerm('')} size="xs" />} onChange={handleChange} type="search" placeholder="Search..." /></Center>
-
+            
             {sorted.length > 0 ? sorted.map(([date, options]) => {
                     const selectedMonthName =  dayjs().month(month-1).format('MMMM')
                 return (
                     <>
                         <h1 key={date} ref={`${selectedMonthName} ${selectedDayNumber} ${year}` === dayjs(date).format('MMMM D YYYY')  ? dateLabelRef : null} className="has-text-centered mt-3"><span className={styles.date}>{dayjs(date).format('MMMM D YYYY')}</span></h1>
+                       
+                        { !isMobileView ?
                         <Grid>
-                            {options.map((el, index) => {
+                            { options.map((el, index) => {
                                 return (<ReleaseCard fetching={fetching} index={index} key={index} setReleases={setReleases} releases={releases} setUploadModalOpened={setUploadModalOpened} release={el} />)
+                                // return (  <Carousel/>)
 
                             })}
+                            
                         </Grid>
+                        : <Carousel cards={options}/>
+                        }
                     </>
                 );
             }) : <Center><h1>No release date was announced for this month</h1></Center>}
