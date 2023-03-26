@@ -1,6 +1,6 @@
 .container {
   display: flex;
-  gap : 5%;
+  gap : 2%;
 }
 .image {
   width: 50%;
@@ -8,12 +8,14 @@
 
 .previous {
   height: 50px;
+  flex-shrink: 1;
   align-self: center;
 }
 
 .next {
   height: 50px;
   align-self: center;
+  flex-shrink: 1;
 }
 
 .next,
