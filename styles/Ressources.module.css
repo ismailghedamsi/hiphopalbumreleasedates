@@ -1,0 +1,45 @@
+.resources-container {
+  margin-top: 2rem;
+  list-style: none;
+  padding: 0;
+}
+
+.resource-item {
+  background-color: #f8f8f8;
+  border-radius: 0.5rem;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.resource-item h4 {
+  margin-top: 0;
+}
+
+.resource-item a {
+  color: #0077ff;
+  text-decoration: none;
+}
+
+.resource-item a:hover {
+  text-decoration: underline;
+}
+
+.category {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+}
+
+.subCategory {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.subcategories-container {
+  padding-left: 2rem;
+  border-left: 1px solid #dcdcdc;
+}
