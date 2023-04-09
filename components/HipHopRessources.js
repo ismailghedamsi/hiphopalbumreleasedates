@@ -4,9 +4,13 @@ import styles from '../styles/Ressources.module.css';
 import { supabase } from '../supabaseClient';
 import { useQuery } from '@supabase-cache-helpers/postgrest-swr';
 import { Accordion } from '@mantine/core';
-
+import Collapsible from 'react-collapsible';
 
 const HipHopRessources = () => {
+  const [isOpen, setOpened] = useState(false)
+
+
+
   const { data, error, isLoading } = useQuery(
     supabase.from('resources').select('*')
   );
@@ -35,48 +39,98 @@ const HipHopRessources = () => {
     }, {});
   }
 
-const SubCategories = ({ subcategories }) => {
-
-  const displayRessource = (resource) => {
-    return (
-      <li key={resource.id} className={styles['resource-item']}>
-      <a href={resource.url}>{resource.name || ''}</a>
-      <p>{resource.description || ''}</p>
-    </li>
-    )
-  }
-  return <>
-    <For each="entry" of={Object.entries(subcategories)}>
-      <div key={entry[0]} className={styles['subcategories-container']}>
-        <If condition={!Object.keys(subcategories).includes('null')}>
-          <h3 className={styles.subCategory}>{entry[0]}</h3>
-        </If>
-        <ul className={styles['resources-container']}>
-          <For each="resource" of={entry[1]}>
-          {displayRessource(resource)}
-          </For>
-        </ul>
-      </div>
-    </For>
-  </>
-};
-
-  return (
-    <Accordion>
-      {Object.entries(groupedResources).map(([category, subcategories]) => {
-        console.log("subcat ", Object.keys(subcategories).includes('null'))
-        return <Accordion.Item value={category} key={category}>
-          <Accordion.Control className={styles.category}>{category}</Accordion.Control>
-          <Accordion.Panel>
-            <SubCategories subcategories={subcategories} />
-          </Accordion.Panel>
-        </Accordion.Item>
-      })}
-      {error && <p>{error.message}</p>}
-      {isLoading && <p>Loading...</p>}
-    </Accordion>
+  const [collapseStatus, setCollapseStatus] = useState(
+    Object.keys(groupedResources).map((category) => ({
+      category,
+      isOpen: false,
+    }))
   );
 
+  const handleTriggerClick = (category) => {
+    console.log("clicked", category);
+    console.log("collapsedstatus ", collapseStatus)
+    console.log("groupedResources ", groupedResources)
+    setCollapseStatus((prevStatus) =>
+      prevStatus.map((status) =>
+        status.category === category
+          ? { ...status, isOpen: !status.isOpen }
+          : status
+      )
+    );
+  };
+
+  const SubCategories = ({ subcategories }) => {
+
+    const displayRessource = (resource) => {
+      return (
+        <li key={resource.id} className={styles['resource-item']}>
+          <a href={resource.url}>{resource.name || ''}</a>
+          <p>{resource.description || ''}</p>
+        </li>
+      )
+    }
+    return <>
+      <Accordion defaultValue={'null'}>
+        <For each="entry" of={Object.entries(subcategories)}>
+          <Accordion.Item value={entry[0] ? entry[0] : "Websites/ Blogs"} key={entry[0]} className={styles['subcategories-container']}>
+            <If condition={!Object.keys(subcategories).includes('null')}>
+              <Accordion.Control>
+                <h3 className={styles.subCategory}>{entry[0]}</h3>
+              </Accordion.Control>
+            </If>
+            <Accordion.Panel>
+              <ul className={styles['resources-container']}>
+                <For each="resource" of={entry[1]}>
+                  {displayRessource(resource)}
+                </For>
+              </ul>
+            </Accordion.Panel>
+          </Accordion.Item>
+        </For>
+      </Accordion>
+    </>
+  };
+
+
+
+  return (
+    Object.entries(groupedResources).map(([category, subcategories]) => {
+
+      return (
+        <div>
+          <Collapsible transitionTime={400}
+            trigger={
+              <div
+                onClick={() => handleTriggerClick(category)}
+                style={{
+                  marginBottom: "5px",
+                  height: "50px",
+                  display: "flex",
+                  backgroundColor: "lightblue",
+                  alignItems: "center"
+                }}
+              >
+                <span style={{ flex: 1 }}>{category}</span>
+                <span style={{ paddingRight: "20px" }}>
+                  {collapseStatus.find((s) => s.category === category)?.isOpen
+                    ? "-"
+                    : "+"}
+                </span>
+              </div>
+            }
+          >
+            {/* <div className={styles.category}>{category}</div> */}
+            <SubCategories subcategories={subcategories} />
+          </Collapsible>
+
+
+          {error && <p>{error.message}</p>}
+          {isLoading && <p>Loading...</p>}
+        </div>
+      )
+    }
+    )
+  )
 }
 
 export default HipHopRessources;

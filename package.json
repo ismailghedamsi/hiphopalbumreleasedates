@@ -36,6 +36,7 @@
     "node-sass": "^7.0.3",
     "npm": "^9.1.2",
     "react": "18.2.0",
+    "react-collapsible": "^2.10.0",
     "react-csv": "^2.2.2",
     "react-custom-scrollbars": "^4.2.1",
     "react-data-table-component": "^7.5.3",
