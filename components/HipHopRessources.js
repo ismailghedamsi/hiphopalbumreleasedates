@@ -5,6 +5,7 @@ import { supabase } from '../supabaseClient';
 import { useQuery } from '@supabase-cache-helpers/postgrest-swr';
 import { Accordion } from '@mantine/core';
 
+
 const HipHopRessources = () => {
   const { data, error, isLoading } = useQuery(
     supabase.from('resources').select('*')
@@ -33,6 +34,33 @@ const HipHopRessources = () => {
       return acc;
     }, {});
   }
+
+const SubCategories = ({ subcategories }) => {
+
+  const displayRessource = (resource) => {
+    return (
+      <li key={resource.id} className={styles['resource-item']}>
+      <a href={resource.url}>{resource.name || ''}</a>
+      <p>{resource.description || ''}</p>
+    </li>
+    )
+  }
+  return <>
+    <For each="entry" of={Object.entries(subcategories)}>
+      <div key={entry[0]} className={styles['subcategories-container']}>
+        <If condition={!Object.keys(subcategories).includes('null')}>
+          <h3 className={styles.subCategory}>{entry[0]}</h3>
+        </If>
+        <ul className={styles['resources-container']}>
+          <For each="resource" of={entry[1]}>
+          {displayRessource(resource)}
+          </For>
+        </ul>
+      </div>
+    </For>
+  </>
+};
+
   return (
     <Accordion>
       {Object.entries(groupedResources).map(([category, subcategories]) => {
@@ -40,19 +68,7 @@ const HipHopRessources = () => {
         return <Accordion.Item value={category} key={category}>
           <Accordion.Control className={styles.category}>{category}</Accordion.Control>
           <Accordion.Panel>
-            {Object.entries(subcategories).map(([subCategory, resources]) => (
-              <div key={`${category}-${subCategory}`} className={styles['subcategories-container']}>
-                {!Object.keys(subcategories).includes('null') && <h3 className={styles.subCategory}>{subCategory}</h3>}
-                <ul className={styles['resources-container']}>
-                  {resources.map(resource => (
-                    <li key={resource.id} className={styles['resource-item']}>
-                      <a href={resource.url}>{resource.name || ''}</a>
-                      <p>{resource.description || ''}</p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+            <SubCategories subcategories={subcategories} />
           </Accordion.Panel>
         </Accordion.Item>
       })}
