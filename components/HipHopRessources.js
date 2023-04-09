@@ -47,9 +47,6 @@ const HipHopRessources = () => {
   );
 
   const handleTriggerClick = (category) => {
-    console.log("clicked", category);
-    console.log("collapsedstatus ", collapseStatus)
-    console.log("groupedResources ", groupedResources)
     setCollapseStatus((prevStatus) =>
       prevStatus.map((status) =>
         status.category === category
