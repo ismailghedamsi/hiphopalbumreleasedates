@@ -30,6 +30,7 @@
   font-weight: bold;
   margin-top: 3rem;
   margin-bottom: 1rem;
+  cursor: pointer; /* Add cursor pointer to indicate that it's clickable */
 }
 
 .subCategory {
@@ -37,6 +38,7 @@
   font-weight: bold;
   margin-top: 2rem;
   margin-bottom: 1rem;
+  cursor: pointer; /* Add cursor pointer to indicate that it's clickable */
 }
 
 .subcategories-container {
