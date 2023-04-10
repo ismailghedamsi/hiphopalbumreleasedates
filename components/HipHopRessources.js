@@ -3,62 +3,61 @@ import React, { useEffect, useState } from 'react';
 import styles from '../styles/Ressources.module.css';
 import { supabase } from '../supabaseClient';
 import { useQuery } from '@supabase-cache-helpers/postgrest-swr';
-import { Accordion } from '@mantine/core';
-import Collapsible from 'react-collapsible';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionItemHeading,
+  AccordionItemButton,
+  AccordionItemPanel,
+} from 'react-accessible-accordion';
 
-const HipHopRessources = () => {
-  const [isOpen, setOpened] = useState(false)
+import { Accordion as AccordionMantine } from '@mantine/core'
+
+import 'react-accessible-accordion/dist/fancy-example.css';
 
 
+function HipHopRessources() {
 
   const { data, error, isLoading } = useQuery(
     supabase.from('resources').select('*')
   );
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const [defaultValue, setDefaultValue] = useState(null);
+  const [groupedResources, setGroupedResources] = useState({});
 
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+  useEffect(() => {
+    if (data) {
+      const resources = data.reduce((acc, resource) => {
+        if (!acc[resource.category]) {
+          acc[resource.category] = {};
+        }
+        if (!acc[resource.category][resource.subCategory]) {
+          acc[resource.category][resource.subCategory] = [];
+        }
+        acc[resource.category][resource.subCategory].push(resource);
+        return acc;
+      }, {});
 
-  // Group resources by category and subcategory
-  let groupedResources = {};
+      setGroupedResources(resources);
 
-  if (data) {
-    groupedResources = data.reduce((acc, resource) => {
-      if (!acc[resource.category]) {
-        acc[resource.category] = {};
+      // Set default value to the first category
+      if (Object.keys(resources).length > 0) {
+        setDefaultValue(Object.keys(resources)[0]);
       }
-      if (!acc[resource.category][resource.subCategory]) {
-        acc[resource.category][resource.subCategory] = [];
-      }
-      acc[resource.category][resource.subCategory].push(resource);
-      return acc;
-    }, {});
-  }
+    }
+  }, [data]);
 
-  const [collapseStatus, setCollapseStatus] = useState(
-    Object.keys(groupedResources).map((category) => ({
-      category,
-      isOpen: false,
-    }))
-  );
-
-  const handleTriggerClick = (category) => {
-    setCollapseStatus((prevStatus) =>
-      prevStatus.map((status) =>
-        status.category === category
-          ? { ...status, isOpen: !status.isOpen }
-          : status
-      )
-    );
-  };
+  // useEffect(() => {
+  //   // Set default value to the first category
+  //   if (Object.keys(groupedResources).length > 0) {
+  //     setDefaultValue(Object.keys(groupedResources)[0]);
+  //   }
+  // }, [groupedResources]);
 
   const SubCategories = ({ subcategories }) => {
 
     const displayRessource = (resource) => {
+
       return (
         <li key={resource.id} className={styles['resource-item']}>
           <a href={resource.url}>{resource.name || ''}</a>
@@ -67,67 +66,77 @@ const HipHopRessources = () => {
       )
     }
     return <>
-      <Accordion defaultValue={'null'}>
+      <AccordionMantine defaultValue={'null'}>
         <For each="entry" of={Object.entries(subcategories)}>
-          <Accordion.Item value={entry[0] ? entry[0] : "Websites/ Blogs"} key={entry[0]} className={styles['subcategories-container']}>
+          <AccordionMantine.Item value={entry[0] ? entry[0] : "Websites/ Blogs"} key={entry[0]} className={styles['subcategories-container']}>
             <If condition={!Object.keys(subcategories).includes('null')}>
-              <Accordion.Control>
+              <AccordionMantine.Control>
                 <h3 className={styles.subCategory}>{entry[0]}</h3>
-              </Accordion.Control>
+              </AccordionMantine.Control>
             </If>
-            <Accordion.Panel>
+            <AccordionMantine.Panel>
               <ul className={styles['resources-container']}>
                 <For each="resource" of={entry[1]}>
                   {displayRessource(resource)}
                 </For>
               </ul>
-            </Accordion.Panel>
-          </Accordion.Item>
+            </AccordionMantine.Panel>
+          </AccordionMantine.Item>
         </For>
-      </Accordion>
+      </AccordionMantine>
     </>
   };
 
 
+  if (isLoading || !data) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    Object.entries(groupedResources).map(([category, subcategories]) => {
-
-      return (
-        <div>
-          <Collapsible transitionTime={400}
-            trigger={
-              <div
-                onClick={() => handleTriggerClick(category)}
-                style={{
-                  marginBottom: "5px",
-                  height: "50px",
-                  display: "flex",
-                  backgroundColor: "lightblue",
-                  alignItems: "center"
-                }}
-              >
-                <span style={{ flex: 1 }}>{category}</span>
-                <span style={{ paddingRight: "20px" }}>
-                  {collapseStatus.find((s) => s.category === category)?.isOpen
-                    ? "-"
-                    : "+"}
-                </span>
-              </div>
-            }
-          >
-            {/* <div className={styles.category}>{category}</div> */}
-            <SubCategories subcategories={subcategories} />
-          </Collapsible>
-
-
-          {error && <p>{error.message}</p>}
-          {isLoading && <p>Loading...</p>}
-        </div>
-      )
-    }
-    )
-  )
+    <>
+      <head>
+        <title>Hip Hop Resources</title>
+        <meta name="description" content="A collection of resources for keeping in touch and exploring hip hop culture" />
+        <meta name="keywords" content="hip hop resources, underground hip hop, hip hop channels, hip hop music promotion, hip hop interviews, rap battles, street culture, hip hop lifestyle, album reviews, music production, hip hop culture preservation, classic hip hop, indie/underground hip hop, hip hop news and updates" />
+        <meta property="og:title" content="Hip Hop Resources" />
+        <meta property="og:description" content="A collection of resources for keeping in touch and exploring hip hop culture." />
+        <meta property="og:type" content="website" />
+      </head>
+      <div className="hip-hop-resources">
+        <Accordion
+          allowZeroExpanded
+          preExpanded={[defaultValue]}
+          role="tablist"
+          aria-multiselectable="true"
+        >
+          {Object.entries(groupedResources).map(([category, sub]) => {
+            return (
+              <AccordionItem key={category} uuid={category === "Websites/ Blogs" ? "websiteBlogs" : category} role="presentation">
+                <AccordionItemHeading role="tab">
+                  <AccordionItemButton
+                    role="tab"
+                    id={`${category}-tab`}
+                    aria-controls={`${category}-panel`}
+                    aria-selected={defaultValue === category}
+                  >
+                    {category}
+                  </AccordionItemButton>
+                </AccordionItemHeading>
+                <AccordionItemPanel
+                  role="tabpanel"
+                  id={`${category}-panel`}
+                  aria-labelledby={`${category}-tab`}
+                  hidden={defaultValue !== category}
+                >
+                  <SubCategories subcategories={sub} />
+                </AccordionItemPanel>
+              </AccordionItem>
+            );
+          })}
+        </Accordion>
+      </div>
+    </>
+  );
 }
 
 export default HipHopRessources;
