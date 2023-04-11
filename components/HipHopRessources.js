@@ -111,7 +111,7 @@ function HipHopRessources() {
         >
           {Object.entries(groupedResources).map(([category, sub]) => {
             return (
-              <AccordionItem key={category} uuid={category === "Websites/ Blogs" ? "websiteBlogs" : category} role="presentation">
+              <AccordionItem key={category} role="presentation">
                 <AccordionItemHeading role="tab">
                   <AccordionItemButton
                     role="tab"
