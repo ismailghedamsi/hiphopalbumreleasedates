@@ -7,12 +7,7 @@ import { useState } from "react"
 import DateHelpers from "../helper/dateUtilities"
 import AppContext from "./AppContext"
 import Footer from "./Footer"
-
-
-const DaysList = dynamic(() => import('./DaysList'), {
-    ssr: false,
-    loading: () => <p>Loading day selector</p>
-  });
+import DaysList from './DaysList'
 
 
 const NavbarComponent = dynamic(() => import('./Navbar'), {
