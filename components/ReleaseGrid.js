@@ -3,7 +3,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { supabase } from "../supabaseClient";
 import dayjs from "dayjs";
 import DateHelpers from '../helper/dateUtilities'
-import { Center, TextInput } from "@mantine/core";
+import { Center, Loader, TextInput } from "@mantine/core";
 import AppContext from "./AppContext";
 import { useRouter } from "next/router";
 import { IconX } from "@tabler/icons";
@@ -18,15 +18,15 @@ import Carousel from "./carousel/Carousel";
 const Modal = dynamic(() => import('@mantine/core').then(mod => mod.Modal), {
     ssr: false,
     loading: () => <p>Loading modal...</p>
-  });
+});
 
-  const AddRelease = dynamic(() => import('./AddRelease'), {
+const AddRelease = dynamic(() => import('./AddRelease'), {
     ssr: false,
     loading: () => <p>Loading form...</p>
-  });
-  
+});
 
-  const AddReleaseButton = styled.button`
+
+const AddReleaseButton = styled.button`
      border-radius: 20px;
      background-color: #FFD700;
      margin-bottom: 4vh;
@@ -65,17 +65,17 @@ const LoginToUploadButton = styled.button`
     }
     }
 `;
-  
+
 const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedYear }) => {
 
     const [releases, setReleases] = useState([])
     const [_, setUploadModalOpened] = useState(false)
     const [addReleaseModalOpened, setAddReleaseModalOpened] = useState(false)
     const [defaultValueYearSelect, setDefaultValueYearSelect] = useState(new Date().getFullYear())
-    const { loggedUser, year, month, selectedDayNumber,setSelectedDayNumber, setUniqueDays  } = useContext(AppContext)
+    const { loggedUser, year, month, selectedDayNumber, setSelectedDayNumber, setUniqueDays } = useContext(AppContext)
     const [insertedData, setInsertedData] = useState([])
     const [searchTerm, setSearchTerm] = useState('');
-    const [fetching, setFetching] = useState()
+    const [fetching, setFetching] = useState(false) // set initial state to false
     const matches = useMediaQuery('(max-width: 900px)');
     const isMobileView = useMediaQuery('(max-width: 767px)')
 
@@ -85,10 +85,10 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
 
     useEffect(() => {
         dateLabelRef?.current?.scrollIntoView({
-          behavior: "instant", // or 'instant'
-          block: "center"
+            behavior: "instant", // or 'instant'
+            block: "center"
         });
-      },[dateLabelRef?.current, selectedDayNumber])
+    }, [dateLabelRef?.current, selectedDayNumber])
 
     const getReleases = async () => {
         setFetching(true)
@@ -105,7 +105,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
             setReleases(data)
         }
         setFetching(false)
-        const releasesDates = data.map(el => el.releaseDate) 
+        const releasesDates = data.map(el => el.releaseDate)
         let days = releasesDates.map(date => date.split("-")[2]).map(day => day.replace(/^0+/, ''));
         let unique = days.filter((day, index) => days.indexOf(day) === index);
         setUniqueDays(unique)
@@ -122,7 +122,6 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
         acc[dayjs(el.releaseDate).format('YYYY-MM-DD')].push(el);
         return acc;
     }, {});
-
 
     const sorted = Object.entries(grouped).sort((d1, d2) => {
         var parseDate = function parseDate(dateAsString) {
@@ -157,29 +156,32 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
             </div>
 
             <Center><TextInput sx={{ width: matches ? "25vh" : "50vh" }} value={searchTerm} rightSection={searchTerm != "" && <IconX onClick={() => setSearchTerm('')} size="xs" />} onChange={handleChange} type="search" placeholder="Search..." /></Center>
-            
-            {sorted.length > 0 ? sorted.map(([date, options]) => {
-                    const selectedMonthName =  dayjs().month(month-1).format('MMMM')
+
+            {fetching ? ( // show loading icon while fetching data
+                <Center>
+                    <Loader size="lg" />
+                </Center>
+            ) : sorted.length > 0 ? sorted.map(([date, options]) => {
+                const selectedMonthName = dayjs().month(month - 1).format('MMMM')
                 return (
                     <>
-                        <h1 key={date} ref={`${selectedMonthName} ${selectedDayNumber} ${year}` === dayjs(date).format('MMMM D YYYY')  ? dateLabelRef : null} className="has-text-centered mt-3"><span className={styles.date}>{dayjs(date).format('MMMM D YYYY')}</span></h1>
-                       
-                        { !isMobileView ?
-                        <Grid>
-                            { options.map((el, index) => {
-                                return (<ReleaseCard fetching={fetching} index={index} key={index} setReleases={setReleases} releases={releases} setUploadModalOpened={setUploadModalOpened} release={el} />)
-                                // return (  <Carousel/>)
+                        <h1 key={date} ref={`${selectedMonthName} ${selectedDayNumber} ${year}` === dayjs(date).format('MMMM D YYYY') ? dateLabelRef : null} className="has-text-centered mt-3"><span className={styles.date}>{dayjs(date).format('MMMM D YYYY')}</span></h1>
 
-                            })}
-                            
-                        </Grid>
-                        : <Carousel cards={options}/>
+                        {!isMobileView ?
+                            <Grid>
+                                {options.map((el, index) => {
+                                    return (<ReleaseCard fetching={fetching} index={index} key={index} setReleases={setReleases} releases={releases} setUploadModalOpened={setUploadModalOpened} release={el} />)
+                                    // return (  <Carousel/>)
+
+                                })}
+
+                            </Grid>
+                            : <Carousel cards={options} />
                         }
                     </>
                 );
             }) : <Center><h1>No release date was announced for this month</h1></Center>}
         </>
     );
-};
-
+}
 export default ReleaseGrid;

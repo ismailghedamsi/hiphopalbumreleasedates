@@ -36,6 +36,7 @@ const Navbar = () => {
         <LeftContainer>
           <NavbarLinkContainer>
             <NavbarLink href="/" style={handleActiveLink("/")} onClick={() => setActiveLink('/')}> Releases</NavbarLink>
+            <NavbarLink href="/ressources" style={handleActiveLink("/ressources")} onClick={() => setActiveLink('/ressources')}> Ressources</NavbarLink>
             <NavbarLink style={handleActiveLink("/topContributors")} href="/topContributors" onClick={() => setActiveLink('/topContributors')}> Top Contributors</NavbarLink>
             
             {!loggedUser && <NavbarLink style={handleActiveLink("/register")} href="/register" onClick={() => setActiveLink('/register')}> Register</NavbarLink>}
@@ -63,6 +64,7 @@ const Navbar = () => {
       {extendNavbar && (
         <NavbarExtendedContainer>
           <NavbarLinkExtended style={handleActiveLinkMobile("/")} href="/"  onClick={() => setActiveLinkMobile('/')}> Releases</NavbarLinkExtended>
+          <NavbarLinkExtended style={handleActiveLinkMobile("/ressources")} href="/ressources"  onClick={() => setActiveLinkMobile('/ressources')}> Ressources</NavbarLinkExtended>
           <NavbarLinkExtended href="/topContributors" style={handleActiveLinkMobile("/topContributors")} onClick={() => setActiveLinkMobile('/topContributors')}> Top Contributors
           </NavbarLinkExtended>
           {!loggedUser && <NavbarLinkExtended href="/register" style={handleActiveLinkMobile("/register")} onClick={() => setActiveLinkMobile('/register')}> Register</NavbarLinkExtended>}
