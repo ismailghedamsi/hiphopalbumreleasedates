@@ -47,12 +47,6 @@ function HipHopRessources() {
     }
   }, [data]);
 
-  // useEffect(() => {
-  //   // Set default value to the first category
-  //   if (Object.keys(groupedResources).length > 0) {
-  //     setDefaultValue(Object.keys(groupedResources)[0]);
-  //   }
-  // }, [groupedResources]);
 
   const SubCategories = ({ subcategories }) => {
 
