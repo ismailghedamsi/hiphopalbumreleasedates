@@ -1,5 +1,5 @@
 import ReleaseCard from "./ReleaseCard";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { supabase } from "../supabaseClient";
 import dayjs from "dayjs";
 import DateHelpers from '../helper/dateUtilities'
@@ -78,6 +78,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     const [fetching, setFetching] = useState(false) // set initial state to false
     const matches = useMediaQuery('(max-width: 900px)');
     const isMobileView = useMediaQuery('(max-width: 767px)')
+    const handleSearch = useCallback(event => setSearchTerm(event.target.value), []);
 
     const dateLabelRef = useRef(null);
 
@@ -132,10 +133,6 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
         return parseDate(d1[0]) - parseDate(d2[0]);
     })
 
-    const handleChange = event => {
-        setSearchTerm(event.target.value);
-    };
-
     return (
         <>
             {loggedUser && <Modal
@@ -155,7 +152,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
                 {loggedUser ? <AddReleaseButton onClick={() => setAddReleaseModalOpened(true)}>Add  release</AddReleaseButton> : <LoginToUploadButton onClick={() => router.push("/signIn")}>Login to add a release</LoginToUploadButton>}
             </div>
 
-            <Center><TextInput sx={{ width: matches ? "25vh" : "50vh" }} value={searchTerm} rightSection={searchTerm != "" && <IconX onClick={() => setSearchTerm('')} size="xs" />} onChange={handleChange} type="search" placeholder="Search..." /></Center>
+            <Center><TextInput sx={{ width: matches ? "25vh" : "50vh" }} value={searchTerm} rightSection={searchTerm != "" && <IconX onClick={() => setSearchTerm('')} size="xs" />} onChange={handleSearch} type="search" placeholder="Search..." /></Center>
 
             {fetching ? ( // show loading icon while fetching data
                 <Center>
