@@ -4,62 +4,69 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import AppContext from './AppContext';
 
 const Title = styled.h1`
-  margin-right : 3vw;
+  margin-right: 1rem;
+  margin-top: 0;
+  margin-bottom: 0;
   font-size: medium;
-` 
-
-const ListContainer = styled.ul`
-  list-style-type: none; /* remove bullet points */
-  padding: 0; /* remove default padding */
-  margin: 0; /* remove default margin */
-  display: flex; /* display items in a row */
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  position: sticky; /* make the container sticky */
-  top: 0; /* set the container to stick to the top of the viewport */
-  height: 800px;
-  margin-top: 50vh;
-  min-width: 50px;
+  
+  @media (min-width: 768px) {
+    font-size: large;
+  }
 `;
 
-
 const ListItem = styled.li`
-  width: 40px; /* set width */
-  height: 40px; /* set height */
-  padding: 0.5em; /* add some padding */
-  margin: 0.5em; /* add some margin */
-  border-radius: 0.5em; /* add rounded corners */
+  width: 30px;
+  height: 20px;
+  padding: 0.5em;
+  margin: 0.3em;
+  border-radius: 0.5em;
   font-size: x-small;
-  background-color: lightgreen; /* set background color to shiny white */
+  background-color: lightgreen;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media (min-width: 768px) {
+    width: 30px;
+    height: 25px;
+    font-size: small;
+    margin: 0.2em;
+    padding: 1em;
+  }
+`;
+
+const ListContainer = styled.ul`
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 120px;
+  right: 16vw;
+  height: 75vh;
+  margin-right: 4vw;
+  margin-bottom: 5vh;
+  padding-bottom: 1%;
+  min-width: 50px;
+  flex-direction: column;
+  overflow-y: auto; /* Add scrollbar */
 `;
 
 
-const Button = styled.button` text-decoration: none; /* remove underline */ 
-  all: unset;
-  cursor: pointer;
-color: black; /* set text color */ 
-width: 2em; /* set width of each list item */ 
-text-align: center; /* center align the text */ 
-display: block; /* display the link as a block */;
-`
-
 const DaysList = () => {
   const textRef = useRef(null);
-  const {setSelectedDayNumber, uniqueDays} = useContext(AppContext)
- 
+  const { setSelectedDayNumber, uniqueDays } = useContext(AppContext);
+
   return (
-    <ListContainer>
-          <Title ref={textRef}>day</Title>
-      <Scrollbars>
+    <Scrollbars autoHide>
+      <ListContainer>
+        <Title ref={textRef}>day</Title>
         {uniqueDays && uniqueDays.length > 0 && uniqueDays.map((el) => {
-            return <ListItem onClick={() =>    setSelectedDayNumber(el)}>{el}</ListItem>
+          return <ListItem onClick={() => setSelectedDayNumber(el)}>{el}</ListItem>;
         })}
-      </Scrollbars>
-    </ListContainer>
+      </ListContainer>
+    </Scrollbars>
   );
 };
 
