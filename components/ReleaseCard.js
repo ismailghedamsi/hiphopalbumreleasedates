@@ -29,10 +29,9 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
     const [files, setFiles] = useState([]);
     const [uploadModalOpened, setUploadModalOpened] = useState(false)
     const [linksModalOpened, setLinksModalOpened] = useState(false)
-    const [releaseTitle, setReleaseTitle] = useState("")
     const [isUploading, setIsUploading] = useState(false)
 
-    let inputRef = useRef()
+    const inputRef = useRef()
 
     const showToast = (message, type) => {
         const options = {
@@ -66,7 +65,7 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
             const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${releaseId}/${files[0].name}`);
             await supabase.from("releases").update({ cover: publicURL.data.publicUrl }).eq("id", releaseId);
             let copy = [...releases];
-            let objIndex = copy.findIndex((obj => obj.id == releaseId));
+            let objIndex = copy.findIndex((obj => obj.id === releaseId));
             copy[objIndex].cover = publicURL.data.publicUrl;
             setReleases(copy);
             showToast("The release was added", "success");
@@ -103,7 +102,7 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
                 transitionDuration={600}
 
                 transitionTimingFunction="ease"
-                title={releaseTitle}
+                title={`${release.artist} - ${release.album}`}
             >
                 <Linktree release={release} />
             </LinksModal>
@@ -128,7 +127,6 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
                         <Center>
                             {<Button variant="gradient" gradient={{ from: 'orange', to: 'red' }} onClick={() => {
                                 setLinksModalOpened(true)
-                                setReleaseTitle(release.artist + " - " + release.album)
                             }
                             }>
                                 Links
