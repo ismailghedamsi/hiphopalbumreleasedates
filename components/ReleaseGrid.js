@@ -50,7 +50,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
  
     useEffect(() => {
         dateLabelRef?.current?.scrollIntoView({
-            behavior: "instant", // or 'instant'
+            behavior: "instant",
             block: "center"
         });
     }, [dateLabelRef?.current, selectedDayNumber])
@@ -145,10 +145,10 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
               const selectedMonthName = dayjs().month(month - 1).format("MMMM");
               return (
                 <Fragment key={date}>
-                  <h1
+                    <h1
                     ref={
-                      `${selectedMonthName} ${selectedDayNumber} ${year}` ===
-                      dayjs(date).format("MMMM D YYYY")
+                      options.some(el => el.releaseDate.split("-")[2].replace(/^0+/, '') === selectedDayNumber) ||
+                      `${selectedMonthName} ${selectedDayNumber} ${year}` === dayjs(date).format("MMMM D YYYY")
                         ? dateLabelRef
                         : null
                     }
