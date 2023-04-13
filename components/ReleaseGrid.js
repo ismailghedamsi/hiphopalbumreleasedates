@@ -3,19 +3,18 @@ import { Fragment, useCallback, useContext, useEffect, useRef, useState } from "
 import { supabase } from "../supabaseClient";
 import dayjs from "dayjs";
 import DateHelpers from '../helper/dateUtilities'
-import { Center, Loader, TextInput } from "@mantine/core";
+import { Center, Loader } from "@mantine/core";
 import AppContext from "./AppContext";
 import { useRouter } from "next/router";
-import { IconX } from "@tabler/icons";
 import styles from '../styles/ReleaseGrid.module.css'
 import { useMediaQuery } from "@mantine/hooks";
 import Grid from "./styled/ReleaseGrid/Grid";
 import dynamic from 'next/dynamic';
-import { styled } from "styled-components";
 import Carousel from "./carousel/Carousel";
 import { AddReleaseButton, LoginToUploadButton } from "./styled/ReleaseGrid/Buttons";
 import { ReleaseGrouper } from "../helper/ReleaseGrouper";
 import { ReleaseSorter } from "../helper/ReleaseSorter";
+import Search from "./Search";
 
 
 const Modal = dynamic(() => import('@mantine/core').then(mod => mod.Modal), {
@@ -39,7 +38,6 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     const [insertedData, setInsertedData] = useState([])
     const [searchTerm, setSearchTerm] = useState('');
     const [fetching, setFetching] = useState(false) // set initial state to false
-    const matches = useMediaQuery('(max-width: 900px)');
     const isMobileView = useMediaQuery('(max-width: 767px)')
     const handleSearch = useCallback(event => setSearchTerm(event.target.value), []);
 
@@ -121,20 +119,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
             )}
           </div>
       
-          <Center>
-            <TextInput
-              sx={{ width: matches ? "25vh" : "50vh" }}
-              value={searchTerm}
-              rightSection={
-                searchTerm !== "" && (
-                  <IconX onClick={() => setSearchTerm("")} size="xs" />
-                )
-              }
-              onChange={handleSearch}
-              type="search"
-              placeholder="Search..."
-            />
-          </Center>
+          <Search setSearchTerm={setSearchTerm} searchTerm={searchTerm} handleSearch={handleSearch} />
       
           {fetching ? (
             <Center>
