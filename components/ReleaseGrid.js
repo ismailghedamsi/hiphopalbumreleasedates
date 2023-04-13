@@ -56,26 +56,26 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     }, [dateLabelRef?.current, selectedDayNumber])
 
     const getReleases = async () => {
-        setFetching(true)
-        let query = supabase.from('releases').select()
-        query = query.gte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-01`)
-            .lte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-${DateHelpers.getDaysInMonth(year, month)}`)
-            .order('releaseDate', { ascending: true })
-
-        if (searchTerm != "") {
-            query = query.or(`artist.ilike.*${searchTerm}*,album.ilike.*${searchTerm}*`)
-        }
-        const { data, error } = await query
+        setFetching(true);
+        const { data, error } = await supabase
+          .from('releases')
+          .select()
+          .gte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-01`)
+          .lte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-${DateHelpers.getDaysInMonth(year, month)}`)
+          .order('releaseDate', { ascending: true })
+          .or(searchTerm ? `artist.ilike.*${searchTerm}*,album.ilike.*${searchTerm}*` : '');
+      
         if (!error) {
-            setReleases(data)
+          setReleases(data);
+          const releasesDates = data.map(el => el.releaseDate);
+          // days without leading zero
+          const days = releasesDates.map(date => date.split("-")[2]).map(day => day.replace(/^0+/, ''));
+          const unique = days.filter((day, index) => days.indexOf(day) === index);
+          setUniqueDays(unique);
         }
-        setFetching(false)
-        const releasesDates = data.map(el => el.releaseDate)
-        let days = releasesDates.map(date => date.split("-")[2]).map(day => day.replace(/^0+/, ''));
-        let unique = days.filter((day, index) => days.indexOf(day) === index);
-        setUniqueDays(unique)
-
-    }
+      
+        setFetching(false);
+      };
 
     useEffect(() => {
         getReleases()
@@ -85,25 +85,6 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     const sorter = new ReleaseSorter();
 
     const sortedGroupedReleases = sorter.sortByDate(grouper.groupByDate(releases));
-
-
-sortedGroupedReleases && console.log("sortedGroupedReleases ",sortedGroupedReleases)
-
-    // // Group your items
-    // let grouped = releases.reduce((acc, el) => {
-    //     if (!acc[dayjs(el.releaseDate).format('YYYY-MM-DD')]) acc[dayjs(el.releaseDate).format('YYYY-MM-DD')] = [];
-    //     acc[dayjs(el.releaseDate).format('YYYY-MM-DD')].push(el);
-    //     return acc;
-    // }, {});
-
-    // const sorted = Object.entries(grouped).sort((d1, d2) => {
-    //     var parseDate = function parseDate(dateAsString) {
-    //         var dateParts = dateAsString.split(" ");
-    //         return new Date(parseInt(dateParts[2], 10), parseInt(dateParts[1], 10) - 1, parseInt(dateParts[0], 10));
-    //     };
-
-    //     return parseDate(d1[0]) - parseDate(d2[0]);
-    // })
 
     return (
         <>
