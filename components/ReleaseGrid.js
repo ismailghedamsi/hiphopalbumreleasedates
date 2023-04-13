@@ -56,26 +56,26 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     }, [dateLabelRef?.current, selectedDayNumber])
 
     const getReleases = async () => {
-        setFetching(true);
-        const { data, error } = await supabase
-          .from('releases')
-          .select()
-          .gte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-01`)
-          .lte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-${DateHelpers.getDaysInMonth(year, month)}`)
-          .order('releaseDate', { ascending: true })
-          .or(searchTerm ? `artist.ilike.*${searchTerm}*,album.ilike.*${searchTerm}*` : '');
-      
-        if (!error) {
-          setReleases(data);
-          const releasesDates = data.map(el => el.releaseDate);
-          // days without leading zero
-          const days = releasesDates.map(date => date.split("-")[2]).map(day => day.replace(/^0+/, ''));
-          const unique = days.filter((day, index) => days.indexOf(day) === index);
-          setUniqueDays(unique);
+        setFetching(true)
+        let query = supabase.from('releases').select()
+        query = query.gte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-01`)
+            .lte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-${DateHelpers.getDaysInMonth(year, month)}`)
+            .order('releaseDate', { ascending: true })
+
+        if (searchTerm != "") {
+            query = query.or(`artist.ilike.*${searchTerm}*,album.ilike.*${searchTerm}*`)
         }
-      
-        setFetching(false);
-      };
+        const { data, error } = await query
+        if (!error) {
+            setReleases(data)
+        }
+        setFetching(false)
+        const releasesDates = data.map(el => el.releaseDate)
+        let days = releasesDates.map(date => date.split("-")[2]).map(day => day.replace(/^0+/, ''));
+        let unique = days.filter((day, index) => days.indexOf(day) === index);
+        setUniqueDays(unique)
+
+    }
 
     useEffect(() => {
         getReleases()
