@@ -15,7 +15,6 @@ import { AddReleaseButton, LoginToUploadButton } from "./styled/ReleaseGrid/Butt
 import { ReleaseGrouper } from "../helper/ReleaseGrouper";
 import { ReleaseSorter } from "../helper/ReleaseSorter";
 import Search from "./Search";
-import AddReleaseButtonOrLogin from "./AddReleaseButtonOrLogin";
 
 
 const Modal = dynamic(() => import('@mantine/core').then(mod => mod.Modal), {
@@ -80,15 +79,6 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
         getReleases()
     }, [year, month, additionId, searchTerm])
 
-    const handleButtonClick = (action) => {
-        if (action === 'add') {
-          setAddReleaseModalOpened(true);
-        } else if (action === 'login') {
-          router.push('/signIn');
-        }
-      }
-      
-
     const grouper = new ReleaseGrouper();
     const sorter = new ReleaseSorter();
 
@@ -118,7 +108,15 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
           )}
       
           <div className="has-text-centered">
-            <AddReleaseButtonOrLogin onClick={handleButtonClick} />
+            {loggedUser ? (
+              <AddReleaseButton onClick={() => setAddReleaseModalOpened(true)}>
+                Add release
+              </AddReleaseButton>
+            ) : (
+              <LoginToUploadButton onClick={() => router.push("/signIn")}>
+                Login to add a release
+              </LoginToUploadButton>
+            )}
           </div>
       
           <Search setSearchTerm={setSearchTerm} searchTerm={searchTerm} handleSearch={handleSearch} />
