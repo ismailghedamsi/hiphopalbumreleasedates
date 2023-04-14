@@ -89,7 +89,7 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
                 transition="fade"
                 transitionDuration={600}
                 transitionTimingFunction="ease"
-                title="Add release"
+                title="Add release"d
             >
                 <SharedUploadZone onDrop={handleUpload} onReject={handleRejectedFile} uploading={isUploading} maxSize={5 * 1024 ** 2} maxFiles={1} multiple={false} />
             </Modal>
