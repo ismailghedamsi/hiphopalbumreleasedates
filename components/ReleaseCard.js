@@ -29,18 +29,22 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
     const [files, setFiles] = useState([]);
     const [uploadModalOpened, setUploadModalOpened] = useState(false)
     const [linksModalOpened, setLinksModalOpened] = useState(false)
-    const [releaseTitle, setReleaseTitle] = useState("")
     const [isUploading, setIsUploading] = useState(false)
 
-    let inputRef = useRef()
+    const inputRef = useRef()
 
-    const coverUploadFailed = () => toast.error("Cover can't be uploaded", {
-        position: toast.POSITION.BOTTOM_CENTER
-    });
-
-    const coverUploadSucceed = () => toast.success("The release was added", {
-        position: toast.POSITION.BOTTOM_CENTER
-    });
+    const showToast = (message, type) => {
+        const options = {
+          position: toast.POSITION.BOTTOM_CENTER
+        };
+      
+        if (type === "success") {
+          toast.success(message, options);
+        } else if (type === "error") {
+          toast.error(message, options);
+        }
+      };
+      
 
     const getCover = (coverPath) => {
         if (coverPath === "" && loggedUser) {
@@ -53,25 +57,25 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
 
 
     const handleUpload = async (files) => {
-        setFiles(files)
+        setFiles(files);
         if (files.length > 0) {
-            setIsUploading(true)
-            const { error } = await supabase.storage.from('album-covers').upload(`public/${releaseId}/${files[0].name}`, files[0])
-            if (!error) {
-                const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${releaseId}/${files[0].name}`)
-                await supabase.from("releases").update({ cover: publicURL.data.publicUrl }).eq("id", releaseId)
-                let copy = [...releases]
-                let objIndex = copy.findIndex((obj => obj.id == releaseId));
-                copy[objIndex].cover = publicURL.data.publicUrl
-                setReleases(copy)
-                coverUploadSucceed()
-                setUploadModalOpened(false)
-            } else {
-                coverUploadFailed()
-            }
-            setIsUploading(false)
+          setIsUploading(true);
+          const { error } = await supabase.storage.from('album-covers').upload(`public/${releaseId}/${files[0].name}`, files[0]);
+          if (!error) {
+            const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${releaseId}/${files[0].name}`);
+            await supabase.from("releases").update({ cover: publicURL.data.publicUrl }).eq("id", releaseId);
+            let copy = [...releases];
+            let objIndex = copy.findIndex((obj => obj.id === releaseId));
+            copy[objIndex].cover = publicURL.data.publicUrl;
+            setReleases(copy);
+            showToast("The release was added", "success");
+            setUploadModalOpened(false);
+          } else {
+            showToast("Cover can't be uploaded", "error");
+          }
+          setIsUploading(false);
         }
-    }
+      };
 
     const handleRejectedFile = () => {
         console.error('rejected files', files)
@@ -85,7 +89,7 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
                 transition="fade"
                 transitionDuration={600}
                 transitionTimingFunction="ease"
-                title="Add release"
+                title="Add release"d
             >
                 <SharedUploadZone onDrop={handleUpload} onReject={handleRejectedFile} uploading={isUploading} maxSize={5 * 1024 ** 2} maxFiles={1} multiple={false} />
             </Modal>
@@ -98,7 +102,7 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
                 transitionDuration={600}
 
                 transitionTimingFunction="ease"
-                title={releaseTitle}
+                title={`${release.artist} - ${release.album}`}
             >
                 <Linktree release={release} />
             </LinksModal>
@@ -114,7 +118,7 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
                                 alt={`Album cover of ${release.album} album by ${release.artist} `} />
                         </picture>
                     </Skeleton>
-                    {/* <i className="fas fa-pen fa-pen-indicateur" title="Modifier"></i> */}
+
                     <CardContent>
 
                         <CardHeader><span className={styles.labels}>Artist : </span>{`${release.artist}`}</CardHeader>
@@ -123,7 +127,6 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
                         <Center>
                             {<Button variant="gradient" gradient={{ from: 'orange', to: 'red' }} onClick={() => {
                                 setLinksModalOpened(true)
-                                setReleaseTitle(release.artist + " - " + release.album)
                             }
                             }>
                                 Links
