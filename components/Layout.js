@@ -1,5 +1,5 @@
 import { Center, Grid } from "@mantine/core"
-import { StyledEngineProvider } from "@mui/material"
+import { StyledEngineProvider, useMediaQuery } from "@mui/material"
 import dayjs from "dayjs"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
@@ -9,6 +9,7 @@ import AppContext from "./AppContext"
 import Footer from "./Footer"
 import DaysList from './DaysList'
 import styles from '../styles/Releases.module.css'
+import NavigationTabs from "./NavigationTabs"
 
 
 const NavbarComponent = dynamic(() => import('./Navbar'), {
@@ -20,14 +21,17 @@ const Layout = ({ children }) => {
     const [loggedUser, setLoggedUser] = useState()
     const [month, setMonth] = useState(DateHelpers.getMonth(new Date()))
     const [year, setYear] = useState(new Date().getFullYear())
-    const [selectedDayNumber, setSelectedDayNumber] = useState(dayjs().format('D'))
+    const [selectedDayNumber, setSelectedDayNumber] = useState()
     const router = useRouter()
     const [uniqueDays, setUniqueDays] = useState()
+    const isMobile = useMediaQuery('(max-width: 768px)'); // Adjust the breakpoint as needed
     const anyValue = 5
+
     return (
         <StyledEngineProvider injectFirst>
             <AppContext.Provider value={{ uniqueDays, setUniqueDays, selectedDayNumber, setSelectedDayNumber, year, month, setMonth, setYear, loggedUser, setLoggedUser, appContext, setAppContext, anyValue }}>
-                <NavbarComponent />
+                {/* <NavbarComponent /> */}
+                {isMobile ? <NavigationTabs /> : <NavbarComponent />}
                 {router.pathname === '/' && <div className={styles.container}>
                     <h1 className={styles.description}>A comprehensive and regularly updated compilation of upcoming hip hop music releases is available.
                         There is no differentiation between popular and lesser-known releases, and anyone has the freedom to contribute new
