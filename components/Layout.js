@@ -30,8 +30,7 @@ const Layout = ({ children }) => {
     return (
         <StyledEngineProvider injectFirst>
             <AppContext.Provider value={{ uniqueDays, setUniqueDays, selectedDayNumber, setSelectedDayNumber, year, month, setMonth, setYear, loggedUser, setLoggedUser, appContext, setAppContext, anyValue }}>
-                {/* <NavbarComponent /> */}
-                {isMobile ? <NavigationTabs /> : <NavbarComponent />}
+                <NavbarComponent />
                 {router.pathname === '/' && <div className={styles.container}>
                     <h1 className={styles.description}>A comprehensive and regularly updated compilation of upcoming hip hop music releases is available.
                         There is no differentiation between popular and lesser-known releases, and anyone has the freedom to contribute new
