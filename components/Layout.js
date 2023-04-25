@@ -1,6 +1,5 @@
-import { Center, Grid } from "@mantine/core"
+import { Grid } from "@mantine/core"
 import { StyledEngineProvider, useMediaQuery } from "@mui/material"
-import dayjs from "dayjs"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
 import { useState } from "react"
@@ -9,7 +8,6 @@ import AppContext from "./AppContext"
 import Footer from "./Footer"
 import DaysList from './DaysList'
 import styles from '../styles/Releases.module.css'
-import NavigationTabs from "./NavigationTabs"
 
 
 const NavbarComponent = dynamic(() => import('./Navbar'), {
