@@ -38,7 +38,7 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     const { loggedUser, year, month, selectedDayNumber, setSelectedDayNumber, setUniqueDays } = useContext(AppContext)
     const [insertedData, setInsertedData] = useState([])
     const [searchTerm, setSearchTerm] = useState('');
-    const [fetching, setFetching] = useState(false) // set initial state to false
+    const [fetching, setFetching] = useState(false)
     const isMobileView = useMediaQuery('(max-width: 767px)')
     const handleSearch = useCallback(event => setSearchTerm(event.target.value), []);
 
