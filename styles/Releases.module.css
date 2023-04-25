@@ -1,0 +1,44 @@
+.container {
+    max-width: 90vh;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    background-color: white;
+    margin: auto; /* Center the container horizontally */
+    margin-bottom: 2em; /* Add some space between the container and the element below */
+    padding: 20px;
+ 
+  }
+  
+  .description {
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    line-height: 1.5;
+    word-break: normal;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .container {
+      max-width: 62vw;
+      margin: 1em;
+    }
+    
+    .description {
+      font-size: 15px;
+      line-height: 1.1;
+    }
+  }
+  
+  /*Ipad air  */
+  @media only screen and (min-device-width: 820px) and (max-device-width: 1180px) {
+    .container {
+      max-width: 55vh;
+      margin: auto; /* Center the container horizontally */
+      margin-bottom: 2em; /* Add some space between the container and the element below */
+      margin-right: 9em;
+    }
+    
+    .description {
+      font-size: 20px;
+      line-height: 1.3;
+    }
+  }

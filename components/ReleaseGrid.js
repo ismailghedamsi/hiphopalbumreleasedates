@@ -15,6 +15,7 @@ import { AddReleaseButton, LoginToUploadButton } from "./styled/ReleaseGrid/Butt
 import { ReleaseGrouper } from "../helper/ReleaseGrouper";
 import { ReleaseSorter } from "../helper/ReleaseSorter";
 import Search from "./Search";
+import useDidMountEffect from "./hooks/useDidMountEffect";
 
 
 const Modal = dynamic(() => import('@mantine/core').then(mod => mod.Modal), {
@@ -46,12 +47,12 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
     const router = useRouter()
 
  
-    useEffect(() => {
+    useDidMountEffect(() => {
         dateLabelRef?.current?.scrollIntoView({
             behavior: "instant",
             block: "center"
         });
-    }, [dateLabelRef?.current, selectedDayNumber])
+    }, [selectedDayNumber])
 
     const getReleases = async () => {
         setFetching(true)
