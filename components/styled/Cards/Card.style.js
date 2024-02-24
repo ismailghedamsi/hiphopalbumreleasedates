@@ -30,7 +30,7 @@ export const CardContent = styled.div`
 `;
 
 export const CardHeader = styled.h2`
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   margin: 0 0 10px 0;
   color: #333;
