@@ -124,8 +124,8 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
                         </picture>
                     </Skeleton>
                     <CardContent>
-                        <CardHeader><span className={styles.labels}>Artist:</span> {release.artist}</CardHeader>
-                        <CardSecondaryText><span className={styles.labels}>Album:</span> {release.album}</CardSecondaryText>
+                        <CardHeader> {release.artist}</CardHeader>
+                        <CardSecondaryText>{release.album}</CardSecondaryText>
                         <Center>
                             <Button variant="gradient" gradient={{ from: 'orange', to: 'red' }} onClick={() => setLinksModalOpened(true)}>
                                 Links
