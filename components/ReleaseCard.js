@@ -8,7 +8,7 @@ import styles from '../styles/ReleaseCard.module.css';
 import SharedUploadZone from "./Upload/UploadZone";
 import dynamic from "next/dynamic";
 import Linktree from "./Linktree";
-// Assuming ReleaseCard.js is at src/components/ReleaseCard.js
+
 import {
     Card,
     CardContent,
