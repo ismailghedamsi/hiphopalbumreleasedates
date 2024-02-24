@@ -5,24 +5,19 @@ export const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   padding: 20px;
-  max-width: 320px; // Maintain a consistent width
-  height: 500px; // Fixed height for all cards
-  background-color: #fff; // Consider your theme's color
+  max-width: 320px;
+  background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   margin-bottom: 20px;
   word-wrap: break-word;
-  overflow: hidden;
 `;
 
 export const CardImage = styled.img`
-  width: 100%;
-  max-width: 280px;
-  height: auto;
-  border-radius: 8px;
-  margin-bottom: 15px;
+  width: 100%; // Responsive to the container width
+  object-fit: cover; // Keeps the aspect ratio of the image
+  margin-bottom: 20px; // Consistent margin below the image
 `;
 
 export const CardContent = styled.div`
@@ -32,16 +27,14 @@ export const CardContent = styled.div`
 export const CardHeader = styled.h2`
   font-size: 18px;
   font-weight: bold;
-  margin: 0 0 10px 0;
-  color: #333;
-  word-wrap: break-word;
+  margin: 0;
+  min-height: 48px; // Set a minimum height to accommodate a potential two-line wrap without changing the layout
 `;
 
 export const CardSecondaryText = styled.p`
-  font-size: 16px;
-  color: #666;
+  font-size: 14px;
   margin: 0;
-  word-wrap: break-word;
+  min-height: 36px; // Set a minimum height that allows for two lines of text
 `;
 
 export const Card = styled.div`
