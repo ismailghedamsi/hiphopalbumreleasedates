@@ -14,7 +14,7 @@ export const CardContainer = styled.div`
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   margin-bottom: 20px;
   word-wrap: break-word;
-  overflow: auto; // Optional: Allows scrolling within the card if content exceeds the fixed height
+  overflow: hidden;
 `;
 
 export const CardImage = styled.img`
