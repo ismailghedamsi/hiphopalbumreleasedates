@@ -8,7 +8,7 @@ export const CardContainer = styled.div`
   justify-content: center;
   padding: 20px;
   max-width: 320px; // Maintain a consistent width
-  height: 480px; // Fixed height for all cards
+  height: 500px; // Fixed height for all cards
   background-color: #fff; // Consider your theme's color
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
