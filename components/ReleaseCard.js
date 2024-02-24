@@ -113,7 +113,7 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
                 <Linktree release={release} />
             </LinksModal>
 
-                <CardContainer ref={index === 3 ? inputRef : null}>
+                <CardContainer>
                     <Skeleton visible={fetching}>
                         <picture className={styles.thumbnail}>
                             <CardImage height={250} width={250}
