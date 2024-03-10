@@ -4,11 +4,35 @@ import { useState } from "react"
 import PreviousNext from "../components/previousNext"
 import ReleaseGrid from "../components/ReleaseGrid"
 
-const Release = () => {
 
-    const [selectedIndex, setSelectedIndex] = useState(new Date().getMonth())
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
-    const [additionId, setAdditionId] = useState()
+export async function getServerSideProps(context) {
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1; // getMonth() is zero-based; adding 1 to match your fetching logic
+
+    // Adjust the query based on your specific needs
+    const { data: initialReleases, error } = await supabase
+        .from('releases')
+        .select('*')
+        .gte('releaseDate', `${currentYear}-${currentMonth}-01`)
+        .lte('releaseDate', `${currentYear}-${currentMonth}-31`);
+
+    if (error) {
+        console.error('Error fetching initial releases:', error);
+        return { props: { initialReleases: [] } };
+    }
+
+    return {
+        props: { initialReleases }, // will be passed to the page component as props
+    };
+}
+
+
+const Release = ({initialReleases}) => {
+
+    const [selectedIndex, setSelectedIndex] = useState(new Date().getMonth());
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [additionId, setAdditionId] = useState();
+    const [releases, setReleases] = useState(initialReleases);
 
     return (
         <>
@@ -26,7 +50,7 @@ const Release = () => {
                 <PreviousNext additionId={additionId} setAdditionId={setAdditionId} selectedIndex={selectedIndex}
                     setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} selectedYear={selectedYear}
                 />
-                <ReleaseGrid additionId={additionId} setAdditionId={setAdditionId} selectedIndex={selectedIndex}
+                <ReleaseGrid releases={releases} additionId={additionId} selectedIndex={selectedIndex}
                     setSelectedIndex={setSelectedIndex} setSelectedYear={setSelectedYear} selectedYear={selectedYear} />
             </div>
         </>
