@@ -1,5 +1,5 @@
 import { Button, Center, Skeleton } from "@mantine/core";
-import { useContext, useRef, useState } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { supabase } from "../supabaseClient";
@@ -33,16 +33,14 @@ const LinksModal = styled(Modal)`
 // Assuming Card, CardContent, CardHeader, CardImage, CardContainer, and CardSecondaryText are imported from "./styled/Cards/Card.style";
 // If adjustments are needed, apply them directly in your styled-components file.
 
-const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
+const ReleaseCard = React.memo(({ fetching, index, release, releases, setReleases }) => {
     const { loggedUser } = useContext(AppContext);
     const [releaseId, setReleaseId] = useState();
-    const [files, setFiles] = useState([]);
     const [uploadModalOpened, setUploadModalOpened] = useState(false);
     const [linksModalOpened, setLinksModalOpened] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
-    const inputRef = useRef();
 
-    const showToast = (message, type) => {
+    const showToast = useCallback((message, type) => {
         const options = {
             position: toast.POSITION.BOTTOM_CENTER,
         };
@@ -51,90 +49,98 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
         } else if (type === "error") {
             toast.error(message, options);
         }
-    };
+    }, []);
 
-    const getCover = (coverPath) => {
-        if (coverPath === "" && loggedUser) {
+    const coverImage = useMemo(() => {
+        if (release.cover === "" && loggedUser) {
             return "/no_cover_logged.png";
-        } else if (coverPath === "" && !loggedUser) {
+        } else if (release.cover === "" && !loggedUser) {
             return "/no_cover_unlogged.png";
         }
-        return coverPath;
-    };
+        return release.cover;
+    }, [release.cover, loggedUser]);
 
-    const handleUpload = async (files) => {
-        setFiles(files);
-        if (files.length > 0) {
-            setIsUploading(true);
-            const { error } = await supabase.storage.from('album-covers').upload(`public/${releaseId}/${files[0].name}`, files[0]);
-            if (!error) {
-                const publicURL = supabase.storage.from('album-covers').getPublicUrl(`public/${releaseId}/${files[0].name}`);
-                await supabase.from("releases").update({ cover: publicURL.data.publicUrl }).eq("id", releaseId);
-                let copy = [...releases];
-                let objIndex = copy.findIndex((obj => obj.id === releaseId));
-                copy[objIndex].cover = publicURL.data.publicUrl;
-                setReleases(copy);
-                showToast("The release was added", "success");
-                setUploadModalOpened(false);
-            } else {
-                showToast("Cover can't be uploaded", "error");
-            }
-            setIsUploading(false);
+    const handleUpload = useCallback(async (files) => {
+        setIsUploading(true);
+        const file = files[0];
+        const { error } = await supabase.storage.from('album-covers').upload(`public/${releaseId}/${file.name}`, file);
+        if (!error) {
+            const publicURL = await supabase.storage.from('album-covers').getPublicUrl(`public/${releaseId}/${file.name}`);
+            const copy = [...releases];
+            const objIndex = copy.findIndex((obj => obj.id === releaseId));
+            copy[objIndex].cover = publicURL.data.publicUrl;
+            setReleases(copy);
+            showToast("The release was added", "success");
+        } else {
+            showToast("Cover can't be uploaded", "error");
         }
-    };
+        setIsUploading(false);
+    }, [releaseId, releases, showToast]);
 
-    const handleRejectedFile = () => {
-        console.error('Rejected files', files);
-    };
+    const handleRejectedFile = useCallback(() => {
+        console.error('Rejected files');
+    }, []);
+
+    const openUploadModal = useCallback(() => {
+        setUploadModalOpened(true);
+        setReleaseId(release.id);
+    }, [release.id]);
 
     return (
         <>
-            <Modal
-                opened={uploadModalOpened}
-                centered
-                onClose={() => setUploadModalOpened(false)}
-                transition="fade"
-                transitionDuration={600}
-                transitionTimingFunction="ease"
-                title="Add release"
-            >
-                <SharedUploadZone onDrop={handleUpload} onReject={handleRejectedFile} uploading={isUploading} maxSize={5 * 1024 ** 2} maxFiles={1} multiple={false} />
-            </Modal>
+            {uploadModalOpened && (
+                <Modal
+                    opened={uploadModalOpened}
+                    centered
+                    onClose={() => setUploadModalOpened(false)}
+                    transition="fade"
+                    transitionDuration={600}
+                    transitionTimingFunction="ease"
+                    title="Add release"
+                >
+                    <SharedUploadZone onDrop={handleUpload} onReject={handleRejectedFile} uploading={isUploading} maxSize={5 * 1024 ** 2} maxFiles={1} multiple={false} />
+                </Modal>
+            )}
 
-            <LinksModal
-                opened={linksModalOpened}
-                centered
-                onClose={() => setLinksModalOpened(false)}
-                transition="fade"
-                transitionDuration={600}
-                transitionTimingFunction="ease"
-                title={`${release.artist} - ${release.album}`}
-            >
-                <Linktree release={release} />
-            </LinksModal>
+            {linksModalOpened && (
+                <LinksModal
+                    opened={linksModalOpened}
+                    centered
+                    onClose={() => setLinksModalOpened(false)}
+                    transition="fade"
+                    transitionDuration={600}
+                    transitionTimingFunction="ease"
+                    title={`${release.artist} - ${release.album}`}
+                >
+                    <Linktree release={release} />
+                </LinksModal>
+            )}
 
-                <CardContainer>
-                    <Skeleton visible={fetching}>
-                        <picture className={styles.thumbnail}>
-                            <CardImage height={250} width={250}
-                                loading="eager"
-                                onClick={() => { release.cover === "" && setUploadModalOpened(true); setReleaseId(release.id) }}
-                                src={getCover(release.cover)}
-                                alt={`Album cover of ${release.album} by ${release.artist}`} />
-                        </picture>
-                    </Skeleton>
-                    <CardContent>
-                        <CardHeader> {release.artist}</CardHeader>
-                        <CardSecondaryText>{release.album}</CardSecondaryText>
-                        <Center>
-                            <Button variant="gradient" gradient={{ from: 'orange', to: 'red' }} onClick={() => setLinksModalOpened(true)}>
-                                Links
-                            </Button>
-                        </Center>
-                    </CardContent>
-                </CardContainer>
+            <CardContainer>
+                <Skeleton visible={fetching}>
+                    <picture className={styles.thumbnail}>
+                        <CardImage
+                            height={250}
+                            width={250}
+                            loading="eager"
+                            onClick={release.cover === "" ? openUploadModal : undefined}
+                            src={coverImage}
+                            alt={`Album cover of ${release.album} by ${release.artist}`}
+                        />
+                    </picture>
+                </Skeleton>
+                <CardContent>
+                    <CardHeader>{release.artist}</CardHeader>
+                    <CardSecondaryText>{release.album}</CardSecondaryText>
+                    <Center>
+                        <Button variant="gradient" gradient={{ from: 'orange', to: 'red' }} onClick={() => setLinksModalOpened(true)}>
+                            Links
+                        </Button>
+                    </Center>
+                </CardContent>
+            </CardContainer>
         </>
     );
-};
+});
 
 export default ReleaseCard;
