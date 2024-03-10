@@ -16,6 +16,7 @@ import { ReleaseGrouper } from "../helper/ReleaseGrouper";
 import { ReleaseSorter } from "../helper/ReleaseSorter";
 import Search from "./Search";
 import useDidMountEffect from "./hooks/useDidMountEffect";
+import LazyLoad from "react-lazyload";
 
 
 const Modal = dynamic(() => import('@mantine/core').then(mod => mod.Modal), {
@@ -148,16 +149,18 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
                   {!isMobileView ? (
                     <Grid>
                       {options.map((el, index) => (
-                        <ReleaseCard
-                          fetching={fetching}
-                          index={index}
-                          key={index}
-                          setReleases={setReleases}
-                          releases={releases}
-                          setUploadModalOpened={setUploadModalOpened}
-                          release={el}
-                        />
-                      ))}
+                      <LazyLoad  height={200} offset={100} >
+                          <ReleaseCard
+                            fetching={fetching}
+                            index={index}
+                            key={index}
+                            setReleases={setReleases}
+                            releases={releases}
+                            setUploadModalOpened={setUploadModalOpened}
+                            release={el}
+                          />
+                          </LazyLoad>
+                          ))}
                     </Grid>
                   ) : (
                     <Carousel cards={options} />

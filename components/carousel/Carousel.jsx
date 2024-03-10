@@ -3,27 +3,23 @@ import styles from '../../styles/Carousel.module.css';
 import ReleaseCard from "../ReleaseCard";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { Center } from "@mantine/core";
+import LazyLoad from "react-lazyload";
 
 
 const Carousel = ({ cards }) => {
-  console.log("cards ", cards)
 
   const [currentAlbum, setCurrentAlbum] = useState(0);
 
   const handleNext = () => {
     setCurrentAlbum((prevState) => {
-      console.log("aaaa");
       return prevState + 1 < cards.length ? prevState + 1 : 0;
     });
-    console.log("current album infd ", cards[currentAlbum]);
   };
 
   const handlePrevious = () => {
     setCurrentAlbum((prevState) => {
-      console.log("aaaa");
       return prevState - 1 >= 0 ? prevState - 1 : cards.length - 1;
     });
-    console.log("current album infd ", cards[currentAlbum]);
   };
 
 
@@ -33,8 +29,9 @@ const Carousel = ({ cards }) => {
        <button onClick={() => handlePrevious()} disabled={cards.length <= 0} className={styles.previous}>
         <ChevronLeft />
       </button>
-      
-      <ReleaseCard fetching={false} index={currentAlbum} disabled={cards.length <= 0}  release={cards[currentAlbum]} releases={cards} />
+      <LazyLoad height={200} offset={100}>
+          <ReleaseCard fetching={false} index={currentAlbum} disabled={cards.length <= 0}  release={cards[currentAlbum]} releases={cards} />
+      </LazyLoad>
        <button onClick={() => handleNext()} className={styles.next}>
         <ChevronRight />
       </button>
