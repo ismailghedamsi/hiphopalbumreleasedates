@@ -1,5 +1,5 @@
 import { Button, Center, Skeleton } from "@mantine/core";
-import { useContext, useMemo, useRef, useState } from "react";
+import React, { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { supabase } from "../supabaseClient";
@@ -17,6 +17,7 @@ import {
     CardContainer,
     CardSecondaryText,
   } from './styled/Cards/Card.style'; // Adjust the import path based on your actual file structure
+import Image from "next/image";
   
 
 const Modal = dynamic(() => import('@mantine/core').then(mod => mod.Modal), {
@@ -29,6 +30,13 @@ const LinksModal = styled(Modal)`
     background: radial-gradient(circle at center, #fd4335 , yellow);
     }
 `;
+
+export const ImageWrapper = styled.div`
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+`;
+
 
 // Assuming Card, CardContent, CardHeader, CardImage, CardContainer, and CardSecondaryText are imported from "./styled/Cards/Card.style";
 // If adjustments are needed, apply them directly in your styled-components file.
@@ -117,9 +125,9 @@ const ReleaseCard = React.memo(({ fetching, index, release, releases, setRelease
             )}
 
             <CardContainer>
-                <Skeleton visible={fetching}>
-                    <picture className={styles.thumbnail}>
-                        <CardImage
+                <Skeleton  height={250} width={250} visible={fetching}>
+                    <ImageWrapper>
+                        <Image
                             height={250}
                             width={250}
                             loading="eager"
@@ -127,7 +135,7 @@ const ReleaseCard = React.memo(({ fetching, index, release, releases, setRelease
                             src={coverImage}
                             alt={`Album cover of ${release.album} by ${release.artist}`}
                         />
-                    </picture>
+                        </ImageWrapper>
                 </Skeleton>
                 <CardContent>
                     <CardHeader>{release.artist}</CardHeader>
