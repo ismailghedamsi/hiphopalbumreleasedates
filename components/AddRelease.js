@@ -40,6 +40,68 @@ export default function AddRelease({ setAdditionId, setInsertedData }) {
 
 
   const insertRelease = async (rel) => {
+    // Check if user is logged in
+    if (!loggedUser || !loggedUser.id) {
+      toast.error("You must be logged in to add albums. Please sign in first.", {
+        position: toast.POSITION.BOTTOM_CENTER
+      });
+      return;
+    }
+
+    // Get the current authenticated user from Supabase session
+    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !authUser) {
+      toast.error("Authentication error: Please try logging out and logging back in.", {
+        position: toast.POSITION.BOTTOM_CENTER
+      });
+      return;
+    }
+
+    // Use the authenticated user's ID from the session
+    const userId = authUser.id;
+
+    // Check if profile exists, create it if it doesn't
+    try {
+      const { data: profileCheck, error: profileCheckError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', userId)
+        .single();
+      
+      if (profileCheckError && profileCheckError.code === 'PGRST116') {
+        // Profile doesn't exist, try to create it
+        // Try minimal insert with just id first
+        let profileData = { id: userId };
+        const username = authUser.user_metadata?.username || authUser.email?.split('@')[0] || 'user';
+        profileData.username = username;
+        
+        const { data: newProfile, error: createError } = await supabase
+          .from('profiles')
+          .insert(profileData)
+          .select()
+          .single();
+        
+        if (createError) {
+          // If that fails, try with just the id
+          const { data: newProfile2, error: createError2 } = await supabase
+            .from('profiles')
+            .insert({ id: userId })
+            .select()
+            .single();
+          
+          if (createError2) {
+            toast.error(`Profile creation failed: ${createError2.message}. Please run the SQL script in Supabase to create your profile.`, {
+              position: toast.POSITION.BOTTOM_CENTER
+            });
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("Could not check profiles table:", e);
+    }
+
     if (!rel.cover) {
       rel.cover = ""
     }
@@ -51,7 +113,7 @@ export default function AddRelease({ setAdditionId, setInsertedData }) {
     delete rel.spotify;
     delete rel.bandcamp
     delete rel.apple_music
-    rel.addedBy = loggedUser.id
+    rel.addedBy = userId
     rel.artist = trim(rel.artist)
     rel.album = trim(rel.album)
     rel.releaseDate = dayjs(rel.releaseDate).format('YYYY-MM-DD')
@@ -83,7 +145,22 @@ export default function AddRelease({ setAdditionId, setInsertedData }) {
 
     }
     if (error) {
-      duplicateToast()
+      if (error.code === '23505') {
+        // Duplicate entry
+        duplicateToast()
+      } else if (error.code === '23503' || error.message.includes('foreign key constraint')) {
+        // Foreign key constraint violation - user doesn't exist in profiles table
+        const tableName = error.details?.match(/table "(\w+)"/)?.[1] || 'profiles';
+        const userID = error.details?.match(/Key \(addedBy\)=\(([^)]+)\)/)?.[1] || userId;
+        const errorMsg = error.details || error.message;
+        toast.error(`Database error: Your user account (${userID}) doesn't exist in the "${tableName}" table. ${errorMsg}`, {
+          position: toast.POSITION.BOTTOM_CENTER
+        });
+      } else {
+        toast.error(`Error adding album: ${error.message}`, {
+          position: toast.POSITION.BOTTOM_CENTER
+        });
+      }
     }
   }
 

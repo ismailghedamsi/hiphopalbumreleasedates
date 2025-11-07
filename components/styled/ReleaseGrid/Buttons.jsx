@@ -1,6 +1,6 @@
 import { styled } from "styled-components";
 
-const AddReleaseButton = styled.button`
+const sharedStyles = `
      border-radius: 20px;
      background-color: #FFD700;
      margin-bottom: 4vh;
@@ -13,14 +13,12 @@ const AddReleaseButton = styled.button`
      }
 `;
 
+const AddReleaseButton = styled.button`
+     ${sharedStyles}
+`;
+
 const LoginToUploadButton = styled.button`
-     border-radius: 20px;
-     background-color: #FFD700;
-     margin-bottom: 4vh;
-     margin-top : 4vh;
-     border-style: solid;
-     height : 5vh;
-     width: 20vh;
+     ${sharedStyles}
      :hover {
          background-image: linear-gradient(rgb(0 0 0/40%) 0 0);
      }
@@ -40,5 +38,10 @@ const LoginToUploadButton = styled.button`
     }
 `;
 
+const ExportButton = styled.button`
+     ${sharedStyles}
+     width: auto;
+     padding: 0 2.5rem;
+`;
 
-export  {AddReleaseButton,LoginToUploadButton}
+export  {AddReleaseButton,LoginToUploadButton, ExportButton}
