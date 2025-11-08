@@ -1,6 +1,6 @@
 import { Center } from "@mantine/core"
-import { useQuery } from "@supabase-cache-helpers/postgrest-swr"
 import Head from "next/head"
+import { useEffect, useState } from "react"
 import { supabase } from "../supabaseClient"
 
 const Headers = ({ headersArray }) => {
@@ -35,10 +35,31 @@ const Content = ({ data }) => {
 }
 
 const TopContributor = () => {
-
-    const { data } = useQuery(
-        supabase.from("top_contributors").select("*")
-    )
+    const [data, setData] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
+    useEffect(() => {
+        let active = true
+        const fetchContributors = async () => {
+            setLoading(true)
+            const { data: contributors, error } = await supabase
+                .from("top_contributors")
+                .select("*")
+            if (!active) {
+                return
+            }
+            if (error) {
+                setError(error)
+            } else {
+                setData(contributors ?? [])
+            }
+            setLoading(false)
+        }
+        fetchContributors()
+        return () => {
+            active = false
+        }
+    }, [])
 
     const headersArray = [
         "User",
@@ -60,6 +81,8 @@ const TopContributor = () => {
                 <h1 className="has-text-centered">Top contributors</h1>
             </Center>
             <Center>
+                {error && <p role="alert">Unable to load contributors.</p>}
+                {loading && !error && <p>Loading...</p>}
                 <table className="table is-bordered">
                     <Headers headersArray={headersArray} />
                     <Content data={data} />

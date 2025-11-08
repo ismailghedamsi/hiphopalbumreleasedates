@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from '../styles/Ressources.module.css';
 import { supabase } from '../supabaseClient';
-import { useQuery } from '@supabase-cache-helpers/postgrest-swr';
 import {
   Accordion,
   AccordionItem,
@@ -18,15 +17,39 @@ import 'react-accessible-accordion/dist/fancy-example.css';
 
 function HipHopRessources() {
 
-  const { data, error, isLoading } = useQuery(
-    supabase.from('resources').select('*')
-  );
-
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [defaultValue, setDefaultValue] = useState(null);
   const [groupedResources, setGroupedResources] = useState({});
 
   useEffect(() => {
-    if (data) {
+    let isMounted = true;
+
+    const fetchResources = async () => {
+      setIsLoading(true);
+      const { data, error } = await supabase.from('resources').select('*');
+      if (!isMounted) return;
+
+      if (error) {
+        setError(error);
+        setData([]);
+      } else {
+        setError(null);
+        setData(data ?? []);
+      }
+      setIsLoading(false);
+    };
+
+    fetchResources();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (data && data.length > 0) {
       const resources = data.reduce((acc, resource) => {
         if (!acc[resource.category]) {
           acc[resource.category] = {};
@@ -44,6 +67,9 @@ function HipHopRessources() {
       if (Object.keys(resources).length > 0) {
         setDefaultValue(Object.keys(resources)[0]);
       }
+    } else {
+      setGroupedResources({});
+      setDefaultValue(null);
     }
   }, [data]);
 
@@ -82,8 +108,12 @@ function HipHopRessources() {
   };
 
 
-  if (isLoading || !data) {
+  if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div role="alert">Unable to load hip hop resources.</div>;
   }
 
   return (

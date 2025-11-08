@@ -22,7 +22,6 @@
     "@mui/icons-material": "^5.10.14",
     "@mui/lab": "^5.0.0-alpha.30",
     "@mui/material": "^5.10.14",
-    "@supabase-cache-helpers/postgrest-swr": "^0.4.17",
     "@supabase/supabase-js": "^2.0.5",
     "@tabler/icons": "^1.111.0",
     "@vercel/analytics": "^0.1.6",
@@ -58,7 +57,6 @@
     "responsive-navbar-react": "^1.2.1",
     "sass": "^1.56.1",
     "styled-components": "^6.0.0-beta.8",
-    "swr": "^2.3.6",
     "uuid": "^9.0.0",
     "yup": "^0.32.11"
   },
