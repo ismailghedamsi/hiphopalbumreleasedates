@@ -32,21 +32,28 @@ const Home = ({ initialReleases = [] }) => {
 
 export default Home
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   const now = new Date();
   const year = now.getFullYear();
   const month = DateHelpers.getMonth(now);
-
-  const { data, error } = await supabase
-    .from('releases')
-    .select()
-    .gte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-01`)
-    .lte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-${DateHelpers.getDaysInMonth(year, month)}`)
-    .order('releaseDate', { ascending: true });
-
+  let initialReleases = [];
+  try {
+    const { data, error } = await supabase
+      .from('releases')
+      .select()
+      .gte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-01`)
+      .lte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-${DateHelpers.getDaysInMonth(year, month)}`)
+      .order('releaseDate', { ascending: true });
+    if (!error && data) {
+      initialReleases = data;
+    }
+  } catch (error) {
+    console.error("Failed to fetch releases for static props", error);
+  }
   return {
     props: {
-      initialReleases: !error && data ? data : [],
+      initialReleases,
     },
+    revalidate: 1800,
   };
 }
