@@ -1,4 +1,4 @@
-import { Button, Center, Skeleton } from "@mantine/core";
+import { Button, Center, Skeleton, Tabs, TextInput, Stack, Text } from "@mantine/core";
 import { useContext, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -40,6 +40,9 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
     const [uploadModalOpened, setUploadModalOpened] = useState(false);
     const [linksModalOpened, setLinksModalOpened] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [imageUrl, setImageUrl] = useState("");
+    const [isSavingUrl, setIsSavingUrl] = useState(false);
+    const [urlError, setUrlError] = useState("");
     const inputRef = useRef();
 
     const showToast = (message, type) => {
@@ -76,11 +79,55 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
                 setReleases(copy);
                 showToast("The release was added", "success");
                 setUploadModalOpened(false);
+                setImageUrl("");
+                setUrlError("");
             } else {
                 showToast("Cover can't be uploaded", "error");
             }
             setIsUploading(false);
         }
+    };
+
+    const handleSaveImageUrl = async () => {
+        if (!imageUrl) {
+            setUrlError("Please enter an image URL.");
+            return;
+        }
+        try {
+            const parsedUrl = new URL(imageUrl);
+            if (!parsedUrl.protocol.startsWith("http")) {
+                throw new Error("Invalid protocol");
+            }
+        } catch (err) {
+            setUrlError("Please enter a valid URL (http/https).");
+            return;
+        }
+
+        setUrlError("");
+        setIsSavingUrl(true);
+
+        const coverUrl = imageUrl.trim();
+        const currentReleaseId = releaseId ?? release.id;
+
+        const { error } = await supabase
+            .from("releases")
+            .update({ cover: coverUrl })
+            .eq("id", currentReleaseId);
+
+        if (!error) {
+            const copy = [...releases];
+            const objIndex = copy.findIndex((obj => obj.id === currentReleaseId));
+            if (objIndex !== -1) {
+                copy[objIndex].cover = coverUrl;
+                setReleases(copy);
+            }
+            showToast("Cover updated from URL", "success");
+            setUploadModalOpened(false);
+            setImageUrl("");
+        } else {
+            showToast("Cover can't be updated from URL", "error");
+        }
+        setIsSavingUrl(false);
     };
 
     const handleRejectedFile = () => {
@@ -92,13 +139,46 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
             <Modal
                 opened={uploadModalOpened}
                 centered
-                onClose={() => setUploadModalOpened(false)}
+                onClose={() => {
+                    setUploadModalOpened(false);
+                    setUrlError("");
+                    setImageUrl("");
+                }}
                 transition="fade"
                 transitionDuration={600}
                 transitionTimingFunction="ease"
                 title="Add release"
             >
-                <SharedUploadZone onDrop={handleUpload} onReject={handleRejectedFile} uploading={isUploading} maxSize={5 * 1024 ** 2} maxFiles={1} multiple={false} />
+                <Tabs defaultValue="upload">
+                    <Tabs.List grow>
+                        <Tabs.Tab value="upload">Upload file</Tabs.Tab>
+                        <Tabs.Tab value="url">Use image URL</Tabs.Tab>
+                    </Tabs.List>
+                    <Tabs.Panel value="upload" pt="md">
+                        <SharedUploadZone onDrop={handleUpload} onReject={handleRejectedFile} uploading={isUploading} maxSize={5 * 1024 ** 2} maxFiles={1} multiple={false} />
+                    </Tabs.Panel>
+                    <Tabs.Panel value="url" pt="md">
+                        <Stack spacing="sm">
+                            <Text size="sm" color="dimmed">
+                                Paste a direct link to an image (jpg, png, etc.). We will use this link as the cover.
+                            </Text>
+                            <TextInput
+                                placeholder="https://example.com/cover.jpg"
+                                value={imageUrl}
+                                onChange={(event) => setImageUrl(event.currentTarget.value)}
+                                error={urlError}
+                            />
+                            <Button
+                                variant="gradient"
+                                gradient={{ from: 'indigo', to: 'cyan' }}
+                                onClick={handleSaveImageUrl}
+                                loading={isSavingUrl}
+                            >
+                                Save cover from URL
+                            </Button>
+                        </Stack>
+                    </Tabs.Panel>
+                </Tabs>
             </Modal>
 
             <LinksModal
@@ -122,7 +202,14 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
                                 sizes="(max-width: 768px) 80vw, 250px"
                                 priority={index === 0}
                                 loading={index === 0 ? undefined : "lazy"}
-                                onClick={() => { release.cover === "" && setUploadModalOpened(true); setReleaseId(release.id) }}
+                                onClick={() => {
+                                    if (release.cover === "") {
+                                        setUploadModalOpened(true);
+                                        setReleaseId(release.id);
+                                        setImageUrl("");
+                                        setUrlError("");
+                                    }
+                                }}
                                 src={getCover(release.cover)}
                                 alt={`Album cover of ${release.album} by ${release.artist}`} />
                         </picture>
