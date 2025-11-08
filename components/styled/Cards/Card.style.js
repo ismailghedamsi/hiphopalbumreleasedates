@@ -1,5 +1,6 @@
 // src/styled/CardStyles.js
 import styled from 'styled-components';
+import Image from 'next/image';
 
 export const CardContainer = styled.div`
   display: flex;
@@ -14,10 +15,11 @@ export const CardContainer = styled.div`
   word-wrap: break-word;
 `;
 
-export const CardImage = styled.img`
-  width: 100%; // Responsive to the container width
-  object-fit: cover; // Keeps the aspect ratio of the image
-  margin-bottom: 20px; // Consistent margin below the image
+export const CardImage = styled(Image)`
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  margin-bottom: 20px;
 `;
 
 export const CardContent = styled.div`

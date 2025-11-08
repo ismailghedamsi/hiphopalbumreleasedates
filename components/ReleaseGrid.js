@@ -35,9 +35,9 @@ const BulkAddRelease = dynamic(() => import('./BulkAddRelease'), {
 });
 
 
-const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedYear }) => {
+const ReleaseGrid = ({ additionId, initialReleases = [], setAdditionId, setSelectedIndex, setSelectedYear }) => {
 
-    const [releases, setReleases] = useState([])
+    const [releases, setReleases] = useState(initialReleases)
     const [_, setUploadModalOpened] = useState(false)
     const [addReleaseModalOpened, setAddReleaseModalOpened] = useState(false)
     const [defaultValueYearSelect, setDefaultValueYearSelect] = useState(new Date().getFullYear())
@@ -60,6 +60,24 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
         });
     }, [selectedDayNumber])
 
+    const updateUniqueDays = useCallback((data = []) => {
+        if (!setUniqueDays) {
+            return;
+        }
+        const releasesDates = data.map(el => el.releaseDate)
+        const days = releasesDates
+            .map(date => date.split("-")[2])
+            .map(day => day.replace(/^0+/, ''));
+        const unique = days.filter((day, index) => days.indexOf(day) === index);
+        setUniqueDays(unique);
+    }, [setUniqueDays]);
+
+    useEffect(() => {
+        if (initialReleases.length > 0) {
+            updateUniqueDays(initialReleases);
+        }
+    }, [initialReleases, updateUniqueDays]);
+
     const getReleases = async () => {
         setFetching(true)
         let query = supabase.from('releases').select()
@@ -73,12 +91,9 @@ const ReleaseGrid = ({ additionId, setAdditionId, setSelectedIndex, setSelectedY
         const { data, error } = await query
         if (!error) {
             setReleases(data)
+            updateUniqueDays(data)
         }
         setFetching(false)
-        const releasesDates = data.map(el => el.releaseDate)
-        let days = releasesDates.map(date => date.split("-")[2]).map(day => day.replace(/^0+/, ''));
-        let unique = days.filter((day, index) => days.indexOf(day) === index);
-        setUniqueDays(unique)
 
     }
 

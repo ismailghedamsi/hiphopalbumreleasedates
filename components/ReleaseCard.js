@@ -116,8 +116,12 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
                 <CardContainer>
                     <Skeleton visible={fetching}>
                         <picture className={styles.thumbnail}>
-                            <CardImage height={250} width={250}
-                                loading="eager"
+                            <CardImage
+                                height={250}
+                                width={250}
+                                sizes="(max-width: 768px) 80vw, 250px"
+                                priority={index === 0}
+                                loading={index === 0 ? undefined : "lazy"}
                                 onClick={() => { release.cover === "" && setUploadModalOpened(true); setReleaseId(release.id) }}
                                 src={getCover(release.cover)}
                                 alt={`Album cover of ${release.album} by ${release.artist}`} />

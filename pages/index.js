@@ -1,8 +1,10 @@
 import Release from './releases';
 import { FaArrowUp } from "react-icons/fa";
 import Head from 'next/head';
+import { supabase } from '../supabaseClient';
+import DateHelpers from '../helper/dateUtilities';
 
-const Home = () => {
+const Home = ({ initialReleases = [] }) => {
 
   return <>
     <Head>
@@ -23,9 +25,28 @@ const Home = () => {
     <a href="#" aria-label="Scroll to top of the page" role="button" className="button is-floating is-primary">
       <FaArrowUp aria-hidden="true" />
     </a>
-    <Release />
+    <Release initialReleases={initialReleases} />
   </>
 
 }
 
 export default Home
+
+export async function getServerSideProps() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = DateHelpers.getMonth(now);
+
+  const { data, error } = await supabase
+    .from('releases')
+    .select()
+    .gte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-01`)
+    .lte("releaseDate", `${year}-${DateHelpers.appendZero(month)}-${DateHelpers.getDaysInMonth(year, month)}`)
+    .order('releaseDate', { ascending: true });
+
+  return {
+    props: {
+      initialReleases: !error && data ? data : [],
+    },
+  };
+}
