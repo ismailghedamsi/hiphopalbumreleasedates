@@ -2,7 +2,7 @@ import { Center, TextInput } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { IconX } from "@tabler/icons";
 
-const Search = ({ setSearchTerm, searchTerm, handleSearch }) => {
+const Search = ({ setSearchTerm, searchTerm, handleSearch, placeholder = "Search..." }) => {
     const matches = useMediaQuery(theme => theme.breakpoints.down("sm"));
   
     return (
@@ -17,7 +17,7 @@ const Search = ({ setSearchTerm, searchTerm, handleSearch }) => {
           }
           onChange={handleSearch}
           type="search"
-          placeholder="Search..."
+          placeholder={placeholder}
         />
       </Center>
     );

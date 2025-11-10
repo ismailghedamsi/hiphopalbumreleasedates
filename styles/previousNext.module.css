@@ -29,3 +29,37 @@
     outline: 2px solid #004f3d;
     outline-offset: 2px;
 }
+
+.monthPickerWrapper {
+    margin-left: 1rem;
+}
+
+.monthPickerWrapper :global(.react-datepicker-wrapper) {
+    width: 160px;
+}
+
+.monthPickerWrapper :global(.react-datepicker__input-container > input) {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #d9d9d9;
+    font-size: 0.9rem;
+}
+
+.monthPickerWrapper :global(.react-datepicker__input-container > input:focus) {
+    outline: none;
+    border-color: #008464;
+    box-shadow: 0 0 0 2px rgba(0, 168, 129, 0.2);
+}
+
+@media (max-width: 600px) {
+    .monthPickerWrapper {
+        margin-left: 0;
+        margin-top: 0.75rem;
+        width: 100%;
+    }
+
+    .monthPickerWrapper :global(.react-datepicker-wrapper) {
+        width: 100%;
+    }
+}

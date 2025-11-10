@@ -1,29 +1,19 @@
-import styled from "@emotion/styled";
 import { Flex } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import moment from "moment";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import AppContext from "./AppContext";
 import styles from '../styles/previousNext.module.css'
+import MonthYearPicker from "./MonthPicker";
 
 const PreviousNext = ({additionId }) => {
     const { year,setMonth, month, setYear} = useContext(AppContext)
     const matches = useMediaQuery('(min-width: 500px)');
+    const [pickerValue, setPickerValue] = useState(new Date(year, month - 1, 1));
 
    useEffect(() => {
-     moment( new Date(year,month-1,1)).format("MMMM")
+     setPickerValue(new Date(year, month - 1, 1));
    },[month,year,additionId])
-
-   const MonthChangeButton = styled.button`
-    border-radius: 20px;
-    height : 5vh;
-    background-color : #00A881;
-    width: 20vh;
-    border-style: solid;
-    :hover {
-        background-image: linear-gradient(rgb(0 0 0/30%) 0 0);
-     }
-   `
 
     return (
         <Flex
@@ -34,32 +24,36 @@ const PreviousNext = ({additionId }) => {
       direction={matches ? "row" : "column"}
       wrap="nowrap"
     >
-            <MonthChangeButton onClick={handlePreviousMonth()} variant="outline">Previous</MonthChangeButton>
-            <div className={styles.month_label}>{moment( new Date(year,month-1,1)).format(matches ? "MMMM" : "MMM")}</div>
-            <MonthChangeButton variant="outline" onClick={handleNextMonth()}>Next</MonthChangeButton>
+            <button type="button" className={styles.monthChangeButton} onClick={handlePreviousMonth}>Previous</button>
+            <div className={styles.monthLabel}>{moment( new Date(year,month-1,1)).format(matches ? "MMMM" : "MMM")}</div>
+            <button type="button" className={styles.monthChangeButton} onClick={handleNextMonth}>Next</button>
+            <div className={styles.monthPickerWrapper}>
+              <MonthYearPicker
+                startDate={pickerValue}
+                setStartDate={setPickerValue}
+                setMonth={setMonth}
+                setYear={setYear}
+              />
+            </div>
         </Flex>
     )
 
     function handleNextMonth() {
-        return () => {
-            if (month - 1 === 11) {
-                setMonth(1);
-                setYear(year + 1);
-            } else {
-                setMonth(month + 1);
-            }
-        };
+        if (month - 1 === 11) {
+            setMonth(1);
+            setYear(year + 1);
+        } else {
+            setMonth(month + 1);
+        }
     }
 
     function handlePreviousMonth() {
-        return () => {
-            if (month - 1 === 0) {
-                setMonth(12);
-                setYear(year - 1);
-            } else {
-                setMonth(month - 1);
-            }
-        };
+        if (month - 1 === 0) {
+            setMonth(12);
+            setYear(year - 1);
+        } else {
+            setMonth(month - 1);
+        }
     }
 }
 
