@@ -3,7 +3,7 @@ import { Fragment, useCallback, useContext, useEffect, useRef, useState } from "
 import { supabase } from "../supabaseClient";
 import dayjs from "dayjs";
 import DateHelpers from '../helper/dateUtilities'
-import { Center, Loader } from "@mantine/core";
+import { Center, Loader, Modal } from "@mantine/core";
 import AppContext from "./AppContext";
 import { useRouter } from "next/router";
 import styles from '../styles/ReleaseGrid.module.css'
@@ -18,11 +18,6 @@ import Search from "./Search";
 import useDidMountEffect from "./hooks/useDidMountEffect";
 import { Tabs } from "@mantine/core";
 
-
-const Modal = dynamic(() => import('@mantine/core').then(mod => mod.Modal), {
-    ssr: false,
-    loading: () => <p>Loading modal...</p>
-});
 
 const AddRelease = dynamic(() => import('./AddRelease'), {
     ssr: false,

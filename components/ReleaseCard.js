@@ -1,4 +1,4 @@
-import { Button, Center, Skeleton, Tabs, TextInput, Stack, Text } from "@mantine/core";
+import { Button, Center, Skeleton, Tabs, TextInput, Stack, Text, Modal } from "@mantine/core";
 import { useContext, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -18,11 +18,6 @@ import {
     CardSecondaryText,
   } from './styled/Cards/Card.style'; // Adjust the import path based on your actual file structure
   
-
-const Modal = dynamic(() => import('@mantine/core').then(mod => mod.Modal), {
-    ssr: false,
-    loading: () => <p>Loading modal...</p>
-});
 
 const LinksModal = styled(Modal)`
    & .mantine-Modal-modal {
