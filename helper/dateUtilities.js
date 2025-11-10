@@ -12,7 +12,6 @@ export default class DateHelpers {
     }
 
     static getMonth(date){
-      const temp = date.getMonth()+1
-      return temp
+      return date.getMonth() + 1
     }
   }

@@ -17,14 +17,19 @@ const NavbarComponent = dynamic(() => import('./Navbar'), {
 const Layout = ({ children }) => {
     const [appContext, setAppContext] = useState("default")
     const [loggedUser, setLoggedUser] = useState()
-    const [month, setMonth] = useState(DateHelpers.getMonth(new Date()))
-    const [year, setYear] = useState(new Date().getFullYear())
+    const now = new Date()
+    const [month, setMonth] = useState(now.getMonth() + 1)
+    const [year, setYear] = useState(now.getFullYear())
     const [selectedDayNumber, setSelectedDayNumber] = useState()
     const router = useRouter()
     const [uniqueDays, setUniqueDays] = useState()
     const anyValue = 5
 
     useEffect(() => {
+        if (!router.isReady) {
+            return
+        }
+
         const { year: yearParam, month: monthParam, day: dayParam } = router.query
 
         if (yearParam) {
@@ -39,6 +44,11 @@ const Layout = ({ children }) => {
             if (!Number.isNaN(parsedMonth) && parsedMonth >= 1 && parsedMonth <= 12) {
                 setMonth(parsedMonth)
             }
+        } else {
+            const currentMonth = new Date().getMonth() + 1
+            if (month !== currentMonth) {
+                setMonth(currentMonth)
+            }
         }
 
         if (dayParam) {
@@ -47,7 +57,7 @@ const Layout = ({ children }) => {
                 setSelectedDayNumber(String(parsedDay))
             }
         }
-    }, [router.query.year, router.query.month, router.query.day])
+    }, [router.isReady, router.query.year, router.query.month, router.query.day, month])
     return (
         <StyledEngineProvider injectFirst>
             <AppContext.Provider value={{ uniqueDays, setUniqueDays, selectedDayNumber, setSelectedDayNumber, year, month, setMonth, setYear, loggedUser, setLoggedUser, appContext, setAppContext, anyValue }}>
