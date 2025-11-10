@@ -163,6 +163,7 @@ const ReleaseGrid = ({ additionId, initialReleases = [], setAdditionId, setSelec
             <ModalBase
               opened={addReleaseModalOpened}
               title="Add release"
+              size="xl"
               onClose={() => setAddReleaseModalOpened(false)}
             >
               <Tabs defaultValue="single">

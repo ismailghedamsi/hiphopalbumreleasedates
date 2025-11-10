@@ -140,6 +140,7 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
                     setUrlError("");
                     setImageUrl("");
                 }}
+            size="lg"
             >
                 <Tabs defaultValue="upload">
                     <Tabs.List grow>
