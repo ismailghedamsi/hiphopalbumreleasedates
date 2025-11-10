@@ -3,7 +3,7 @@ import { StyledEngineProvider } from "@mui/material"
 import dayjs from "dayjs"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import DateHelpers from "../helper/dateUtilities"
 import AppContext from "./AppContext"
 import Footer from "./Footer"
@@ -23,6 +23,31 @@ const Layout = ({ children }) => {
     const router = useRouter()
     const [uniqueDays, setUniqueDays] = useState()
     const anyValue = 5
+
+    useEffect(() => {
+        const { year: yearParam, month: monthParam, day: dayParam } = router.query
+
+        if (yearParam) {
+            const parsedYear = parseInt(yearParam, 10)
+            if (!Number.isNaN(parsedYear) && parsedYear >= 1900 && parsedYear <= 2100) {
+                setYear(parsedYear)
+            }
+        }
+
+        if (monthParam) {
+            const parsedMonth = parseInt(monthParam, 10)
+            if (!Number.isNaN(parsedMonth) && parsedMonth >= 1 && parsedMonth <= 12) {
+                setMonth(parsedMonth)
+            }
+        }
+
+        if (dayParam) {
+            const parsedDay = parseInt(dayParam, 10)
+            if (!Number.isNaN(parsedDay)) {
+                setSelectedDayNumber(String(parsedDay))
+            }
+        }
+    }, [router.query.year, router.query.month, router.query.day])
     return (
         <StyledEngineProvider injectFirst>
             <AppContext.Provider value={{ uniqueDays, setUniqueDays, selectedDayNumber, setSelectedDayNumber, year, month, setMonth, setYear, loggedUser, setLoggedUser, appContext, setAppContext, anyValue }}>

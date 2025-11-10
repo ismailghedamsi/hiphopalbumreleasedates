@@ -2,8 +2,8 @@ import { useContext, useEffect, useState } from "react"
 import { supabase } from "../supabaseClient"
 import AppContext from "./AppContext"
 import "../styles/Navbar.module.css"
-import { NavbarContainer, LeftContainer, NavbarExtendedContainer, NavbarInnerContainer, NavbarLink, NavbarLinkContainer, NavbarLinkExtended, OpenLinksButton } from "./styled/Navbar.style"
-import { IconMenu, IconX } from "@tabler/icons"
+import { NavbarContainer, LeftContainer, NavbarExtendedContainer, NavbarInnerContainer, NavbarLink, NavbarLinkContainer, NavbarLinkExtended, OpenLinksButton, HeaderSearchWrapper, HeaderSearchForm, HeaderSearchInput, HeaderSearchIcon, MobileSearchContainer, MobileSearchForm, MobileSearchInput, MobileSearchIcon } from "./styled/Navbar.style"
+import { IconMenu, IconX, IconSearch } from "@tabler/icons"
 import { useRouter } from "next/router"
 
 const Navbar = () => {
@@ -12,6 +12,7 @@ const Navbar = () => {
   const [extendNavbar, setExtendNavbar] = useState(false);
   const [activeLink, setActiveLink] = useState(router.pathname);
   const [activeLinkMobile, setActiveLinkMobile] = useState(router.pathname);
+  const [searchValue, setSearchValue] = useState("");
   const getLoggedUser = async () => {
     const res = await supabase.auth.getUser()
     setLoggedUser(res.data.user)
@@ -20,6 +21,27 @@ const Navbar = () => {
   useEffect(() => {
     getLoggedUser()
   }, [])
+
+  useEffect(() => {
+    if (router.pathname === "/search") {
+      const q = router.query.q;
+      if (typeof q === "string") {
+        setSearchValue(q);
+      } else if (!q) {
+        setSearchValue("");
+      }
+    }
+  }, [router.pathname, router.query.q]);
+
+  const handleSearchSubmit = (value) => {
+    const trimmed = value.trim();
+    setExtendNavbar(false);
+    if (trimmed.length === 0) {
+      router.push("/search");
+      return;
+    }
+    router.push(`/search?q=${encodeURIComponent(trimmed)}`);
+  };
 
   const handleActiveLink = (active) => {
     return activeLink === `${active}` ? { "color": "aliceblue", paddingBottom: "10px", textDecoration: "none", borderBottom: "1px solid ", lineHeight: "48px" } : {}
@@ -59,6 +81,26 @@ const Navbar = () => {
             </OpenLinksButton>
           </NavbarLinkContainer>
         </LeftContainer>
+        <HeaderSearchWrapper>
+          <HeaderSearchForm
+            role="search"
+            onSubmit={(event) => {
+              event.preventDefault();
+              handleSearchSubmit(searchValue);
+            }}
+          >
+            <HeaderSearchInput
+              type="search"
+              value={searchValue}
+              onChange={(event) => setSearchValue(event.target.value)}
+              placeholder="Search releases..."
+              aria-label="Search releases"
+            />
+            <HeaderSearchIcon>
+              <IconSearch size={18} />
+            </HeaderSearchIcon>
+          </HeaderSearchForm>
+        </HeaderSearchWrapper>
       </NavbarInnerContainer>
 
       {extendNavbar && (
@@ -77,6 +119,26 @@ const Navbar = () => {
               type="button"
             > <span >Sign out</span></NavbarLinkExtended>
           }
+          <MobileSearchContainer>
+            <MobileSearchForm
+              role="search"
+              onSubmit={(event) => {
+                event.preventDefault();
+                handleSearchSubmit(searchValue);
+              }}
+            >
+              <MobileSearchInput
+                type="search"
+                value={searchValue}
+                onChange={(event) => setSearchValue(event.target.value)}
+                placeholder="Search releases..."
+                aria-label="Search releases"
+              />
+              <MobileSearchIcon>
+                <IconSearch size={18} />
+              </MobileSearchIcon>
+            </MobileSearchForm>
+          </MobileSearchContainer>
         </NavbarExtendedContainer>
       )}
     </NavbarContainer>

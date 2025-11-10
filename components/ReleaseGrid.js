@@ -3,7 +3,7 @@ import { Fragment, useCallback, useContext, useEffect, useRef, useState } from "
 import { supabase } from "../supabaseClient";
 import dayjs from "dayjs";
 import DateHelpers from '../helper/dateUtilities'
-import { Center, Loader, Paper, Text, Group, SegmentedControl, Stack, ScrollArea, Button } from "@mantine/core";
+import { Center, Loader } from "@mantine/core";
 import AppContext from "./AppContext";
 import { useRouter } from "next/router";
 import styles from '../styles/ReleaseGrid.module.css'
@@ -41,12 +41,9 @@ const ReleaseGrid = ({ additionId, initialReleases = [], setAdditionId, setSelec
     const [_, setUploadModalOpened] = useState(false)
     const [addReleaseModalOpened, setAddReleaseModalOpened] = useState(false)
     const [defaultValueYearSelect, setDefaultValueYearSelect] = useState(new Date().getFullYear())
-    const { loggedUser, year, month, setMonth, setYear, selectedDayNumber, setSelectedDayNumber, setUniqueDays } = useContext(AppContext)
+    const { loggedUser, year, month, selectedDayNumber, setSelectedDayNumber, setUniqueDays } = useContext(AppContext)
     const [insertedData, setInsertedData] = useState([])
     const [searchTerm, setSearchTerm] = useState('');
-    const [searchScope, setSearchScope] = useState("month");
-    const [globalResults, setGlobalResults] = useState([]);
-    const [globalFetching, setGlobalFetching] = useState(false);
     const [fetching, setFetching] = useState(false)
     const isMobileView = useMediaQuery('(max-width: 767px)')
     const handleSearch = useCallback(event => setSearchTerm(event.target.value), []);
@@ -81,46 +78,6 @@ const ReleaseGrid = ({ additionId, initialReleases = [], setAdditionId, setSelec
         }
     }, [initialReleases, updateUniqueDays]);
 
-    useEffect(() => {
-        let ignore = false;
-
-        const runGlobalSearch = async () => {
-            if (searchScope !== "all") {
-                setGlobalResults([]);
-                setGlobalFetching(false);
-                return;
-            }
-            const term = searchTerm.trim();
-            if (term.length < 2) {
-                setGlobalResults([]);
-                setGlobalFetching(false);
-                return;
-            }
-            setGlobalFetching(true);
-            const { data, error } = await supabase
-                .from("releases")
-                .select()
-                .or(`artist.ilike.*${term}*,album.ilike.*${term}*`)
-                .order('releaseDate', { ascending: true })
-                .limit(100);
-            if (ignore) {
-                return;
-            }
-            if (!error && data) {
-                setGlobalResults(data);
-            } else {
-                setGlobalResults([]);
-            }
-            setGlobalFetching(false);
-        };
-
-        runGlobalSearch();
-
-        return () => {
-            ignore = true;
-        };
-    }, [searchScope, searchTerm]);
-
     const getReleases = useCallback(async (term = "") => {
         setFetching(true);
         let query = supabase.from('releases').select()
@@ -144,12 +101,8 @@ const ReleaseGrid = ({ additionId, initialReleases = [], setAdditionId, setSelec
     }, [month, updateUniqueDays, year]);
 
     useEffect(() => {
-        if (searchScope === "month") {
-            getReleases(searchTerm);
-        } else {
-            getReleases("");
-        }
-    }, [year, month, additionId, searchScope, searchTerm, getReleases]);
+        getReleases(searchTerm);
+    }, [year, month, additionId, searchTerm, getReleases]);
 
     const grouper = new ReleaseGrouper();
     const sorter = new ReleaseSorter();
@@ -205,18 +158,6 @@ const ReleaseGrid = ({ additionId, initialReleases = [], setAdditionId, setSelec
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
     };
-
-    const handleSelectSearchResult = useCallback((release) => {
-        if (!release?.releaseDate) {
-            return;
-        }
-        const releaseDate = dayjs(release.releaseDate);
-        setYear(releaseDate.year());
-        setMonth(releaseDate.month() + 1);
-        setSelectedDayNumber(releaseDate.format("D"));
-        setSearchScope("month");
-        setSearchTerm("");
-    }, [setMonth, setSelectedDayNumber, setYear]);
 
     const sortedGroupedReleases = sorter.sortByDate(grouper.groupByDate(releases));
 
@@ -277,65 +218,14 @@ const ReleaseGrid = ({ additionId, initialReleases = [], setAdditionId, setSelec
             )}
           </div>
 
-          <Center mt="md" mb="xs">
-            <SegmentedControl
-              value={searchScope}
-              onChange={setSearchScope}
-              data={[
-                { label: "This month", value: "month" },
-                { label: "All releases", value: "all" },
-              ]}
-              size="sm"
-            />
-          </Center>
-
           <Search
             setSearchTerm={setSearchTerm}
             searchTerm={searchTerm}
             handleSearch={handleSearch}
-            placeholder={
-              searchScope === "all"
-                ? "Search every release by artist or album..."
-                : "Filter this month’s releases..."
-            }
+            placeholder="Filter this month’s releases..."
           />
 
-          {searchScope === "all" ? (
-            <Paper shadow="sm" radius="md" p="md" withBorder mt="md" mx="auto" style={{ maxWidth: 800 }}>
-              {searchTerm.trim().length < 2 ? (
-                <Text size="sm" color="dimmed">
-                  Type at least 2 characters to search the full release archive.
-                </Text>
-              ) : globalFetching ? (
-                <Center>
-                  <Loader size="lg" />
-                </Center>
-              ) : globalResults.length > 0 ? (
-                <ScrollArea.Autosize mah={360}>
-                  <Stack spacing="sm">
-                    {globalResults.map((result) => (
-                      <Group key={result.id} position="apart" align="flex-start" spacing="md">
-                        <div>
-                          <Text fw={600}>{result.artist}</Text>
-                          <Text size="sm" color="dimmed">
-                            {result.album}
-                          </Text>
-                          <Text size="xs" color="dimmed">
-                            {dayjs(result.releaseDate).format("MMMM D, YYYY")}
-                          </Text>
-                        </div>
-                        <Button size="xs" variant="light" onClick={() => handleSelectSearchResult(result)}>
-                          Go to month
-                        </Button>
-                      </Group>
-                    ))}
-                  </Stack>
-                </ScrollArea.Autosize>
-              ) : (
-                <Text size="sm">No releases match “{searchTerm.trim()}”.</Text>
-              )}
-            </Paper>
-          ) : fetching ? (
+          {fetching ? (
             <Center>
               <Loader size="lg" />
             </Center>
