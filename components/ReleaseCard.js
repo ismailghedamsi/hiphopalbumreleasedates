@@ -1,4 +1,4 @@
-import { Button, Center, Skeleton, Tabs, TextInput, Stack, Text, Modal } from "@mantine/core";
+import { Button, Center, Skeleton, Tabs, TextInput, Stack, Text } from "@mantine/core";
 import { useContext, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -8,6 +8,7 @@ import styles from '../styles/ReleaseCard.module.css';
 import SharedUploadZone from "./Upload/UploadZone";
 import dynamic from "next/dynamic";
 import Linktree from "./Linktree";
+import ModalBase from "./ModalBase";
 
 import {
     Card,
@@ -19,10 +20,10 @@ import {
   } from './styled/Cards/Card.style'; // Adjust the import path based on your actual file structure
   
 
-const LinksModal = styled(Modal)`
-   & .mantine-Modal-modal {
-    background: radial-gradient(circle at center, #fd4335 , yellow);
-    }
+const LinksModalContainer = styled.div`
+   background: radial-gradient(circle at center, #fd4335 , yellow);
+   padding: 1rem;
+   border-radius: 12px;
 `;
 
 // Assuming Card, CardContent, CardHeader, CardImage, CardContainer, and CardSecondaryText are imported from "./styled/Cards/Card.style";
@@ -131,18 +132,14 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
 
     return (
         <>
-            <Modal
+            <ModalBase
                 opened={uploadModalOpened}
-                centered
+                title="Add release"
                 onClose={() => {
                     setUploadModalOpened(false);
                     setUrlError("");
                     setImageUrl("");
                 }}
-                transition="fade"
-                transitionDuration={600}
-                transitionTimingFunction="ease"
-                title="Add release"
             >
                 <Tabs defaultValue="upload">
                     <Tabs.List grow>
@@ -174,19 +171,17 @@ const ReleaseCard = ({ fetching, index, release, releases, setReleases }) => {
                         </Stack>
                     </Tabs.Panel>
                 </Tabs>
-            </Modal>
+            </ModalBase>
 
-            <LinksModal
+            <ModalBase
                 opened={linksModalOpened}
-                centered
-                onClose={() => setLinksModalOpened(false)}
-                transition="fade"
-                transitionDuration={600}
-                transitionTimingFunction="ease"
                 title={`${release.artist} - ${release.album}`}
+                onClose={() => setLinksModalOpened(false)}
             >
-                <Linktree release={release} />
-            </LinksModal>
+                <LinksModalContainer>
+                    <Linktree release={release} />
+                </LinksModalContainer>
+            </ModalBase>
 
                 <CardContainer>
                     <Skeleton visible={fetching}>

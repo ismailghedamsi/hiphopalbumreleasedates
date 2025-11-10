@@ -3,7 +3,7 @@ import { Fragment, useCallback, useContext, useEffect, useRef, useState } from "
 import { supabase } from "../supabaseClient";
 import dayjs from "dayjs";
 import DateHelpers from '../helper/dateUtilities'
-import { Center, Loader, Modal } from "@mantine/core";
+import { Center, Loader } from "@mantine/core";
 import AppContext from "./AppContext";
 import { useRouter } from "next/router";
 import styles from '../styles/ReleaseGrid.module.css'
@@ -17,6 +17,7 @@ import { ReleaseSorter } from "../helper/ReleaseSorter";
 import Search from "./Search";
 import useDidMountEffect from "./hooks/useDidMountEffect";
 import { Tabs } from "@mantine/core";
+import ModalBase from "./ModalBase";
 
 
 const AddRelease = dynamic(() => import('./AddRelease'), {
@@ -159,15 +160,10 @@ const ReleaseGrid = ({ additionId, initialReleases = [], setAdditionId, setSelec
     return (
         <>
           {loggedUser && (
-            <Modal
+            <ModalBase
               opened={addReleaseModalOpened}
-              centere
-              onClose={() => setAddReleaseModalOpened(false)}
-              transition="fade"
-              transitionDuration={600}
-              transitionTimingFunction="ease"
               title="Add release"
-              size="lg"
+              onClose={() => setAddReleaseModalOpened(false)}
             >
               <Tabs defaultValue="single">
                 <Tabs.List>
@@ -195,7 +191,7 @@ const ReleaseGrid = ({ additionId, initialReleases = [], setAdditionId, setSelec
                   />
                 </Tabs.Panel>
               </Tabs>
-            </Modal>
+            </ModalBase>
           )}
       
           <div className="has-text-centered" style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
