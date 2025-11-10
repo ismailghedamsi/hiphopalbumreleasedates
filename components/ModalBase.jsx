@@ -1,10 +1,5 @@
-import dynamic from "next/dynamic";
+import { Modal } from "@mantine/core";
 import styles from "../styles/ModalBase.module.css";
-
-const MantineModal = dynamic(
-  () => import("@mantine/core").then((mod) => mod.Modal),
-  { ssr: false }
-);
 
 const ModalBase = ({
   opened,
@@ -16,7 +11,7 @@ const ModalBase = ({
   ...rest
 }) => {
   return (
-    <MantineModal
+    <Modal
       opened={opened}
       onClose={onClose}
       title={title}
@@ -41,7 +36,7 @@ const ModalBase = ({
       {...rest}
     >
       {children}
-    </MantineModal>
+    </Modal>
   );
 };
 
