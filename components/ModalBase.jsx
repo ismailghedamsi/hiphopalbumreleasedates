@@ -1,4 +1,10 @@
-import { Modal } from "@mantine/core";
+import dynamic from "next/dynamic";
+import styles from "../styles/ModalBase.module.css";
+
+const MantineModal = dynamic(
+  () => import("@mantine/core").then((mod) => mod.Modal),
+  { ssr: false }
+);
 
 const ModalBase = ({
   opened,
@@ -10,14 +16,13 @@ const ModalBase = ({
   ...rest
 }) => {
   return (
-    <Modal
+    <MantineModal
       opened={opened}
       onClose={onClose}
       title={title}
       centered
       radius="lg"
       size={size}
-      withinPortal={false}
       trapFocus
       returnFocus
       overlayProps={{
@@ -26,10 +31,17 @@ const ModalBase = ({
         blur: 2,
         ...overlayProps,
       }}
+      classNames={{
+        content: styles.content,
+        header: styles.header,
+        title: styles.title,
+        body: styles.body,
+        close: styles.close,
+      }}
       {...rest}
     >
       {children}
-    </Modal>
+    </MantineModal>
   );
 };
 
